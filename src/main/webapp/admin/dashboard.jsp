@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,9 +14,10 @@
     <c:if test="${empty sessionScope.user}">
         <c:redirect url="/login"/>
     </c:if>
-    
-    <c:if test="${sessionScope.user.role.roleName ne 'Administrator'}">
-        <c:redirect url="/login"/>
+
+    <c:set var="_role" value="${empty sessionScope.user or empty sessionScope.user.role or empty sessionScope.user.role.roleName ? '' : fn:toLowerCase(fn:replace(sessionScope.user.role.roleName, ' ', ''))}"/>
+    <c:if test="${_role ne 'administrator'}">
+        <c:redirect url="${pageContext.request.contextPath}/login"/>
     </c:if>
     
     <div class="header">
@@ -25,8 +27,11 @@
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Logout</a>
         </div>
     </div>
-    
-    <div class="container">
+
+    <div class="dashboard-layout">
+        <jsp:include page="/shared/left-navbar.jsp"/>
+        <main class="dashboard-content">
+            <div class="container">
         <div class="welcome-section">
             <h2>Welcome to the Admin Dashboard</h2>
             <p>You have full administrative access to the Dental Clinic Management System. 
@@ -82,6 +87,8 @@
                • Generate monthly reports<br>
                • Backup system data</p>
         </div>
+            </div>
+        </main>
     </div>
 </body>
 </html>

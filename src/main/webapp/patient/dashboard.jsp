@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,8 +15,9 @@
         <c:redirect url="/login"/>
     </c:if>
     
-    <c:if test="${sessionScope.user.role.roleName ne 'Patient'}">
-        <c:redirect url="/login"/>
+    <c:set var="_role" value="${empty sessionScope.user or empty sessionScope.user.role or empty sessionScope.user.role.roleName ? '' : fn:toLowerCase(fn:replace(sessionScope.user.role.roleName, ' ', ''))}"/>
+    <c:if test="${_role ne 'patient'}">
+        <c:redirect url="${pageContext.request.contextPath}/login"/>
     </c:if>
     
     <div class="header">
@@ -25,8 +27,11 @@
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Logout</a>
         </div>
     </div>
-    
-    <div class="container">
+
+    <div class="dashboard-layout">
+        <jsp:include page="/shared/left-navbar.jsp"/>
+        <main class="dashboard-content">
+            <div class="container">
         <div class="welcome-section">
             <h2>Welcome to Your Patient Portal</h2>
             <p>Access your dental records, manage appointments, and stay informed about your dental health. 
@@ -81,6 +86,8 @@
                <br>
                <strong>Need to reschedule?</strong> Please call our office at (555) 123-4567</p>
         </div>
+            </div>
+        </main>
     </div>
 </body>
 </html>

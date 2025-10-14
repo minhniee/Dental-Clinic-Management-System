@@ -31,7 +31,8 @@ public class LoginServlet extends HttpServlet {
         HttpSession session = request.getSession(false);
         if (session != null && session.getAttribute("user") != null) {
             User user = (User) session.getAttribute("user");
-            response.sendRedirect(getRedirectUrl(user.getRole().getRoleName()));
+            String path = getRedirectUrl(user.getRole().getRoleName());
+            response.sendRedirect(request.getContextPath() + path);
             return;
         }
         
@@ -63,10 +64,11 @@ public class LoginServlet extends HttpServlet {
                 HttpSession session = request.getSession(true);
                 session.setAttribute("user", user);
                 session.setMaxInactiveInterval(30 * 60); // 30 minutes
-                
+
+                System.out.println(user.getRole());
                 // Redirect based on role
                 String redirectUrl = getRedirectUrl(user.getRole().getRoleName());
-                response.sendRedirect(redirectUrl);
+                response.sendRedirect(request.getContextPath() + redirectUrl);
             } else {
                 request.setAttribute("errorMessage", "Invalid email or password.");
                 request.getRequestDispatcher("/login.jsp").forward(request, response);
@@ -81,8 +83,10 @@ public class LoginServlet extends HttpServlet {
      * Get redirect URL based on user role
      */
     private String getRedirectUrl(String roleName) {
-        switch (roleName.toLowerCase()) {
+        String normalized = roleName == null ? "" : roleName.toLowerCase().replaceAll("\\s+", "");
+        switch (normalized) {
             case "administrator":
+                System.out.println("done admin");
                 return "/admin/dashboard.jsp";
             case "clinicmanager":
                 return "/manager/dashboard.jsp";
@@ -93,7 +97,7 @@ public class LoginServlet extends HttpServlet {
             case "patient":
                 return "/patient/dashboard.jsp";
             default:
-                return "/login.jsp";
+                return "login.jsp";
         }
     }
 }
