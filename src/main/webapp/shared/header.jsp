@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>${pageTitle != null ? pageTitle : 'Dental Clinic Management System'}</title>
+    <title>${pageTitle != null ? pageTitle : 'Hệ Thống Quản Lý Phòng Khám Nha Khoa'}</title>
     
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -75,7 +75,7 @@
         <div class="container">
             <a class="navbar-brand" href="${pageContext.request.contextPath}/home">
                 <i class="fas fa-tooth text-primary me-2"></i>
-                DentalCare Clinic
+                Phòng Khám Nha Khoa DentalCare
             </a>
             
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
@@ -86,16 +86,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/home">Home</a>
+                        <a class="nav-link" href="${pageContext.request.contextPath}/home">Trang Chủ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/home#dentists">Our Dentists</a>
+                        <a class="nav-link" href="${pageContext.request.contextPath}/home#dentists">Bác Sĩ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/home#services">Services</a>
+                        <a class="nav-link" href="${pageContext.request.contextPath}/home#services">Dịch Vụ</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/home#contact">Contact</a>
+                        <a class="nav-link" href="${pageContext.request.contextPath}/home#contact">Liên Hệ</a>
                     </li>
                 </ul>
                 
@@ -110,11 +110,11 @@
                                 </a>
                                 <ul class="dropdown-menu">
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/patient/dashboard.jsp">
-                                        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                        <i class="fas fa-tachometer-alt me-2"></i>Bảng Điều Khiển
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li><a class="dropdown-item" href="${pageContext.request.contextPath}/logout">
-                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                        <i class="fas fa-sign-out-alt me-2"></i>Đăng Xuất
                                     </a></li>
                                 </ul>
                             </div>
@@ -122,7 +122,7 @@
                         <c:otherwise>
                             <a href="${pageContext.request.contextPath}/login.jsp" class="btn-login">
                                 <i class="fas fa-sign-in-alt me-1"></i>
-                                Login
+                                Đăng Nhập
                             </a>
                         </c:otherwise>
                     </c:choose>

@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="shared/header.jsp">
-    <jsp:param name="pageTitle" value="Server Error - DentalCare Clinic" />
+    <jsp:param name="pageTitle" value="Lỗi Máy Chủ - Phòng Khám Nha Khoa DentalCare" />
 </jsp:include>
 
 <main class="min-vh-100 d-flex align-items-center" style="background-color: #f8fafc;">
@@ -23,11 +23,11 @@
                     500
                 </h1>
                 <h2 class="h3 fw-semibold text-slate-700 mb-3" style="color: #334155;">
-                    Internal Server Error
+                    Lỗi Máy Chủ Nội Bộ
                 </h2>
                 <p class="lead text-slate-600 mb-4" style="color: #475569; font-size: 1.125rem; line-height: 1.6;">
-                    We're experiencing technical difficulties. Our team has been notified and is working 
-                    to resolve the issue. Please try again in a few moments.
+                    Chúng tôi đang gặp khó khăn về mặt kỹ thuật. Đội ngũ của chúng tôi đã được thông báo và đang làm việc 
+                    để giải quyết vấn đề. Vui lòng thử lại sau vài phút.
                 </p>
                 
                 <!-- Action Buttons -->
@@ -35,12 +35,12 @@
                     <a href="${pageContext.request.contextPath}/home" class="btn btn-primary btn-lg px-4 py-3" 
                        style="background-color: #06b6d4; border-color: #06b6d4; border-radius: 0.5rem;">
                         <i class="fas fa-home me-2"></i>
-                        Back to Home
+                        Về Trang Chủ
                     </a>
                     <button onclick="window.location.reload()" class="btn btn-outline-primary btn-lg px-4 py-3"
                             style="border-color: #06b6d4; color: #06b6d4; border-radius: 0.5rem;">
                         <i class="fas fa-redo me-2"></i>
-                        Try Again
+                        Thử Lại
                     </button>
                 </div>
                 
@@ -49,18 +49,18 @@
                     <div class="card-body p-4">
                         <h5 class="card-title fw-semibold mb-3" style="color: #0f172a;">
                             <i class="fas fa-info-circle text-primary me-2" style="color: #06b6d4;"></i>
-                            What happened?
+                            Điều gì đã xảy ra?
                         </h5>
                         <p class="text-slate-600 mb-3" style="color: #475569;">
-                            The server encountered an unexpected error while processing your request. 
-                            This is usually temporary and will be resolved shortly.
+                            Máy chủ gặp lỗi không mong muốn khi xử lý yêu cầu của bạn. 
+                            Điều này thường là tạm thời và sẽ được giải quyết sớm.
                         </p>
                         <div class="alert alert-info border-0 mb-0" style="background-color: #f1f5f9; border-radius: 0.5rem;">
                             <div class="d-flex align-items-center">
                                 <i class="fas fa-clock text-primary me-3" style="color: #06b6d4;"></i>
                                 <div>
-                                    <strong style="color: #0f172a;">Estimated Resolution Time:</strong>
-                                    <span class="text-slate-600 ms-2" style="color: #475569;">5-10 minutes</span>
+                                    <strong style="color: #0f172a;">Thời Gian Giải Quyết Dự Kiến:</strong>
+                                    <span class="text-slate-600 ms-2" style="color: #475569;">5-10 phút</span>
                                 </div>
                             </div>
                         </div>
@@ -72,17 +72,17 @@
                     <div class="card-body p-4">
                         <h5 class="card-title fw-semibold mb-3" style="color: #0f172a;">
                             <i class="fas fa-headset text-primary me-2" style="color: #06b6d4;"></i>
-                            Need Immediate Assistance?
+                            Cần Hỗ Trợ Ngay Lập Tức?
                         </h5>
                         <p class="text-slate-600 mb-3" style="color: #475569;">
-                            If you need to book an appointment urgently, please contact us directly:
+                            Nếu bạn cần đặt lịch hẹn khẩn cấp, vui lòng liên hệ trực tiếp với chúng tôi:
                         </p>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-phone text-primary me-3" style="color: #06b6d4;"></i>
                                     <div>
-                                        <small class="text-slate-500 d-block" style="color: #64748b;">Phone</small>
+                                        <small class="text-slate-500 d-block" style="color: #64748b;">Điện Thoại</small>
                                         <span class="fw-semibold" style="color: #0f172a;">(555) 123-4567</span>
                                     </div>
                                 </div>
@@ -104,10 +104,10 @@
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-exclamation-triangle text-danger me-3"></i>
                                     <div>
-                                        <strong class="text-danger">Dental Emergency?</strong>
+                                        <strong class="text-danger">Cấp Cứu Nha Khoa?</strong>
                                         <br>
                                         <small class="text-danger">
-                                            Call our 24/7 emergency line: <strong>(555) 123-HELP</strong>
+                                            Gọi đường dây cấp cứu 24/7 của chúng tôi: <strong>(555) 123-HELP</strong>
                                         </small>
                                     </div>
                                 </div>
@@ -119,28 +119,28 @@
                 <!-- Quick Links -->
                 <div class="mt-4">
                     <h6 class="fw-semibold text-slate-700 mb-3" style="color: #334155;">
-                        Try These Pages:
+                        Thử Các Trang Này:
                     </h6>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
                         <a href="${pageContext.request.contextPath}/home" class="text-decoration-none">
                             <span class="badge bg-light text-primary px-3 py-2" 
                                   style="background-color: #f1f5f9; color: #06b6d4; border-radius: 0.5rem;">
                                 <i class="fas fa-home me-1"></i>
-                                Home
+                                Trang Chủ
                             </span>
                         </a>
                         <a href="${pageContext.request.contextPath}/login.jsp" class="text-decoration-none">
                             <span class="badge bg-light text-primary px-3 py-2" 
                                   style="background-color: #f1f5f9; color: #06b6d4; border-radius: 0.5rem;">
                                 <i class="fas fa-sign-in-alt me-1"></i>
-                                Login
+                                Đăng Nhập
                             </span>
                         </a>
                         <a href="tel:+15551234567" class="text-decoration-none">
                             <span class="badge bg-light text-primary px-3 py-2" 
                                   style="background-color: #f1f5f9; color: #06b6d4; border-radius: 0.5rem;">
                                 <i class="fas fa-phone me-1"></i>
-                                Call Us
+                                Gọi Chúng Tôi
                             </span>
                         </a>
                     </div>

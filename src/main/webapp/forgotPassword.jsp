@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Forgot Password - Dental Clinic Management System</title>
+    <title>Quên Mật Khẩu - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <style>
         * {
             margin: 0;
@@ -180,8 +180,8 @@
     <div class="forgot-container">
         <div class="forgot-header">
             <div class="dental-icon">🔒</div>
-            <h1>Reset Password</h1>
-            <p>Enter your email address to receive a temporary password</p>
+            <h1>Đặt Lại Mật Khẩu</h1>
+            <p>Nhập địa chỉ email của bạn để nhận mật khẩu tạm thời</p>
         </div>
         
         <!-- Display error message if exists -->
@@ -197,29 +197,29 @@
                 ${successMessage}
             </div>
             <div class="info-box">
-                <strong>Important:</strong> Please save this temporary password and change it after logging in.
+                <strong>Quan trọng:</strong> Vui lòng lưu mật khẩu tạm thời này và thay đổi nó sau khi đăng nhập.
             </div>
         </c:if>
         
         <c:if test="${empty successMessage}">
             <div class="info-box">
-                <strong>Note:</strong> A new temporary password will be generated and displayed on this page. 
-                Please change it after logging in.
+                <strong>Lưu ý:</strong> Một mật khẩu tạm thời mới sẽ được tạo và hiển thị trên trang này. 
+                Vui lòng thay đổi nó sau khi đăng nhập.
             </div>
         </c:if>
         
         <form action="${pageContext.request.contextPath}/forgotPassword" method="post">
             <div class="form-group">
-                <label for="email">Email Address:</label>
+                <label for="email">Địa Chỉ Email:</label>
                 <input type="email" id="email" name="email" required 
-                       value="${param.email}" placeholder="Enter your email address">
+                       value="${param.email}" placeholder="Nhập địa chỉ email của bạn">
             </div>
             
-            <button type="submit" class="btn-reset">Reset Password</button>
+            <button type="submit" class="btn-reset">Đặt Lại Mật Khẩu</button>
         </form>
         
         <div class="back-to-login">
-            <a href="${pageContext.request.contextPath}/login">← Back to Login</a>
+            <a href="${pageContext.request.contextPath}/login">← Quay Lại Đăng Nhập</a>
         </div>
     </div>
 </body>

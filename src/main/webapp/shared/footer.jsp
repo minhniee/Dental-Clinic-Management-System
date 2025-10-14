@@ -6,11 +6,11 @@
                 <div class="col-lg-4 col-md-6 mb-4">
                     <h5 class="text-white mb-3">
                         <i class="fas fa-tooth text-primary me-2"></i>
-                        DentalCare Clinic
+                        Phòng Khám Nha Khoa DentalCare
                     </h5>
                     <p class="text-light opacity-75 mb-3">
-                        Your trusted partner in dental health. We provide comprehensive dental care 
-                        with state-of-the-art technology and compassionate service.
+                        Đối tác đáng tin cậy trong chăm sóc sức khỏe răng miệng. Chúng tôi cung cấp dịch vụ nha khoa toàn diện 
+                        với công nghệ tiên tiến và dịch vụ tận tâm.
                     </p>
                     <div class="d-flex">
                         <a href="#" class="text-light me-3" aria-label="Facebook">
@@ -30,31 +30,31 @@
                 
                 <!-- Quick Links -->
                 <div class="col-lg-2 col-md-6 mb-4">
-                    <h6 class="text-white mb-3">Quick Links</h6>
+                    <h6 class="text-white mb-3">Liên Kết Nhanh</h6>
                     <ul class="list-unstyled">
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/home" class="text-light opacity-75 text-decoration-none">
-                                Home
+                                Trang Chủ
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/home#dentists" class="text-light opacity-75 text-decoration-none">
-                                Our Dentists
+                                Bác Sĩ
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/home#services" class="text-light opacity-75 text-decoration-none">
-                                Services
+                                Dịch Vụ
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/home#contact" class="text-light opacity-75 text-decoration-none">
-                                Contact
+                                Liên Hệ
                             </a>
                         </li>
                         <li class="mb-2">
                             <a href="${pageContext.request.contextPath}/login.jsp" class="text-light opacity-75 text-decoration-none">
-                                Patient Login
+                                Đăng Nhập Bệnh Nhân
                             </a>
                         </li>
                     </ul>
@@ -62,13 +62,13 @@
                 
                 <!-- Contact Info -->
                 <div class="col-lg-3 col-md-6 mb-4">
-                    <h6 class="text-white mb-3">Contact Info</h6>
+                    <h6 class="text-white mb-3">Thông Tin Liên Hệ</h6>
                     <div class="d-flex align-items-start mb-3">
                         <i class="fas fa-map-marker-alt text-primary me-3 mt-1"></i>
                         <div>
                             <p class="text-light opacity-75 mb-0">
-                                123 Health Street<br>
-                                Medical District, City 12345
+                                123 Đường Sức Khỏe<br>
+                                Quận Y Tế, Thành Phố 12345
                             </p>
                         </div>
                     </div>
@@ -94,14 +94,14 @@
                 
                 <!-- Emergency Contact -->
                 <div class="col-lg-3 col-md-6 mb-4">
-                    <h6 class="text-white mb-3">Emergency</h6>
+                    <h6 class="text-white mb-3">Cấp Cứu</h6>
                     <div class="bg-danger bg-opacity-10 p-3 rounded">
                         <h6 class="text-danger mb-2">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            Dental Emergency?
+                            Cấp Cứu Nha Khoa?
                         </h6>
                         <p class="text-light opacity-75 mb-2">
-                            Call our 24/7 emergency line for urgent dental care.
+                            Gọi đường dây cấp cứu 24/7 của chúng tôi để được chăm sóc nha khoa khẩn cấp.
                         </p>
                         <a href="tel:+15551234567" class="btn btn-danger btn-sm">
                             <i class="fas fa-phone me-1"></i>
@@ -116,12 +116,12 @@
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <p class="text-light opacity-75 mb-0">
-                        &copy; 2024 DentalCare Clinic. All rights reserved.
+                        &copy; 2024 Phòng Khám Nha Khoa DentalCare. Tất cả quyền được bảo lưu.
                     </p>
                 </div>
                 <div class="col-md-6 text-md-end">
-                    <a href="#" class="text-light opacity-75 text-decoration-none me-3">Privacy Policy</a>
-                    <a href="#" class="text-light opacity-75 text-decoration-none">Terms of Service</a>
+                    <a href="#" class="text-light opacity-75 text-decoration-none me-3">Chính Sách Bảo Mật</a>
+                    <a href="#" class="text-light opacity-75 text-decoration-none">Điều Khoản Dịch Vụ</a>
                 </div>
             </div>
         </div>

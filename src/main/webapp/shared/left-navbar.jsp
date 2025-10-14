@@ -9,7 +9,7 @@
 
 <aside class="sidebar">
     <div class="sidebar-header">
-        <span class="sidebar-title">Dashboard</span>
+        <span class="sidebar-title">Bảng Điều Khiển</span>
         <span class="sidebar-role">
             <c:out value="${roleNameRaw}"/>
         </span>
@@ -19,88 +19,88 @@
         <!-- Administrator menu -->
         <c:if test="${role eq 'administrator'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/admin/dashboard.jsp') ? 'active' : ''}" href="${ctx}/admin/dashboard.jsp">Overview</a></li>
-                <li><a href="${ctx}/admin/users">Users</a></li>
-                <li><a href="${ctx}/admin/roles">Roles & Permissions</a></li>
-                <li><a href="${ctx}/admin/employees">Employees</a></li>
-                <li><a href="${ctx}/admin/schedules">Schedules</a></li>
-                <li><a href="${ctx}/admin/notifications">Notifications</a></li>
-                <li><a href="${ctx}/admin/services">Services</a></li>
-                <li><a href="${ctx}/admin/pricing">Pricing</a></li>
-                <li><a href="${ctx}/admin/promotions">Promotions</a></li>
-                <li><a href="${ctx}/admin/inventory">Inventory</a></li>
-                <li><a href="${ctx}/admin/analytics">Analytics</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/admin/dashboard.jsp') ? 'active' : ''}" href="${ctx}/admin/dashboard.jsp">Tổng Quan</a></li>
+                <li><a href="${ctx}/admin/users">Người Dùng</a></li>
+                <li><a href="${ctx}/admin/roles">Vai Trò & Quyền Hạn</a></li>
+                <li><a href="${ctx}/admin/employees">Nhân Viên</a></li>
+                <li><a href="${ctx}/admin/schedules">Lịch Trình</a></li>
+                <li><a href="${ctx}/admin/notifications">Thông Báo</a></li>
+                <li><a href="${ctx}/admin/services">Dịch Vụ</a></li>
+                <li><a href="${ctx}/admin/pricing">Giá Cả</a></li>
+                <li><a href="${ctx}/admin/promotions">Khuyến Mãi</a></li>
+                <li><a href="${ctx}/admin/inventory">Tồn Kho</a></li>
+                <li><a href="${ctx}/admin/analytics">Phân Tích</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/admin/reports/financial">Financial Reports</a></li>
-                <li><a href="${ctx}/admin/reports/usage">Website Usage</a></li>
-                <li><a href="${ctx}/admin/reports/treatment">Treatment & Patient</a></li>
+                <li><a href="${ctx}/admin/reports/financial">Báo Cáo Tài Chính</a></li>
+                <li><a href="${ctx}/admin/reports/usage">Sử Dụng Website</a></li>
+                <li><a href="${ctx}/admin/reports/treatment">Điều Trị & Bệnh Nhân</a></li>
             </ul>
         </c:if>
 
         <!-- Clinic Manager menu -->
         <c:if test="${role eq 'clinicmanager'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/manager/dashboard.jsp') ? 'active' : ''}" href="${ctx}/manager/dashboard.jsp">Overview</a></li>
-                <li><a href="${ctx}/manager/employees">Employees</a></li>
-                <li><a href="${ctx}/manager/schedules">Schedules</a></li>
-                <li><a href="${ctx}/manager/patients">Patients</a></li>
-                <li><a href="${ctx}/manager/queue">Queue</a></li>
-                <li><a href="${ctx}/manager/online-appointments">Online Appointments</a></li>
-                <li><a href="${ctx}/manager/invoices">Invoices</a></li>
-                <li><a href="${ctx}/manager/inventory">Inventory</a></li>
-                <li><a href="${ctx}/manager/feedback">Feedback</a></li>
-                <li><a href="${ctx}/manager/analytics">Analytics</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/manager/dashboard.jsp') ? 'active' : ''}" href="${ctx}/manager/dashboard.jsp">Tổng Quan</a></li>
+                <li><a href="${ctx}/manager/employees">Nhân Viên</a></li>
+                <li><a href="${ctx}/manager/schedules">Lịch Trình</a></li>
+                <li><a href="${ctx}/manager/patients">Bệnh Nhân</a></li>
+                <li><a href="${ctx}/manager/queue">Hàng Chờ</a></li>
+                <li><a href="${ctx}/manager/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
+                <li><a href="${ctx}/manager/invoices">Hóa Đơn</a></li>
+                <li><a href="${ctx}/manager/inventory">Tồn Kho</a></li>
+                <li><a href="${ctx}/manager/feedback">Phản Hồi</a></li>
+                <li><a href="${ctx}/manager/analytics">Phân Tích</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/manager/reports">Reports</a></li>
+                <li><a href="${ctx}/manager/reports">Báo Cáo</a></li>
             </ul>
         </c:if>
 
         <!-- Receptionist menu -->
         <c:if test="${role eq 'receptionist'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/receptionist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/receptionist/dashboard.jsp">Overview</a></li>
-                <li><a href="${ctx}/receptionist/register-patient">Register Patient</a></li>
-                <li><a href="${ctx}/receptionist/patients">Patient List</a></li>
-                <li><a href="${ctx}/receptionist/patient-files">Patient Files</a></li>
-                <li><a href="${ctx}/receptionist/queue">Waiting Queue</a></li>
-                <li><a href="${ctx}/receptionist/assign">Assign to Dentist</a></li>
-                <li><a href="${ctx}/receptionist/invoices">Invoices & Payments</a></li>
-                <li><a href="${ctx}/receptionist/online-appointments">Online Appointments</a></li>
-                <li><a href="${ctx}/receptionist/inventory">Inventory</a></li>
-                <li><a href="${ctx}/receptionist/feedback">Feedback</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/receptionist/dashboard.jsp">Tổng Quan</a></li>
+                <li><a href="${ctx}/receptionist/register-patient">Đăng Ký Bệnh Nhân</a></li>
+                <li><a href="${ctx}/receptionist/patients">Danh Sách Bệnh Nhân</a></li>
+                <li><a href="${ctx}/receptionist/patient-files">Hồ Sơ Bệnh Nhân</a></li>
+                <li><a href="${ctx}/receptionist/queue">Hàng Chờ</a></li>
+                <li><a href="${ctx}/receptionist/assign">Phân Công Bác Sĩ</a></li>
+                <li><a href="${ctx}/receptionist/invoices">Hóa Đơn & Thanh Toán</a></li>
+                <li><a href="${ctx}/receptionist/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
+                <li><a href="${ctx}/receptionist/inventory">Tồn Kho</a></li>
+                <li><a href="${ctx}/receptionist/feedback">Phản Hồi</a></li>
             </ul>
         </c:if>
 
         <!-- Dentist menu -->
         <c:if test="${role eq 'dentist'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/dentist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/dentist/dashboard.jsp">Overview</a></li>
-                <li><a href="${ctx}/dentist/patients">Patients</a></li>
-                <li><a href="${ctx}/dentist/medical-record">Medical Records</a></li>
-                <li><a href="${ctx}/dentist/examinations">Examinations</a></li>
-                <li><a href="${ctx}/dentist/treatment-plan">Treatment Plans</a></li>
-                <li><a href="${ctx}/dentist/clinical-results">Clinical Results</a></li>
-                <li><a href="${ctx}/dentist/prescriptions">Prescriptions</a></li>
-                <li><a href="${ctx}/dentist/history">History</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/dentist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/dentist/dashboard.jsp">Tổng Quan</a></li>
+                <li><a href="${ctx}/dentist/patients">Bệnh Nhân</a></li>
+                <li><a href="${ctx}/dentist/medical-record">Hồ Sơ Y Tế</a></li>
+                <li><a href="${ctx}/dentist/examinations">Khám Bệnh</a></li>
+                <li><a href="${ctx}/dentist/treatment-plan">Kế Hoạch Điều Trị</a></li>
+                <li><a href="${ctx}/dentist/clinical-results">Kết Quả Lâm Sàng</a></li>
+                <li><a href="${ctx}/dentist/prescriptions">Đơn Thuốc</a></li>
+                <li><a href="${ctx}/dentist/history">Lịch Sử</a></li>
             </ul>
         </c:if>
 
         <!-- Patient menu -->
         <c:if test="${role eq 'patient'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/patient/dashboard.jsp') ? 'active' : ''}" href="${ctx}/patient/dashboard.jsp">Overview</a></li>
-                <li><a href="${ctx}/patient/book-appointment">Book Appointment</a></li>
-                <li><a href="${ctx}/patient/appointments">My Appointments</a></li>
-                <li><a href="${ctx}/patient/payments">Payments</a></li>
-                <li><a href="${ctx}/patient/medical-history">Medical History</a></li>
-                <li><a href="${ctx}/patient/feedback">Feedback</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/patient/dashboard.jsp') ? 'active' : ''}" href="${ctx}/patient/dashboard.jsp">Tổng Quan</a></li>
+                <li><a href="${ctx}/patient/book-appointment">Đặt Lịch Hẹn</a></li>
+                <li><a href="${ctx}/patient/appointments">Lịch Hẹn Của Tôi</a></li>
+                <li><a href="${ctx}/patient/payments">Thanh Toán</a></li>
+                <li><a href="${ctx}/patient/medical-history">Lịch Sử Y Tế</a></li>
+                <li><a href="${ctx}/patient/feedback">Phản Hồi</a></li>
             </ul>
         </c:if>
 
         <!-- Fallback for unauthenticated -->
         <c:if test="${empty role}">
             <ul>
-                <li><a href="${ctx}/login">Login</a></li>
+                <li><a href="${ctx}/login">Đăng Nhập</a></li>
             </ul>
         </c:if>
     </nav>

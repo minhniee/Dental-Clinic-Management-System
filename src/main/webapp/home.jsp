@@ -4,7 +4,7 @@
 <%@ page pageEncoding="UTF-8" %>
 
 <jsp:include page="shared/header.jsp">
-    <jsp:param name="pageTitle" value="DentalCare Clinic - Your Smile, Our Priority" />
+    <jsp:param name="pageTitle" value="Phòng Khám Nha Khoa DentalCare - Nụ Cười Của Bạn, Ưu Tiên Của Chúng Tôi" />
 </jsp:include>
 
 <main>
@@ -14,23 +14,23 @@
             <div class="row align-items-center min-vh-75">
                 <div class="col-lg-6">
                     <h1 class="display-4 fw-bold text-slate-900 mb-4" style="color: #0f172a;">
-                        Your Smile, Our Priority
+                        Nụ Cười Của Bạn, Ưu Tiên Của Chúng Tôi
                     </h1>
                     <p class="lead text-slate-600 mb-4" style="color: #475569; font-size: 1.25rem; line-height: 1.6;">
-                        Experience world-class dental care with our team of expert professionals. 
-                        We provide comprehensive dental services using the latest technology 
-                        to ensure your oral health and beautiful smile.
+                        Trải nghiệm dịch vụ nha khoa đẳng cấp thế giới với đội ngũ chuyên gia chuyên nghiệp. 
+                        Chúng tôi cung cấp dịch vụ nha khoa toàn diện sử dụng công nghệ tiên tiến nhất 
+                        để đảm bảo sức khỏe răng miệng và nụ cười đẹp của bạn.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
                         <a href="#contact" class="btn btn-primary btn-lg px-4 py-3" 
                            style="background-color: #06b6d4; border-color: #06b6d4; border-radius: 0.5rem;">
                             <i class="fas fa-calendar-plus me-2"></i>
-                            Book Appointment
+                            Đặt Lịch Hẹn
                         </a>
                         <a href="#dentists" class="btn btn-outline-primary btn-lg px-4 py-3"
                            style="border-color: #06b6d4; color: #06b6d4; border-radius: 0.5rem;">
                             <i class="fas fa-user-md me-2"></i>
-                            Meet Our Team
+                            Gặp Gỡ Đội Ngũ
                         </a>
                     </div>
                 </div>
@@ -39,8 +39,8 @@
                          style="background-color: #f8fafc; min-height: 400px; display: flex; align-items: center; justify-content: center;">
                         <div class="text-center">
                             <i class="fas fa-tooth text-primary mb-3" style="font-size: 4rem; color: #06b6d4;"></i>
-                            <h5 class="text-slate-600" style="color: #475569;">Professional Dental Care</h5>
-                            <p class="text-slate-500" style="color: #64748b;">State-of-the-art equipment and compassionate care</p>
+                            <h5 class="text-slate-600" style="color: #475569;">Chăm Sóc Nha Khoa Chuyên Nghiệp</h5>
+                            <p class="text-slate-500" style="color: #64748b;">Thiết bị hiện đại và dịch vụ tận tâm</p>
                         </div>
                     </div>
                 </div>
@@ -75,10 +75,10 @@
             <div class="row">
                 <div class="col-12 text-center mb-5">
                     <h2 class="display-5 fw-bold text-slate-900 mb-3" style="color: #0f172a;">
-                        Meet Our Expert Dentists
+                        Gặp Gỡ Các Bác Sĩ Nha Khoa Chuyên Gia
                     </h2>
                     <p class="lead text-slate-600" style="color: #475569;">
-                        Our experienced team of dental professionals is dedicated to providing you with the best care.
+                        Đội ngũ chuyên gia nha khoa giàu kinh nghiệm của chúng tôi cam kết mang đến cho bạn dịch vụ chăm sóc tốt nhất.
                     </p>
                 </div>
             </div>
@@ -122,7 +122,7 @@
                                             <span class="badge bg-light text-primary px-3 py-2" 
                                                   style="background-color: #f1f5f9; color: #06b6d4; border-radius: 0.5rem;">
                                                 <i class="fas fa-graduation-cap me-1"></i>
-                                                Licensed Professional
+                                                Chuyên Gia Có Giấy Phép
                                             </span>
                                         </div>
                                         
@@ -152,8 +152,8 @@
                         <div class="col-12 text-center">
                             <div class="py-5">
                                 <i class="fas fa-user-md text-muted mb-3" style="font-size: 3rem;"></i>
-                                <h5 class="text-muted">No dentists available at the moment</h5>
-                                <p class="text-muted">Please check back later or contact us directly.</p>
+                                <h5 class="text-muted">Hiện tại chưa có bác sĩ nào</h5>
+                                <p class="text-muted">Vui lòng kiểm tra lại sau hoặc liên hệ trực tiếp với chúng tôi.</p>
                             </div>
                         </div>
                     </div>
@@ -168,10 +168,10 @@
             <div class="row">
                 <div class="col-12 text-center mb-5">
                     <h2 class="display-5 fw-bold text-slate-900 mb-3" style="color: #0f172a;">
-                        Our Services
+                        Dịch Vụ Của Chúng Tôi
                     </h2>
                     <p class="lead text-slate-600" style="color: #475569;">
-                        Comprehensive dental care tailored to meet your needs and budget.
+                        Dịch vụ nha khoa toàn diện được thiết kế phù hợp với nhu cầu và ngân sách của bạn.
                     </p>
                 </div>
             </div>
@@ -227,7 +227,7 @@
                                             <a href="#contact" class="btn btn-outline-primary w-100" 
                                                style="border-color: #06b6d4; color: #06b6d4; border-radius: 0.5rem;">
                                                 <i class="fas fa-calendar-plus me-2"></i>
-                                                Book This Service
+                                                Đặt Dịch Vụ Này
                                             </a>
                                         </div>
                                     </div>
@@ -241,8 +241,8 @@
                         <div class="col-12 text-center">
                             <div class="py-5">
                                 <i class="fas fa-list-alt text-muted mb-3" style="font-size: 3rem;"></i>
-                                <h5 class="text-muted">No services available at the moment</h5>
-                                <p class="text-muted">Please check back later or contact us for more information.</p>
+                                <h5 class="text-muted">Hiện tại chưa có dịch vụ nào</h5>
+                                <p class="text-muted">Vui lòng kiểm tra lại sau hoặc liên hệ với chúng tôi để biết thêm thông tin.</p>
                             </div>
                         </div>
                     </div>
@@ -257,10 +257,10 @@
             <div class="row">
                 <div class="col-12 text-center mb-5">
                     <h2 class="display-5 fw-bold text-slate-900 mb-3" style="color: #0f172a;">
-                        Book Your Appointment
+                        Đặt Lịch Hẹn Của Bạn
                     </h2>
                     <p class="lead text-slate-600" style="color: #475569;">
-                        Ready to take care of your dental health? Fill out the form below and we'll get back to you soon.
+                        Sẵn sàng chăm sóc sức khỏe răng miệng của bạn? Điền vào biểu mẫu bên dưới và chúng tôi sẽ liên hệ lại với bạn sớm.
                     </p>
                 </div>
             </div>
@@ -277,24 +277,24 @@
                                     <!-- Full Name -->
                                     <div class="col-md-6 mb-3">
                                         <label for="fullName" class="form-label fw-semibold" style="color: #0f172a;">
-                                            Full Name <span class="text-danger">*</span>
+                                            Họ và Tên <span class="text-danger">*</span>
                                         </label>
                                         <input type="text" class="form-control" id="fullName" name="fullName" 
                                                required style="border-color: #d1d5db; border-radius: 0.5rem;">
                                         <div class="invalid-feedback">
-                                            Please provide your full name.
+                                            Vui lòng cung cấp họ và tên đầy đủ của bạn.
                                         </div>
                                     </div>
                                     
                                     <!-- Email -->
                                     <div class="col-md-6 mb-3">
                                         <label for="email" class="form-label fw-semibold" style="color: #0f172a;">
-                                            Email Address <span class="text-danger">*</span>
+                                            Địa Chỉ Email <span class="text-danger">*</span>
                                         </label>
                                         <input type="email" class="form-control" id="email" name="email" 
                                                required style="border-color: #d1d5db; border-radius: 0.5rem;">
                                         <div class="invalid-feedback">
-                                            Please provide a valid email address.
+                                            Vui lòng cung cấp địa chỉ email hợp lệ.
                                         </div>
                                     </div>
                                 </div>
@@ -303,23 +303,23 @@
                                     <!-- Phone -->
                                     <div class="col-md-6 mb-3">
                                         <label for="phone" class="form-label fw-semibold" style="color: #0f172a;">
-                                            Phone Number <span class="text-danger">*</span>
+                                            Số Điện Thoại <span class="text-danger">*</span>
                                         </label>
                                         <input type="tel" class="form-control" id="phone" name="phone" 
                                                required style="border-color: #d1d5db; border-radius: 0.5rem;">
                                         <div class="invalid-feedback">
-                                            Please provide your phone number.
+                                            Vui lòng cung cấp số điện thoại của bạn.
                                         </div>
                                     </div>
                                     
                                     <!-- Preferred Service -->
                                     <div class="col-md-6 mb-3">
                                         <label for="serviceId" class="form-label fw-semibold" style="color: #0f172a;">
-                                            Preferred Service <span class="text-danger">*</span>
+                                            Dịch Vụ Ưa Thích <span class="text-danger">*</span>
                                         </label>
                                         <select class="form-select" id="serviceId" name="serviceId" required 
                                                 style="border-color: #d1d5db; border-radius: 0.5rem;">
-                                            <option value="">Select a service</option>
+                                            <option value="">Chọn một dịch vụ</option>
                                             <c:forEach var="service" items="${services}">
                                                 <option value="${service.serviceId}">
                                                     ${service.name} - $<fmt:formatNumber value="${service.price}" pattern="#,##0.00" />
@@ -327,7 +327,7 @@
                                             </c:forEach>
                                         </select>
                                         <div class="invalid-feedback">
-                                            Please select a service.
+                                            Vui lòng chọn một dịch vụ.
                                         </div>
                                     </div>
                                 </div>
@@ -336,11 +336,11 @@
                                     <!-- Preferred Doctor -->
                                     <div class="col-md-6 mb-3">
                                         <label for="preferredDoctorId" class="form-label fw-semibold" style="color: #0f172a;">
-                                            Preferred Doctor (Optional)
+                                            Bác Sĩ Ưa Thích (Tùy Chọn)
                                         </label>
                                         <select class="form-select" id="preferredDoctorId" name="preferredDoctorId" 
                                                 style="border-color: #d1d5db; border-radius: 0.5rem;">
-                                            <option value="">Any available doctor</option>
+                                            <option value="">Bất kỳ bác sĩ nào có sẵn</option>
                                             <c:forEach var="dentist" items="${dentists}">
                                                 <option value="${dentist.userId}">
                                                     ${dentist.fullName}
@@ -355,12 +355,12 @@
                                     <!-- Preferred Date -->
                                     <div class="col-md-6 mb-3">
                                         <label for="preferredDate" class="form-label fw-semibold" style="color: #0f172a;">
-                                            Preferred Date <span class="text-danger">*</span>
+                                            Ngày Ưa Thích <span class="text-danger">*</span>
                                         </label>
                                         <input type="date" class="form-control" id="preferredDate" name="preferredDate" 
                                                required style="border-color: #d1d5db; border-radius: 0.5rem;">
                                         <div class="invalid-feedback">
-                                            Please select a preferred date.
+                                            Vui lòng chọn ngày ưa thích.
                                         </div>
                                     </div>
                                 </div>
@@ -368,23 +368,23 @@
                                 <!-- Preferred Shift -->
                                 <div class="mb-3">
                                     <label for="preferredShift" class="form-label fw-semibold" style="color: #0f172a;">
-                                        Preferred Time
+                                        Thời Gian Ưa Thích
                                     </label>
                                     <select class="form-select" id="preferredShift" name="preferredShift" 
                                             style="border-color: #d1d5db; border-radius: 0.5rem;">
-                                        <option value="">No preference</option>
-                                        <option value="Morning">Morning (8:00 AM - 12:00 PM)</option>
-                                        <option value="Afternoon">Afternoon (1:00 PM - 5:00 PM)</option>
+                                        <option value="">Không có sở thích</option>
+                                        <option value="Morning">Sáng (8:00 - 12:00)</option>
+                                        <option value="Afternoon">Chiều (13:00 - 17:00)</option>
                                     </select>
                                 </div>
                                 
                                 <!-- Message -->
                                 <div class="mb-4">
                                     <label for="message" class="form-label fw-semibold" style="color: #0f172a;">
-                                        Additional Notes
+                                        Ghi Chú Thêm
                                     </label>
                                     <textarea class="form-control" id="message" name="message" rows="4" 
-                                              placeholder="Please describe your dental concerns or any specific requirements..."
+                                              placeholder="Vui lòng mô tả các vấn đề nha khoa của bạn hoặc bất kỳ yêu cầu cụ thể nào..."
                                               style="border-color: #d1d5db; border-radius: 0.5rem;"></textarea>
                                 </div>
                                 
@@ -393,7 +393,7 @@
                                     <button type="submit" class="btn btn-primary btn-lg px-5 py-3" 
                                             style="background-color: #06b6d4; border-color: #06b6d4; border-radius: 0.5rem; width: 100%;">
                                         <i class="fas fa-paper-plane me-2"></i>
-                                        Submit Request
+                                        Gửi Yêu Cầu
                                     </button>
                                 </div>
                             </form>
@@ -407,20 +407,20 @@
                         <div class="card-body p-4">
                             <h5 class="card-title fw-bold mb-4" style="color: #0f172a;">
                                 <i class="fas fa-info-circle text-primary me-2" style="color: #06b6d4;"></i>
-                                Contact Information
+                                Thông Tin Liên Hệ
                             </h5>
                             
                             <div class="mb-4">
-                                <h6 class="fw-semibold mb-2" style="color: #0f172a;">Address</h6>
+                                <h6 class="fw-semibold mb-2" style="color: #0f172a;">Địa Chỉ</h6>
                                 <p class="text-slate-600 mb-0" style="color: #475569;">
                                     <i class="fas fa-map-marker-alt text-primary me-2" style="color: #06b6d4;"></i>
-                                    123 Health Street<br>
-                                    Medical District, City 12345
+                                    123 Đường Sức Khỏe<br>
+                                    Quận Y Tế, Thành Phố 12345
                                 </p>
                             </div>
                             
                             <div class="mb-4">
-                                <h6 class="fw-semibold mb-2" style="color: #0f172a;">Phone</h6>
+                                <h6 class="fw-semibold mb-2" style="color: #0f172a;">Điện Thoại</h6>
                                 <p class="text-slate-600 mb-0" style="color: #475569;">
                                     <i class="fas fa-phone text-primary me-2" style="color: #06b6d4;"></i>
                                     (555) 123-4567
@@ -436,19 +436,19 @@
                             </div>
                             
                             <div class="mb-4">
-                                <h6 class="fw-semibold mb-2" style="color: #0f172a;">Business Hours</h6>
+                                <h6 class="fw-semibold mb-2" style="color: #0f172a;">Giờ Làm Việc</h6>
                                 <div class="text-slate-600" style="color: #475569;">
                                     <div class="d-flex justify-content-between mb-1">
-                                        <span>Monday - Friday</span>
-                                        <span>8:00 AM - 6:00 PM</span>
+                                        <span>Thứ Hai - Thứ Sáu</span>
+                                        <span>8:00 - 18:00</span>
                                     </div>
                                     <div class="d-flex justify-content-between mb-1">
-                                        <span>Saturday</span>
-                                        <span>9:00 AM - 3:00 PM</span>
+                                        <span>Thứ Bảy</span>
+                                        <span>9:00 - 15:00</span>
                                     </div>
                                     <div class="d-flex justify-content-between">
-                                        <span>Sunday</span>
-                                        <span>Closed</span>
+                                        <span>Chủ Nhật</span>
+                                        <span>Nghỉ</span>
                                     </div>
                                 </div>
                             </div>
@@ -456,10 +456,10 @@
                             <div class="alert alert-info border-0" style="background-color: #f1f5f9; border-radius: 0.5rem;">
                                 <h6 class="alert-heading mb-2" style="color: #0f172a;">
                                     <i class="fas fa-clock text-primary me-2" style="color: #06b6d4;"></i>
-                                    Response Time
+                                    Thời Gian Phản Hồi
                                 </h6>
                                 <p class="mb-0" style="color: #475569; font-size: 0.875rem;">
-                                    We typically respond to appointment requests within 24 hours.
+                                    Chúng tôi thường phản hồi các yêu cầu đặt lịch hẹn trong vòng 24 giờ.
                                 </p>
                             </div>
                         </div>

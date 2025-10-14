@@ -3,11 +3,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dentist Dashboard - Dental Clinic Management System</title>
+    <title>Bảng Điều Khiển Bác Sĩ Nha Khoa - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
 </head>
 <body>
@@ -21,10 +21,10 @@
     </c:if>
     
     <div class="header">
-        <h1>🦷 Dentist Dashboard</h1>
+        <h1>🦷 Bảng Điều Khiển Bác Sĩ Nha Khoa</h1>
         <div class="user-info">
-            <span>Welcome, ${sessionScope.user.fullName}</span>
-            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Logout</a>
+            <span>Chào mừng, ${sessionScope.user.fullName}</span>
+            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
         </div>
     </div>
 
@@ -33,59 +33,59 @@
         <main class="dashboard-content">
             <div class="container">
         <div class="welcome-section">
-            <h2>Welcome to the Dentist Dashboard</h2>
-            <p>Manage your patient appointments, view medical records, and access treatment planning tools. 
-               Focus on providing excellent dental care to your patients.</p>
+            <h2>Chào Mừng Đến Bảng Điều Khiển Bác Sĩ Nha Khoa</h2>
+            <p>Quản lý lịch hẹn bệnh nhân, xem hồ sơ y tế và truy cập các công cụ lập kế hoạch điều trị. 
+               Tập trung vào việc cung cấp dịch vụ chăm sóc nha khoa xuất sắc cho bệnh nhân.</p>
         </div>
         
         <div class="dashboard-grid">
             <div class="card">
-                <h3>📅 My Schedule</h3>
-                <p>View your daily appointments, upcoming patients, and schedule availability. Manage your calendar efficiently.</p>
+                <h3>📅 Lịch Trình Của Tôi</h3>
+                <p>Xem lịch hẹn hàng ngày, bệnh nhân sắp tới và tình trạng lịch trình. Quản lý lịch của bạn một cách hiệu quả.</p>
             </div>
             
             <div class="card">
-                <h3>📋 Patient Records</h3>
-                <p>Access patient medical records, treatment history, and examination notes. Update patient information securely.</p>
+                <h3>📋 Hồ Sơ Bệnh Nhân</h3>
+                <p>Truy cập hồ sơ y tế bệnh nhân, lịch sử điều trị và ghi chú khám bệnh. Cập nhật thông tin bệnh nhân một cách an toàn.</p>
             </div>
             
             <div class="card">
-                <h3>💊 Prescriptions</h3>
-                <p>Create and manage patient prescriptions. Track medication history and dosage recommendations.</p>
+                <h3>💊 Đơn Thuốc</h3>
+                <p>Tạo và quản lý đơn thuốc cho bệnh nhân. Theo dõi lịch sử thuốc và khuyến nghị liều lượng.</p>
             </div>
             
             <div class="card">
-                <h3>🔬 Treatment Plans</h3>
-                <p>Develop comprehensive treatment plans for patients. Track treatment progress and outcomes.</p>
+                <h3>🔬 Kế Hoạch Điều Trị</h3>
+                <p>Phát triển kế hoạch điều trị toàn diện cho bệnh nhân. Theo dõi tiến độ điều trị và kết quả.</p>
             </div>
         </div>
         
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-number">8</div>
-                <div class="stat-label">Today's Patients</div>
+                <div class="stat-label">Bệnh Nhân Hôm Nay</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">3</div>
-                <div class="stat-label">Pending Follow-ups</div>
+                <div class="stat-label">Theo Dõi Chờ Xử Lý</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">15</div>
-                <div class="stat-label">This Week's Appointments</div>
+                <div class="stat-label">Lịch Hẹn Tuần Này</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">98%</div>
-                <div class="stat-label">Patient Satisfaction</div>
+                <div class="stat-label">Sự Hài Lòng Của Bệnh Nhân</div>
             </div>
         </div>
         
         <div class="card" style="margin-top: 2rem;">
-            <h3>📋 Today's Appointments</h3>
-            <p>• 9:00 AM - John Smith (Regular Checkup)<br>
-               • 10:30 AM - Sarah Johnson (Cleaning)<br>
-               • 2:00 PM - Mike Davis (Filling)<br>
-               • 3:30 PM - Lisa Wilson (Consultation)<br>
-               • 4:30 PM - Robert Brown (Follow-up)</p>
+            <h3>📋 Lịch Hẹn Hôm Nay</h3>
+            <p>• 9:00 - John Smith (Khám định kỳ)<br>
+               • 10:30 - Sarah Johnson (Làm sạch)<br>
+               • 14:00 - Mike Davis (Trám răng)<br>
+               • 15:30 - Lisa Wilson (Tư vấn)<br>
+               • 16:30 - Robert Brown (Theo dõi)</p>
         </div>
             </div>
         </main>

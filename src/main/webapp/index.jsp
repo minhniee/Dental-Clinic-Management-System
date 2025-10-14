@@ -2,11 +2,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>JSP - Hello World</title>
+  <title>JSP - Xin Chào Thế Giới</title>
 </head>
 <body>
-<h1><%= "Hello World!" %></h1>
+<h1><%= "Xin Chào Thế Giới!" %></h1>
 <br/>
-<a href="home">Hello Servlet</a>
+<a href="home">Servlet Xin Chào</a>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <jsp:include page="shared/header.jsp">
-    <jsp:param name="pageTitle" value="Page Not Found - DentalCare Clinic" />
+    <jsp:param name="pageTitle" value="Không Tìm Thấy Trang - Phòng Khám Nha Khoa DentalCare" />
 </jsp:include>
 
 <main class="min-vh-100 d-flex align-items-center" style="background-color: #f8fafc;">
@@ -23,11 +23,11 @@
                     404
                 </h1>
                 <h2 class="h3 fw-semibold text-slate-700 mb-3" style="color: #334155;">
-                    Page Not Found
+                    Không Tìm Thấy Trang
                 </h2>
                 <p class="lead text-slate-600 mb-4" style="color: #475569; font-size: 1.125rem; line-height: 1.6;">
-                    Sorry, we couldn't find the page you're looking for. The page may have been moved, 
-                    deleted, or you may have entered an incorrect URL.
+                    Xin lỗi, chúng tôi không thể tìm thấy trang bạn đang tìm kiếm. Trang có thể đã được di chuyển, 
+                    xóa, hoặc bạn có thể đã nhập URL không chính xác.
                 </p>
                 
                 <!-- Action Buttons -->
@@ -35,12 +35,12 @@
                     <a href="${pageContext.request.contextPath}/home" class="btn btn-primary btn-lg px-4 py-3" 
                        style="background-color: #06b6d4; border-color: #06b6d4; border-radius: 0.5rem;">
                         <i class="fas fa-home me-2"></i>
-                        Back to Home
+                        Về Trang Chủ
                     </a>
                     <a href="${pageContext.request.contextPath}/home#contact" class="btn btn-outline-primary btn-lg px-4 py-3"
                        style="border-color: #06b6d4; color: #06b6d4; border-radius: 0.5rem;">
                         <i class="fas fa-calendar-plus me-2"></i>
-                        Book Appointment
+                        Đặt Lịch Hẹn
                     </a>
                 </div>
                 
@@ -49,17 +49,17 @@
                     <div class="card-body p-4">
                         <h5 class="card-title fw-semibold mb-3" style="color: #0f172a;">
                             <i class="fas fa-question-circle text-primary me-2" style="color: #06b6d4;"></i>
-                            Need Help?
+                            Cần Trợ Giúp?
                         </h5>
                         <p class="text-slate-600 mb-3" style="color: #475569;">
-                            If you believe this is an error or need assistance, please contact us:
+                            Nếu bạn tin rằng đây là lỗi hoặc cần hỗ trợ, vui lòng liên hệ với chúng tôi:
                         </p>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="d-flex align-items-center">
                                     <i class="fas fa-phone text-primary me-3" style="color: #06b6d4;"></i>
                                     <div>
-                                        <small class="text-slate-500 d-block" style="color: #64748b;">Phone</small>
+                                        <small class="text-slate-500 d-block" style="color: #64748b;">Điện Thoại</small>
                                         <span class="fw-semibold" style="color: #0f172a;">(555) 123-4567</span>
                                     </div>
                                 </div>
@@ -80,35 +80,35 @@
                 <!-- Quick Links -->
                 <div class="mt-4">
                     <h6 class="fw-semibold text-slate-700 mb-3" style="color: #334155;">
-                        Popular Pages:
+                        Các Trang Phổ Biến:
                     </h6>
                     <div class="d-flex flex-wrap justify-content-center gap-3">
                         <a href="${pageContext.request.contextPath}/home" class="text-decoration-none">
                             <span class="badge bg-light text-primary px-3 py-2" 
                                   style="background-color: #f1f5f9; color: #06b6d4; border-radius: 0.5rem;">
                                 <i class="fas fa-home me-1"></i>
-                                Home
+                                Trang Chủ
                             </span>
                         </a>
                         <a href="${pageContext.request.contextPath}/home#dentists" class="text-decoration-none">
                             <span class="badge bg-light text-primary px-3 py-2" 
                                   style="background-color: #f1f5f9; color: #06b6d4; border-radius: 0.5rem;">
                                 <i class="fas fa-user-md me-1"></i>
-                                Our Dentists
+                                Bác Sĩ
                             </span>
                         </a>
                         <a href="${pageContext.request.contextPath}/home#services" class="text-decoration-none">
                             <span class="badge bg-light text-primary px-3 py-2" 
                                   style="background-color: #f1f5f9; color: #06b6d4; border-radius: 0.5rem;">
                                 <i class="fas fa-list-alt me-1"></i>
-                                Services
+                                Dịch Vụ
                             </span>
                         </a>
                         <a href="${pageContext.request.contextPath}/home#contact" class="text-decoration-none">
                             <span class="badge bg-light text-primary px-3 py-2" 
                                   style="background-color: #f1f5f9; color: #06b6d4; border-radius: 0.5rem;">
                                 <i class="fas fa-envelope me-1"></i>
-                                Contact
+                                Liên Hệ
                             </span>
                         </a>
                     </div>

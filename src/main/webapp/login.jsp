@@ -1,11 +1,11 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Dental Clinic Management System</title>
+    <title>Đăng Nhập - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <style>
         * {
             margin: 0;
@@ -168,8 +168,8 @@
     <div class="login-container">
         <div class="login-header">
             <div class="dental-icon">🦷</div>
-            <h1>Dental Clinic</h1>
-            <p>Professional Dental Care Management</p>
+            <h1>Phòng Khám Nha Khoa</h1>
+            <p>Quản Lý Chăm Sóc Nha Khoa Chuyên Nghiệp</p>
         </div>
         
         <!-- Display error message if exists -->
@@ -188,22 +188,22 @@
         
         <form action="${pageContext.request.contextPath}/login" method="post">
             <div class="form-group">
-                <label for="email">Email Address:</label>
+                <label for="email">Địa Chỉ Email:</label>
                 <input type="email" id="email" name="email" required 
-                       value="${param.email}" placeholder="Enter your email">
+                       value="${param.email}" placeholder="Nhập email của bạn">
             </div>
             
             <div class="form-group">
-                <label for="password">Password:</label>
+                <label for="password">Mật Khẩu:</label>
                 <input type="password" id="password" name="password" required 
-                       placeholder="Enter your password">
+                       placeholder="Nhập mật khẩu của bạn">
             </div>
             
-            <button type="submit" class="btn-login">Login</button>
+            <button type="submit" class="btn-login">Đăng Nhập</button>
         </form>
         
         <div class="forgot-password">
-            <a href="${pageContext.request.contextPath}/forgotPassword">Forgot your password?</a>
+            <a href="${pageContext.request.contextPath}/forgotPassword">Quên mật khẩu?</a>
         </div>
     </div>
 </body>

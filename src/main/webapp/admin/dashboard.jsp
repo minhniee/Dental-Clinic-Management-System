@@ -3,11 +3,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Dental Clinic Management System</title>
+    <title>Bảng Điều Khiển Quản Trị - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
 </head>
 <body>
@@ -21,10 +21,10 @@
     </c:if>
     
     <div class="header">
-        <h1>🦷 Admin Dashboard</h1>
+        <h1>🦷 Bảng Điều Khiển Quản Trị</h1>
         <div class="user-info">
-            <span>Welcome, ${sessionScope.user.fullName}</span>
-            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Logout</a>
+            <span>Chào mừng, ${sessionScope.user.fullName}</span>
+            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
         </div>
     </div>
 
@@ -33,59 +33,59 @@
         <main class="dashboard-content">
             <div class="container">
         <div class="welcome-section">
-            <h2>Welcome to the Admin Dashboard</h2>
-            <p>You have full administrative access to the Dental Clinic Management System. 
-               From here you can manage users, system settings, and oversee all clinic operations.</p>
+            <h2>Chào Mừng Đến Bảng Điều Khiển Quản Trị</h2>
+            <p>Bạn có quyền truy cập quản trị đầy đủ vào Hệ Thống Quản Lý Phòng Khám Nha Khoa. 
+               Từ đây bạn có thể quản lý người dùng, cài đặt hệ thống và giám sát tất cả hoạt động của phòng khám.</p>
         </div>
         
         <div class="dashboard-grid">
             <div class="card">
-                <h3>👥 User Management</h3>
-                <p>Manage user accounts, roles, and permissions. Create new accounts for staff members and patients with appropriate access levels.</p>
+                <h3>👥 Quản Lý Người Dùng</h3>
+                <p>Quản lý tài khoản người dùng, vai trò và quyền hạn. Tạo tài khoản mới cho nhân viên và bệnh nhân với mức độ truy cập phù hợp.</p>
             </div>
             
             <div class="card">
-                <h3>📊 System Reports</h3>
-                <p>View comprehensive reports on clinic operations, financial data, and system usage statistics to make informed decisions.</p>
+                <h3>📊 Báo Cáo Hệ Thống</h3>
+                <p>Xem các báo cáo toàn diện về hoạt động phòng khám, dữ liệu tài chính và thống kê sử dụng hệ thống để đưa ra quyết định sáng suốt.</p>
             </div>
             
             <div class="card">
-                <h3>⚙️ System Settings</h3>
-                <p>Configure system-wide settings, backup data, and manage system maintenance schedules to ensure optimal performance.</p>
+                <h3>⚙️ Cài Đặt Hệ Thống</h3>
+                <p>Cấu hình cài đặt toàn hệ thống, sao lưu dữ liệu và quản lý lịch bảo trì hệ thống để đảm bảo hiệu suất tối ưu.</p>
             </div>
             
             <div class="card">
-                <h3>🔐 Security Management</h3>
-                <p>Monitor security logs, manage password policies, and review system access controls to maintain data security.</p>
+                <h3>🔐 Quản Lý Bảo Mật</h3>
+                <p>Giám sát nhật ký bảo mật, quản lý chính sách mật khẩu và xem xét các điều khiển truy cập hệ thống để duy trì bảo mật dữ liệu.</p>
             </div>
         </div>
         
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-number">5</div>
-                <div class="stat-label">Total Users</div>
+                <div class="stat-label">Tổng Người Dùng</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">3</div>
-                <div class="stat-label">Active Roles</div>
+                <div class="stat-label">Vai Trò Hoạt Động</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">100%</div>
-                <div class="stat-label">System Uptime</div>
+                <div class="stat-label">Thời Gian Hoạt Động Hệ Thống</div>
             </div>
             <div class="stat-card">
                 <div class="stat-number">0</div>
-                <div class="stat-label">Security Issues</div>
+                <div class="stat-label">Vấn Đề Bảo Mật</div>
             </div>
         </div>
         
         <div class="quick-actions">
-            <h3>📋 Quick Actions</h3>
-            <p>• Create new user accounts<br>
-               • View system logs<br>
-               • Configure clinic settings<br>
-               • Generate monthly reports<br>
-               • Backup system data</p>
+            <h3>📋 Hành Động Nhanh</h3>
+            <p>• Tạo tài khoản người dùng mới<br>
+               • Xem nhật ký hệ thống<br>
+               • Cấu hình cài đặt phòng khám<br>
+               • Tạo báo cáo hàng tháng<br>
+               • Sao lưu dữ liệu hệ thống</p>
         </div>
             </div>
         </main>
