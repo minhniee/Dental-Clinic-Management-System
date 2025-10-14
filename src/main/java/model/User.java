@@ -13,6 +13,7 @@ public class User {
     private boolean isActive;
     private LocalDateTime createdAt;
     private Role role;
+    private Employee employee;
 
     public User() {
     }
@@ -108,6 +109,14 @@ public class User {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     @Override
