@@ -62,29 +62,121 @@
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">12</div>
+                <div class="stat-number">
+                    <c:choose>
+                        <c:when test="${not empty stats}">${stats.waitingPatients}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>
+                </div>
                 <div class="stat-label">Bệnh Nhân Đang Chờ</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">25</div>
+                <div class="stat-number">
+                    <c:choose>
+                        <c:when test="${not empty stats}">${stats.scheduledAppointments}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>
+                </div>
                 <div class="stat-label">Lịch Hẹn Hôm Nay</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">8</div>
+                <div class="stat-number">
+                    <c:choose>
+                        <c:when test="${not empty stats}">${stats.completedAppointments}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>
+                </div>
                 <div class="stat-label">Hoàn Thành Hôm Nay</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">3</div>
+                <div class="stat-number">
+                    <c:choose>
+                        <c:when test="${not empty stats}">${stats.cancelledAppointments}</c:when>
+                        <c:otherwise>0</c:otherwise>
+                    </c:choose>
+                </div>
                 <div class="stat-label">Không Đến</div>
             </div>
         </div>
         
+        <!-- Current Queue Section -->
         <div class="card" style="margin-top: 2rem;">
             <h3>📋 Hàng Chờ Hiện Tại</h3>
-            <p>• John Smith - Bác sĩ Johnson - 9:30 (Đang chờ)<br>
-               • Sarah Davis - Bác sĩ Wilson - 10:15 (Đã gọi)<br>
-               • Mike Brown - Bác sĩ Johnson - 11:00 (Đang chờ)<br>
-               • Lisa Garcia - Bác sĩ Wilson - 11:45 (Đang chờ)</p>
+            <c:choose>
+                <c:when test="${not empty currentQueue}">
+                    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <c:forEach var="queueItem" items="${currentQueue}">
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background-color: #f8fafc; border-radius: 0.5rem; border-left: 4px solid #06b6d4;">
+                                <div>
+                                    <strong>${queueItem.appointment.patient.fullName}</strong>
+                                    <span style="color: #64748b;"> - ${queueItem.appointment.dentist.fullName}</span>
+                                    <span style="color: #64748b; font-size: 0.875rem;">
+                                        <fmt:formatDate value="${queueItem.appointment.appointmentDate}" pattern="HH:mm"/>
+                                    </span>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                    <span style="background-color: #06b6d4; color: white; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600;">
+                                        #${queueItem.positionInQueue}
+                                    </span>
+                                    <span style="padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; font-weight: 600;
+                                          <c:choose>
+                                              <c:when test="${queueItem.status eq 'WAITING'}">background-color: #fef3c7; color: #d97706;</c:when>
+                                              <c:when test="${queueItem.status eq 'CHECKED_IN'}">background-color: #dbeafe; color: #2563eb;</c:when>
+                                              <c:when test="${queueItem.status eq 'CALLED'}">background-color: #d1fae5; color: #059669;</c:when>
+                                              <c:when test="${queueItem.status eq 'IN_TREATMENT'}">background-color: #fce7f3; color: #be185d;</c:when>
+                                              <c:otherwise>background-color: #f3f4f6; color: #6b7280;</c:otherwise>
+                                          </c:choose>">
+                                        <c:choose>
+                                            <c:when test="${queueItem.status eq 'WAITING'}">Đang chờ</c:when>
+                                            <c:when test="${queueItem.status eq 'CHECKED_IN'}">Đã check-in</c:when>
+                                            <c:when test="${queueItem.status eq 'CALLED'}">Đã gọi</c:when>
+                                            <c:when test="${queueItem.status eq 'IN_TREATMENT'}">Đang điều trị</c:when>
+                                            <c:otherwise>${queueItem.status}</c:otherwise>
+                                        </c:choose>
+                                    </span>
+                                </div>
+                            </div>
+                        </c:forEach>
+                    </div>
+                </c:when>
+                <c:otherwise>
+                    <p style="color: #64748b; text-align: center; padding: 2rem;">
+                        Hiện tại không có bệnh nhân nào trong hàng chờ
+                    </p>
+                </c:otherwise>
+            </c:choose>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card" style="margin-top: 1.5rem;">
+            <h3>⚡ Thao Tác Nhanh</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                <a href="${pageContext.request.contextPath}/receptionist/patients?action=new" 
+                   class="btn btn-primary" style="padding: 1rem; text-align: center; border-radius: 0.5rem; background-color: #06b6d4; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-user-plus" style="font-size: 1.5rem;"></i>
+                    <span>Đăng Ký Bệnh Nhân</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/receptionist/appointments?action=new" 
+                   class="btn btn-primary" style="padding: 1rem; text-align: center; border-radius: 0.5rem; background-color: #06b6d4; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-calendar-plus" style="font-size: 1.5rem;"></i>
+                    <span>Đặt Lịch Hẹn</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/receptionist/queue" 
+                   class="btn btn-primary" style="padding: 1rem; text-align: center; border-radius: 0.5rem; background-color: #06b6d4; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-list-ol" style="font-size: 1.5rem;"></i>
+                    <span>Quản Lý Hàng Chờ</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/receptionist/appointments?action=list" 
+                   class="btn btn-primary" style="padding: 1rem; text-align: center; border-radius: 0.5rem; background-color: #06b6d4; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-calendar-alt" style="font-size: 1.5rem;"></i>
+                    <span>Xem Lịch Hẹn</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/receptionist/invoices?action=new" 
+                   class="btn btn-primary" style="padding: 1rem; text-align: center; border-radius: 0.5rem; background-color: #06b6d4; color: white; text-decoration: none; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-file-invoice" style="font-size: 1.5rem;"></i>
+                    <span>Tạo Hóa Đơn</span>
+                </a>
+            </div>
         </div>
             </div>
         </main>

@@ -58,15 +58,13 @@
         <!-- Receptionist menu -->
         <c:if test="${role eq 'receptionist'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/receptionist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/receptionist/dashboard.jsp">Tổng Quan</a></li>
-                <li><a href="${ctx}/receptionist/register-patient">Đăng Ký Bệnh Nhân</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/dashboard') or fn:endsWith(currentPath, '/receptionist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/receptionist/dashboard">Tổng Quan</a></li>
+                <li><a href="${ctx}/receptionist/patients?action=new">Đăng Ký Bệnh Nhân</a></li>
                 <li><a href="${ctx}/receptionist/patients">Danh Sách Bệnh Nhân</a></li>
-                <li><a href="${ctx}/receptionist/patient-files">Hồ Sơ Bệnh Nhân</a></li>
-                <li><a href="${ctx}/receptionist/queue">Hàng Chờ</a></li>
-                <li><a href="${ctx}/receptionist/assign">Phân Công Bác Sĩ</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/appointments') ? 'active' : ''}" href="${ctx}/receptionist/appointments">Lịch Hẹn</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/queue') ? 'active' : ''}" href="${ctx}/receptionist/queue">Hàng Chờ</a></li>
                 <li><a href="${ctx}/receptionist/invoices">Hóa Đơn & Thanh Toán</a></li>
-                <li><a href="${ctx}/receptionist/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
-                <li><a href="${ctx}/receptionist/inventory">Tồn Kho</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/online-appointments') ? 'active' : ''}" href="${ctx}/receptionist/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
                 <li><a href="${ctx}/receptionist/feedback">Phản Hồi</a></li>
             </ul>
         </c:if>

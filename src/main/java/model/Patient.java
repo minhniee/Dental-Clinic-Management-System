@@ -2,12 +2,14 @@ package model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class Patient {
     private int patientId;
     private String fullName;
     private LocalDate birthDate;
-    private Character gender;
+    private String  gender;
     private String phone;
     private String email;
     private String address;
@@ -18,7 +20,7 @@ public class Patient {
     public Patient() {
     }
 
-    public Patient(int patientId, String fullName, LocalDate birthDate, Character gender, 
+    public Patient(int patientId, String fullName, LocalDate birthDate, String  gender,
                    String phone, String email, String address, LocalDateTime createdAt, Integer userId) {
         this.patientId = patientId;
         this.fullName = fullName;
@@ -55,11 +57,11 @@ public class Patient {
         this.birthDate = birthDate;
     }
 
-    public Character getGender() {
+    public String  getGender() {
         return gender;
     }
 
-    public void setGender(Character gender) {
+    public void setGender(String  gender) {
         this.gender = gender;
     }
 
@@ -109,6 +111,26 @@ public class Patient {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    /**
+     * Helper method to get birthDate as java.util.Date for JSP formatting
+     */
+    public Date getBirthDateAsDate() {
+        if (birthDate != null) {
+            return Date.from(birthDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to get createdAt as java.util.Date for JSP formatting
+     */
+    public Date getCreatedAtAsDate() {
+        if (createdAt != null) {
+            return Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class Appointment {
     private int appointmentId;
@@ -199,6 +201,36 @@ public class Appointment {
 
     public void setCreatedByUser(User createdByUser) {
         this.createdByUser = createdByUser;
+    }
+
+    /**
+     * Helper method to get appointmentDate as java.util.Date for JSP formatting
+     */
+    public Date getAppointmentDateAsDate() {
+        if (appointmentDate != null) {
+            return Date.from(appointmentDate.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to get createdAt as java.util.Date for JSP formatting
+     */
+    public Date getCreatedAtAsDate() {
+        if (createdAt != null) {
+            return Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to format appointmentDate for HTML datetime-local input
+     */
+    public String getAppointmentDateForInput() {
+        if (appointmentDate != null) {
+            return appointmentDate.toString().substring(0, 16); // Format: YYYY-MM-DDTHH:mm
+        }
+        return "";
     }
 
     @Override

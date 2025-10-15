@@ -3,13 +3,21 @@
 -- SQL Server Script - Minimal schema + Online Booking + Schedules
 -- ===================================================================
 
-IF DB_ID('DentalClinicDB_MVP') IS NULL
+
+use master
+IF DB_ID('DentalClinicDB_MVP') IS NOT NULL
 BEGIN
-    CREATE DATABASE DentalClinicDB_MVP;
+    ALTER DATABASE DentalClinicDB_MVP SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE DentalClinicDB_MVP;
 END
+GO
+
+CREATE DATABASE DentalClinicDB_MVP;
 GO
 USE DentalClinicDB_MVP;
 GO
+
+
 
 -- ======================================================
 -- 1️⃣ USER & ROLE MANAGEMENT
@@ -64,10 +72,16 @@ CREATE TABLE Patients (
     email       VARCHAR(150) NULL,
     address     VARCHAR(300) NULL,
     created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-    user_id     INT NULL UNIQUE,
+    user_id     INT NULL,
     CONSTRAINT FK_Patients_Users FOREIGN KEY (user_id) REFERENCES Users(user_id),
     CONSTRAINT CK_Patients_Gender CHECK (gender IS NULL OR gender IN ('M','F','O'))
 );
+GO
+
+-- Create filtered unique index for user_id (only applies to non-null values)
+CREATE UNIQUE INDEX IX_Patients_UserID_NotNull 
+ON Patients(user_id) 
+WHERE user_id IS NOT NULL;
 GO
 
 CREATE TABLE PatientFiles (
@@ -139,9 +153,9 @@ CREATE TABLE WaitingQueue (
     queue_id          INT IDENTITY(1,1) PRIMARY KEY,
     appointment_id    INT NOT NULL UNIQUE,
     position_in_queue INT NULL,
-    status            VARCHAR(50) NOT NULL DEFAULT 'WAITING', -- WAITING / CALLED / DONE
+    status            VARCHAR(50) NOT NULL DEFAULT 'WAITING', -- WAITING / CHECKED_IN / CALLED / IN_TREATMENT / COMPLETED / NO_SHOW
     CONSTRAINT FK_WaitingQueue_Appointments FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id),
-    CONSTRAINT CK_WaitingQueue_Status CHECK (status IN ('WAITING','CALLED','DONE'))
+    CONSTRAINT CK_WaitingQueue_Status CHECK (status IN ('WAITING','CHECKED_IN','CALLED','IN_TREATMENT','COMPLETED','NO_SHOW'))
 );
 GO
 
@@ -401,9 +415,9 @@ VALUES ('Administrator'), ('ClinicManager'), ('Dentist'), ('Receptionist'), ('Pa
 
 INSERT INTO Users (username, email, password_hash, full_name, phone, role_id)
 VALUES 
-('admin','admin@clinic.com','HASHED_PASSWORD','System Admin','0900000000',1),
-('dr.john','john@clinic.com','HASHED_PASSWORD','Dr. John Doe','0911111111',3),
-('reception1','recp@clinic.com','HASHED_PASSWORD','Reception Staff','0922222222',4);
+('admin','admin@clinic.com','1','System Admin','0900000000',1),
+('dr.john','john@clinic.com','1','Dr. John Doe','0911111111',3),
+('reception1','recp@clinic.com','1','Reception Staff','0922222222',4);
 GO
 
 DECLARE @docId INT = (SELECT user_id FROM Users WHERE username='dr.john');
@@ -415,6 +429,22 @@ BEGIN
     (@docId, CAST(SYSUTCDATETIME() AS DATE), 'Afternoon', '13:00', '17:00', 'R1', 'ACTIVE');
 END
 GO
+INSERT INTO InventoryItems(name, unit, quantity, min_stock)
+VALUES
+('Gloves (box)', 'box', 50, 10),
+('Masks (box)',  'box', 40, 10),
+('Mouthwash',    'bottle', 20, 5);
+GO
+INSERT INTO Services(name, description, price, duration_minutes, is_active) VALUES
+('Oral Examination', 'General oral health check', 100000, 20, 1),
+('Teeth Cleaning', 'Scaling and polishing',       300000, 40, 1),
+('Filling',        'Composite filling',           500000, 45, 1),
+('Root Canal',     'Endodontic treatment',       1500000, 90, 1);
+GO
 PRINT '✅ DentalClinicDB_MVP schema created successfully.';
+
+
+
+
 
 
