@@ -10,13 +10,11 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class PatientDAO {
+public class PatientMDAO {
 
-    private static final Logger logger = Logger.getLogger(PatientDAO.class.getName());
+    private static final Logger logger = Logger.getLogger(PatientMDAO.class.getName());
 
-    /**
-     * Create a new patient
-     */
+
     public int createPatient(Patient patient) {
         // Check for duplicate phone or email before inserting
         if (patient.getPhone() != null && !patient.getPhone().trim().isEmpty()) {

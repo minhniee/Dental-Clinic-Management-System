@@ -1,7 +1,7 @@
 package controller;
 
 import DAO.AppointmentDAO;
-import DAO.PatientDAO;
+import DAO.PatientMDAO;
 import DAO.UserDAO;
 import DAO.WaitingQueueDAO;
 import model.User;
@@ -23,7 +23,7 @@ public class ReceptionistDashboardServlet extends HttpServlet {
 
     private AppointmentDAO appointmentDAO;
     private WaitingQueueDAO waitingQueueDAO;
-    private PatientDAO patientDAO;
+    private PatientMDAO PatientMDAO;
     private UserDAO userDAO;
 
     @Override
@@ -31,7 +31,7 @@ public class ReceptionistDashboardServlet extends HttpServlet {
         super.init();
         appointmentDAO = new AppointmentDAO();
         waitingQueueDAO = new WaitingQueueDAO();
-        patientDAO = new PatientDAO();
+        PatientMDAO = new PatientMDAO();
         userDAO = new UserDAO();
     }
 

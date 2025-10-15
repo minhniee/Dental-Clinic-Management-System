@@ -1,6 +1,6 @@
 package controller;
 
-import DAO.PatientDAO;
+import DAO.PatientMDAO;
 import DAO.UserDAO;
 import DAO.InvoiceDAO;
 import model.Patient;
@@ -22,14 +22,14 @@ import java.util.List;
 @WebServlet("/receptionist/patients")
 public class PatientServlet extends HttpServlet {
 
-    private PatientDAO patientDAO;
+    private PatientMDAO PatientMDAO;
     private UserDAO userDAO;
     private InvoiceDAO invoiceDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        patientDAO = new PatientDAO();
+        PatientMDAO = new PatientMDAO();
         userDAO = new UserDAO();
         invoiceDAO = new InvoiceDAO();
     }
@@ -143,11 +143,11 @@ public class PatientServlet extends HttpServlet {
         int totalCount;
         
         if (searchParam != null && !searchParam.trim().isEmpty()) {
-            patients = patientDAO.searchPatients(searchParam.trim());
+            patients = PatientMDAO.searchPatients(searchParam.trim());
             totalCount = patients.size();
         } else {
-            patients = patientDAO.getAllPatients(offset, pageSize);
-            totalCount = patientDAO.getTotalPatientCount();
+            patients = PatientMDAO.getAllPatients(offset, pageSize);
+            totalCount = PatientMDAO.getTotalPatientCount();
         }
         
         int totalPages = (int) Math.ceil((double) totalCount / pageSize);
@@ -174,7 +174,7 @@ public class PatientServlet extends HttpServlet {
         
         try {
             int patientId = Integer.parseInt(patientIdParam);
-            Patient patient = patientDAO.getPatientById(patientId);
+            Patient patient = PatientMDAO.getPatientById(patientId);
             
             if (patient == null) {
                 request.setAttribute("errorMessage", "Patient not found");
@@ -207,7 +207,7 @@ public class PatientServlet extends HttpServlet {
         
         try {
             int patientId = Integer.parseInt(patientIdParam);
-            Patient patient = patientDAO.getPatientById(patientId);
+            Patient patient = PatientMDAO.getPatientById(patientId);
             
             if (patient == null) {
                 request.setAttribute("errorMessage", "Patient not found");
@@ -263,7 +263,7 @@ public class PatientServlet extends HttpServlet {
         }
         
         // Check if phone already exists
-        Patient existingPatient = patientDAO.getPatientByPhone(phone.trim());
+        Patient existingPatient = PatientMDAO.getPatientByPhone(phone.trim());
         if (existingPatient != null) {
             request.setAttribute("errorMessage", "A patient with this phone number already exists");
             handleNewPatient(request, response);
@@ -292,7 +292,7 @@ public class PatientServlet extends HttpServlet {
         patient.setAddress(address != null && !address.trim().isEmpty() ? address.trim() : null);
         
         // Create patient in database
-        int patientId = patientDAO.createPatient(patient);
+        int patientId = PatientMDAO.createPatient(patient);
         
         if (patientId > 0) {
             request.setAttribute("successMessage", "Patient registered successfully with ID: " + patientId);
@@ -301,7 +301,7 @@ public class PatientServlet extends HttpServlet {
         } else {
             // Check for specific duplicate issues
             if (phone != null && !phone.trim().isEmpty()) {
-                Patient existingByPhone = patientDAO.getPatientByPhone(phone.trim());
+                Patient existingByPhone = PatientMDAO.getPatientByPhone(phone.trim());
                 if (existingByPhone != null) {
                     request.setAttribute("errorMessage", "A patient with phone number '" + phone + "' already exists.");
                     handleNewPatient(request, response);
@@ -310,7 +310,7 @@ public class PatientServlet extends HttpServlet {
             }
             
             if (email != null && !email.trim().isEmpty()) {
-                Patient existingByEmail = patientDAO.getPatientByEmail(email.trim());
+                Patient existingByEmail = PatientMDAO.getPatientByEmail(email.trim());
                 if (existingByEmail != null) {
                     request.setAttribute("errorMessage", "A patient with email '" + email + "' already exists.");
                     handleNewPatient(request, response);
@@ -337,7 +337,7 @@ public class PatientServlet extends HttpServlet {
             int patientId = Integer.parseInt(patientIdParam);
             
             // Check if patient exists
-            Patient existingPatient = patientDAO.getPatientById(patientId);
+            Patient existingPatient = PatientMDAO.getPatientById(patientId);
             if (existingPatient == null) {
                 request.setAttribute("errorMessage", "Patient not found");
                 handleListPatients(request, response);
@@ -370,7 +370,7 @@ public class PatientServlet extends HttpServlet {
             }
             
             // Check if phone already exists for another patient
-            Patient patientWithSamePhone = patientDAO.getPatientByPhone(phone.trim());
+            Patient patientWithSamePhone = PatientMDAO.getPatientByPhone(phone.trim());
             if (patientWithSamePhone != null && patientWithSamePhone.getPatientId() != patientId) {
                 request.setAttribute("errorMessage", "Another patient with this phone number already exists");
                 request.setAttribute("patient", existingPatient);
@@ -402,7 +402,7 @@ public class PatientServlet extends HttpServlet {
             existingPatient.setAddress(address != null && !address.trim().isEmpty() ? address.trim() : null);
             
             // Update patient in database
-            boolean success = patientDAO.updatePatient(existingPatient);
+            boolean success = PatientMDAO.updatePatient(existingPatient);
             
             if (success) {
                 request.setAttribute("successMessage", "Patient updated successfully");

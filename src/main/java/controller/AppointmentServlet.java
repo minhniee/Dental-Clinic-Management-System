@@ -1,7 +1,7 @@
 package controller;
 
 import DAO.AppointmentDAO;
-import DAO.PatientDAO;
+import DAO.PatientMDAO;
 import DAO.DentistDAO;
 import DAO.ServiceDAO;
 import model.Appointment;
@@ -27,7 +27,7 @@ import java.util.List;
 public class AppointmentServlet extends HttpServlet {
 
     private AppointmentDAO appointmentDAO;
-    private PatientDAO patientDAO;
+    private PatientMDAO PatientMDAO;
     private DentistDAO dentistDAO;
     private ServiceDAO serviceDAO;
 
@@ -35,7 +35,7 @@ public class AppointmentServlet extends HttpServlet {
     public void init() throws ServletException {
         super.init();
         appointmentDAO = new AppointmentDAO();
-        patientDAO = new PatientDAO();
+        PatientMDAO = new PatientMDAO();
         dentistDAO = new DentistDAO();
         serviceDAO = new ServiceDAO();
     }
@@ -218,7 +218,7 @@ public class AppointmentServlet extends HttpServlet {
             }
             
             // Load required data for the form
-            List<Patient> patients = patientDAO.getAllPatients(0, 1000); // Get all patients for dropdown
+            List<Patient> patients = PatientMDAO.getAllPatients(0, 1000); // Get all patients for dropdown
             List<User> dentists = dentistDAO.getAllActiveDentists();
             List<Service> services = serviceDAO.getAllActiveServices();
             
@@ -239,7 +239,7 @@ public class AppointmentServlet extends HttpServlet {
             throws ServletException, IOException {
         
         // Load required data for the form
-        List<Patient> patients = patientDAO.getAllPatients(0, 1000); // Get all patients for dropdown
+        List<Patient> patients = PatientMDAO.getAllPatients(0, 1000); // Get all patients for dropdown
         List<User> dentists = dentistDAO.getAllActiveDentists();
         List<Service> services = serviceDAO.getAllActiveServices();
         
@@ -248,7 +248,7 @@ public class AppointmentServlet extends HttpServlet {
         if (patientIdParam != null && !patientIdParam.trim().isEmpty()) {
             try {
                 int patientId = Integer.parseInt(patientIdParam);
-                Patient selectedPatient = patientDAO.getPatientById(patientId);
+                Patient selectedPatient = PatientMDAO.getPatientById(patientId);
                 request.setAttribute("selectedPatient", selectedPatient);
             } catch (NumberFormatException e) {
                 // Ignore invalid patient ID
@@ -412,7 +412,7 @@ public class AppointmentServlet extends HttpServlet {
                 request.setAttribute("errorMessage", "All required fields must be filled");
                 
                 // Load required data for the form
-                List<Patient> patients = patientDAO.getAllPatients(0, 1000);
+                List<Patient> patients = PatientMDAO.getAllPatients(0, 1000);
                 List<User> dentists = dentistDAO.getAllActiveDentists();
                 List<Service> services = serviceDAO.getAllActiveServices();
                 
@@ -455,7 +455,7 @@ public class AppointmentServlet extends HttpServlet {
                 request.setAttribute("errorMessage", "The selected time conflicts with another appointment for this dentist.");
                 
                 // Load required data for the form
-                List<Patient> patients = patientDAO.getAllPatients(0, 1000);
+                List<Patient> patients = PatientMDAO.getAllPatients(0, 1000);
                 List<User> dentists = dentistDAO.getAllActiveDentists();
                 List<Service> services = serviceDAO.getAllActiveServices();
                 
@@ -485,7 +485,7 @@ public class AppointmentServlet extends HttpServlet {
                 request.setAttribute("errorMessage", "Failed to update appointment. Please try again.");
                 
                 // Load required data for the form
-                List<Patient> patients = patientDAO.getAllPatients(0, 1000);
+                List<Patient> patients = PatientMDAO.getAllPatients(0, 1000);
                 List<User> dentists = dentistDAO.getAllActiveDentists();
                 List<Service> services = serviceDAO.getAllActiveServices();
                 
@@ -505,7 +505,7 @@ public class AppointmentServlet extends HttpServlet {
             
             // Load required data for the form
             Appointment existingAppointment = appointmentDAO.getAppointmentById(Integer.parseInt(appointmentIdParam));
-            List<Patient> patients = patientDAO.getAllPatients(0, 1000);
+            List<Patient> patients = PatientMDAO.getAllPatients(0, 1000);
             List<User> dentists = dentistDAO.getAllActiveDentists();
             List<Service> services = serviceDAO.getAllActiveServices();
             

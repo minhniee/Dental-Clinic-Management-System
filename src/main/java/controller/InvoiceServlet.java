@@ -2,7 +2,7 @@ package controller;
 
 import DAO.InvoiceDAO;
 import DAO.PaymentDAO;
-import DAO.PatientDAO;
+import DAO.PatientMDAO;
 import DAO.AppointmentDAO;
 import DAO.ServiceDAO;
 import model.Invoice;
@@ -31,7 +31,7 @@ public class InvoiceServlet extends HttpServlet {
 
     private InvoiceDAO invoiceDAO;
     private PaymentDAO paymentDAO;
-    private PatientDAO patientDAO;
+    private PatientMDAO PatientMDAO;
     private AppointmentDAO appointmentDAO;
     private ServiceDAO serviceDAO;
 
@@ -40,7 +40,7 @@ public class InvoiceServlet extends HttpServlet {
         super.init();
         invoiceDAO = new InvoiceDAO();
         paymentDAO = new PaymentDAO();
-        patientDAO = new PatientDAO();
+        PatientMDAO = new PatientMDAO();
         appointmentDAO = new AppointmentDAO();
         serviceDAO = new ServiceDAO();
     }
@@ -191,7 +191,7 @@ public class InvoiceServlet extends HttpServlet {
             throws ServletException, IOException {
         
         // Load data for the form
-        List<Patient> patients = patientDAO.getAllPatients(0, 1000);
+        List<Patient> patients = PatientMDAO.getAllPatients(0, 1000);
         List<Service> services = serviceDAO.getAllActiveServices();
         
         // Check if patient ID is provided for quick invoice creation
@@ -200,7 +200,7 @@ public class InvoiceServlet extends HttpServlet {
         if (patientIdParam != null && !patientIdParam.trim().isEmpty()) {
             try {
                 int patientId = Integer.parseInt(patientIdParam);
-                selectedPatient = patientDAO.getPatientById(patientId);
+                selectedPatient = PatientMDAO.getPatientById(patientId);
             } catch (NumberFormatException e) {
                 // Ignore invalid patient ID
             }
