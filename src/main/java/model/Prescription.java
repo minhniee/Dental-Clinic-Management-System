@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class Prescription {
     private int prescriptionId;
@@ -10,6 +11,7 @@ public class Prescription {
     private String notes;
     private Patient patient;
     private User dentist;
+    private List<PrescriptionItem> prescriptionItems;
 
     public Prescription() {
     }
@@ -76,6 +78,14 @@ public class Prescription {
 
     public void setDentist(User dentist) {
         this.dentist = dentist;
+    }
+
+    public List<PrescriptionItem> getPrescriptionItems() {
+        return prescriptionItems;
+    }
+
+    public void setPrescriptionItems(List<PrescriptionItem> prescriptionItems) {
+        this.prescriptionItems = prescriptionItems;
     }
 
     @Override

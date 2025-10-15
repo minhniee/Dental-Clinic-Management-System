@@ -23,7 +23,8 @@
                 <li><a href="${ctx}/admin/users">Người Dùng</a></li>
                 <li><a href="${ctx}/admin/roles">Vai Trò & Quyền Hạn</a></li>
                 <li><a href="${ctx}/admin/employees">Nhân Viên</a></li>
-                <li><a href="${ctx}/admin/schedules">Lịch Trình</a></li>
+                <li><a href="${ctx}/admin/schedules">Phân Công Lịch</a></li>
+                <li><a href="${ctx}/admin/weekly-schedule">Lịch Tuần</a></li>
                 <li><a href="${ctx}/admin/notifications">Thông Báo</a></li>
                 <li><a href="${ctx}/admin/services">Dịch Vụ</a></li>
                 <li><a href="${ctx}/admin/pricing">Giá Cả</a></li>
@@ -58,15 +59,13 @@
         <!-- Receptionist menu -->
         <c:if test="${role eq 'receptionist'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/receptionist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/receptionist/dashboard.jsp">Tổng Quan</a></li>
-                <li><a href="${ctx}/receptionist/register-patient">Đăng Ký Bệnh Nhân</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/dashboard') or fn:endsWith(currentPath, '/receptionist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/receptionist/dashboard">Tổng Quan</a></li>
+                <li><a href="${ctx}/receptionist/patients?action=new">Đăng Ký Bệnh Nhân</a></li>
                 <li><a href="${ctx}/receptionist/patients">Danh Sách Bệnh Nhân</a></li>
-                <li><a href="${ctx}/receptionist/patient-files">Hồ Sơ Bệnh Nhân</a></li>
-                <li><a href="${ctx}/receptionist/queue">Hàng Chờ</a></li>
-                <li><a href="${ctx}/receptionist/assign">Phân Công Bác Sĩ</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/appointments') ? 'active' : ''}" href="${ctx}/receptionist/appointments">Lịch Hẹn</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/queue') ? 'active' : ''}" href="${ctx}/receptionist/queue">Hàng Chờ</a></li>
                 <li><a href="${ctx}/receptionist/invoices">Hóa Đơn & Thanh Toán</a></li>
-                <li><a href="${ctx}/receptionist/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
-                <li><a href="${ctx}/receptionist/inventory">Tồn Kho</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/online-appointments') ? 'active' : ''}" href="${ctx}/receptionist/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
                 <li><a href="${ctx}/receptionist/feedback">Phản Hồi</a></li>
             </ul>
         </c:if>

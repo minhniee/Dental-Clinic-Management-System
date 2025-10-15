@@ -93,7 +93,7 @@ public class LoginServlet extends HttpServlet {
             case "dentist":
                 return "/dentist/dashboard.jsp";
             case "receptionist":
-                return "/receptionist/dashboard.jsp";
+                return "/receptionist/dashboard";
             case "patient":
                 return "/patient/dashboard.jsp";
             default:

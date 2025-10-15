@@ -2,9 +2,13 @@ package DAO;
 
 import context.DBContext;
 import model.AppointmentRequest;
+import model.Service;
+import model.User;
 
 import java.sql.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -154,7 +158,10 @@ public class AppointmentRequestDAO {
         request.setPreferredDoctorId(rs.getInt("preferred_doctor_id"));
         if (rs.wasNull()) request.setPreferredDoctorId(null);
         
-        request.setPreferredDate(rs.getDate("preferred_date").toLocalDate());
+        Date preferredDate = rs.getDate("preferred_date");
+        if (preferredDate != null) {
+            request.setPreferredDate(preferredDate.toLocalDate());
+        }
         request.setPreferredShift(rs.getString("preferred_shift"));
         request.setNotes(rs.getString("notes"));
         request.setStatus(rs.getString("status"));
@@ -165,7 +172,10 @@ public class AppointmentRequestDAO {
             request.setOtpExpiresAt(otpExpiresAt.toLocalDateTime());
         }
         
-        request.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
+        Timestamp createdAt = rs.getTimestamp("created_at");
+        if (createdAt != null) {
+            request.setCreatedAt(createdAt.toLocalDateTime());
+        }
         
         Timestamp confirmedAt = rs.getTimestamp("confirmed_at");
         if (confirmedAt != null) {
@@ -173,5 +183,105 @@ public class AppointmentRequestDAO {
         }
         
         return request;
+    }
+
+    /**
+     * Get all appointment requests with related data
+     */
+    public List<AppointmentRequest> getAllAppointmentRequests() {
+        String sql = "SELECT ar.*, " +
+                     "s.name as service_name, " +
+                     "u.full_name as doctor_name " +
+                     "FROM AppointmentRequests ar " +
+                     "LEFT JOIN Services s ON ar.service_id = s.service_id " +
+                     "LEFT JOIN Users u ON ar.preferred_doctor_id = u.user_id " +
+                     "ORDER BY ar.created_at DESC";
+        
+        List<AppointmentRequest> requests = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                AppointmentRequest request = mapResultSetToAppointmentRequest(rs);
+                
+                // Set related service name
+                String serviceName = rs.getString("service_name");
+                if (serviceName != null) {
+                    Service service = new Service();
+                    service.setName(serviceName);
+                    request.setService(service);
+                }
+                
+                // Set related doctor name
+                String doctorName = rs.getString("doctor_name");
+                if (doctorName != null) {
+                    User doctor = new User();
+                    doctor.setFullName(doctorName);
+                    request.setPreferredDoctor(doctor);
+                }
+                
+                requests.add(request);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting all appointment requests", e);
+            e.printStackTrace();
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Unexpected error getting all appointment requests", e);
+            e.printStackTrace();
+        }
+        
+        return requests;
+    }
+
+    /**
+     * Get appointment requests by status
+     */
+    public List<AppointmentRequest> getAppointmentRequestsByStatus(String status) {
+        String sql = "SELECT ar.*, " +
+                     "s.name as service_name, " +
+                     "u.full_name as doctor_name " +
+                     "FROM AppointmentRequests ar " +
+                     "LEFT JOIN Services s ON ar.service_id = s.service_id " +
+                     "LEFT JOIN Users u ON ar.preferred_doctor_id = u.user_id " +
+                     "WHERE ar.status = ? " +
+                     "ORDER BY ar.created_at DESC";
+        
+        List<AppointmentRequest> requests = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, status);
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                AppointmentRequest request = mapResultSetToAppointmentRequest(rs);
+                
+                // Set related service name
+                String serviceName = rs.getString("service_name");
+                if (serviceName != null) {
+                    Service service = new Service();
+                    service.setName(serviceName);
+                    request.setService(service);
+                }
+                
+                // Set related doctor name
+                String doctorName = rs.getString("doctor_name");
+                if (doctorName != null) {
+                    User doctor = new User();
+                    doctor.setFullName(doctorName);
+                    request.setPreferredDoctor(doctor);
+                }
+                
+                requests.add(request);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting appointment requests by status: " + status, e);
+        }
+        
+        return requests;
     }
 }

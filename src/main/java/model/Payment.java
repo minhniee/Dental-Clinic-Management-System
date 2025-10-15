@@ -2,6 +2,9 @@ package model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class Payment {
     private int paymentId;
@@ -68,6 +71,25 @@ public class Payment {
 
     public void setInvoice(Invoice invoice) {
         this.invoice = invoice;
+    }
+
+    /**
+     * Get formatted paidAt date
+     */
+    public String getFormattedPaidAt() {
+        if (paidAt == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return paidAt.format(formatter);
+    }
+
+    /**
+     * Helper method to get paidAt as java.util.Date for JSP formatting
+     */
+    public Date getPaidAtAsDate() {
+        if (paidAt != null) {
+            return Date.from(paidAt.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
     }
 
     @Override

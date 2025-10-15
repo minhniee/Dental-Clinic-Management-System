@@ -2,6 +2,10 @@ package model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.List;
 
 public class Invoice {
     private int invoiceId;
@@ -14,6 +18,7 @@ public class Invoice {
     private LocalDateTime createdAt;
     private Patient patient;
     private Appointment appointment;
+    private List<InvoiceItem> items;
 
     public Invoice() {
     }
@@ -29,6 +34,12 @@ public class Invoice {
         this.createdAt = createdAt;
         // Calculate net amount
         this.netAmount = totalAmount.subtract(discountAmount != null ? discountAmount : BigDecimal.ZERO);
+    }
+
+    public String getFormattedCreatedAt() {
+        if (createdAt == null) return "";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+        return createdAt.format(formatter);
     }
 
     public int getInvoiceId() {
@@ -113,6 +124,24 @@ public class Invoice {
 
     public void setAppointment(Appointment appointment) {
         this.appointment = appointment;
+    }
+
+    public List<InvoiceItem> getItems() {
+        return items;
+    }
+
+    public void setItems(List<InvoiceItem> items) {
+        this.items = items;
+    }
+
+    /**
+     * Helper method to get createdAt as java.util.Date for JSP formatting
+     */
+    public Date getCreatedAtAsDate() {
+        if (createdAt != null) {
+            return Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
     }
 
     @Override

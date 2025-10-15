@@ -137,11 +137,10 @@ public class DentistDAO {
         schedule.setDoctorId(rs.getInt("doctor_id"));
         schedule.setWorkDate(rs.getDate("work_date").toLocalDate());
         schedule.setShift(rs.getString("shift"));
-        schedule.setStartTime(rs.getTime("start_time").toLocalTime());
-        schedule.setEndTime(rs.getTime("end_time").toLocalTime());
+        schedule.setStartTime(rs.getString("start_time"));
+        schedule.setEndTime(rs.getString("end_time"));
         schedule.setRoomNo(rs.getString("room_no"));
         schedule.setStatus(rs.getString("status"));
-        schedule.setCreatedAt(rs.getTimestamp("created_at").toLocalDateTime());
         
         return schedule;
     }
