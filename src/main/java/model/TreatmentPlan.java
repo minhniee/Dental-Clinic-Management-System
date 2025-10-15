@@ -2,6 +2,7 @@ package model;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class TreatmentPlan {
     private int planId;
@@ -10,6 +11,7 @@ public class TreatmentPlan {
     private BigDecimal estimatedCost;
     private LocalDateTime createdAt;
     private MedicalRecord medicalRecord;
+    private List<TreatmentSession> treatmentSessions;
 
     public TreatmentPlan() {
     }
@@ -68,6 +70,14 @@ public class TreatmentPlan {
 
     public void setMedicalRecord(MedicalRecord medicalRecord) {
         this.medicalRecord = medicalRecord;
+    }
+
+    public List<TreatmentSession> getTreatmentSessions() {
+        return treatmentSessions;
+    }
+
+    public void setTreatmentSessions(List<TreatmentSession> treatmentSessions) {
+        this.treatmentSessions = treatmentSessions;
     }
 
     @Override

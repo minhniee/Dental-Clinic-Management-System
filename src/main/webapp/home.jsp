@@ -113,7 +113,7 @@
                                         <c:if test="${not empty dentist.employee and not empty dentist.employee.hireDate}">
                                             <p class="text-slate-500 mb-3" style="color: #64748b; font-size: 0.875rem;">
                                                 <i class="fas fa-calendar-alt me-1"></i>
-                                                Since <fmt:formatDate value="${dentist.employee.hireDate}" pattern="yyyy" />
+                                                Since ${dentist.employee.hireDate}
                                             </p>
                                         </c:if>
                                         
