@@ -30,20 +30,20 @@ public class TestErrorServlet extends HttpServlet {
         } else {
             // Show available test options
             response.setContentType("text/html");
-            response.getWriter().println("""
-                <html>
-                <head><title>Error Page Test</title></head>
-                <body>
-                    <h2>Error Page Test</h2>
-                    <p>Click the links below to test error pages:</p>
-                    <ul>
-                        <li><a href="?type=404">Test 404 Error Page</a></li>
-                        <li><a href="?type=500">Test 500 Error Page</a></li>
-                    </ul>
-                    <p><a href="../home">Back to Home</a></p>
-                </body>
-                </html>
-                """);
+            response.getWriter().println(
+                "<html>" +
+                "<head><title>Error Page Test</title></head>" +
+                "<body>" +
+                "<h2>Error Page Test</h2>" +
+                "<p>Click the links below to test error pages:</p>" +
+                "<ul>" +
+                "<li><a href=\"?type=404\">Test 404 Error Page</a></li>" +
+                "<li><a href=\"?type=500\">Test 500 Error Page</a></li>" +
+                "</ul>" +
+                "<p><a href=\"../home\">Back to Home</a></p>" +
+                "</body>" +
+                "</html>"
+            );
         }
     }
 }

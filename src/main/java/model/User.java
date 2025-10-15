@@ -1,6 +1,8 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class User {
     private int userId;
@@ -101,6 +103,14 @@ public class User {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    // Getter để chuyển đổi LocalDateTime sang java.util.Date cho JSP
+    public Date getCreatedAtAsDate() {
+        if (this.createdAt == null) {
+            return null;
+        }
+        return Date.from(this.createdAt.atZone(ZoneId.systemDefault()).toInstant());
     }
 
     public Role getRole() {

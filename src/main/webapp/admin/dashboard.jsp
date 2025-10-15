@@ -81,11 +81,20 @@
         
         <div class="quick-actions">
             <h3>📋 Hành Động Nhanh</h3>
-            <p>• Tạo tài khoản người dùng mới<br>
-               • Xem nhật ký hệ thống<br>
-               • Cấu hình cài đặt phòng khám<br>
-               • Tạo báo cáo hàng tháng<br>
-               • Sao lưu dữ liệu hệ thống</p>
+            <div class="action-buttons">
+                <a href="${pageContext.request.contextPath}/admin/users" class="action-btn">
+                    👥 Quản Lý Người Dùng
+                </a>
+                <a href="${pageContext.request.contextPath}/admin/roles" class="action-btn">
+                    🔐 Quản Lý Vai Trò
+                </a>
+                <a href="${pageContext.request.contextPath}/admin/users" class="action-btn">
+                    ➕ Tạo Tài Khoản Mới
+                </a>
+                <a href="${pageContext.request.contextPath}/admin/roles" class="action-btn">
+                    ⚙️ Cấu Hình Vai Trò
+                </a>
+            </div>
         </div>
             </div>
         </main>

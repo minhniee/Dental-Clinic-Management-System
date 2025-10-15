@@ -5,32 +5,30 @@
          version="6.0">
 
     <display-name>Dental Clinic Management System</display-name>
-    
-    <!-- Welcome Files -->
+
     <welcome-file-list>
         <welcome-file>home.jsp</welcome-file>
     </welcome-file-list>
-    
+
     <!-- Session Configuration -->
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
-    
-<!--    &lt;!&ndash; Error Pages &ndash;&gt;-->
-<!--    <error-page>-->
-<!--        <error-code>404</error-code>-->
-<!--        <location>/404.jsp</location>-->
-<!--    </error-page>-->
-<!--    -->
-<!--    <error-page>-->
-<!--        <error-code>500</error-code>-->
-<!--        <location>/500.jsp</location>-->
-<!--    </error-page>-->
-<!--    -->
-<!--    &lt;!&ndash; Generic Error Page &ndash;&gt;-->
-<!--    <error-page>-->
-<!--        <exception-type>java.lang.Throwable</exception-type>-->
-<!--        <location>/500.jsp</location>-->
-<!--    </error-page>-->
 
+    <!-- Error Pages -->
+    <error-page>
+        <error-code>404</error-code>
+        <location>/404.jsp</location>
+    </error-page>
+
+    <error-page>
+        <error-code>500</error-code>
+        <location>/500.jsp</location>
+    </error-page>
+
+    <!-- Generic Error Page -->
+    <error-page>
+        <exception-type>java.lang.Throwable</exception-type>
+        <location>/500.jsp</location>
+    </error-page>
 </web-app>
