@@ -1,26 +1,23 @@
 package model;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
 public class DoctorSchedule {
     private int scheduleId;
     private int doctorId;
     private LocalDate workDate;
     private String shift;
-    private LocalTime startTime;
-    private LocalTime endTime;
+    private String startTime;
+    private String endTime;
     private String roomNo;
-    private String status;
-    private LocalDateTime createdAt;
-    private User doctor;
+    private String notes;
+    private String status; // ACTIVE, LOCKED, CANCELLED
 
     public DoctorSchedule() {
     }
 
     public DoctorSchedule(int scheduleId, int doctorId, LocalDate workDate, String shift, 
-                         LocalTime startTime, LocalTime endTime, String roomNo, String status, LocalDateTime createdAt) {
+                         String startTime, String endTime, String roomNo, String notes, String status) {
         this.scheduleId = scheduleId;
         this.doctorId = doctorId;
         this.workDate = workDate;
@@ -28,8 +25,8 @@ public class DoctorSchedule {
         this.startTime = startTime;
         this.endTime = endTime;
         this.roomNo = roomNo;
+        this.notes = notes;
         this.status = status;
-        this.createdAt = createdAt;
     }
 
     public int getScheduleId() {
@@ -64,19 +61,19 @@ public class DoctorSchedule {
         this.shift = shift;
     }
 
-    public LocalTime getStartTime() {
+    public String getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(LocalTime startTime) {
+    public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
 
-    public LocalTime getEndTime() {
+    public String getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(LocalTime endTime) {
+    public void setEndTime(String endTime) {
         this.endTime = endTime;
     }
 
@@ -88,28 +85,20 @@ public class DoctorSchedule {
         this.roomNo = roomNo;
     }
 
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     public String getStatus() {
         return status;
     }
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public User getDoctor() {
-        return doctor;
-    }
-
-    public void setDoctor(User doctor) {
-        this.doctor = doctor;
     }
 
     @Override
@@ -119,11 +108,11 @@ public class DoctorSchedule {
                 ", doctorId=" + doctorId +
                 ", workDate=" + workDate +
                 ", shift='" + shift + '\'' +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
                 ", roomNo='" + roomNo + '\'' +
+                ", notes='" + notes + '\'' +
                 ", status='" + status + '\'' +
-                ", createdAt=" + createdAt +
                 '}';
     }
 }

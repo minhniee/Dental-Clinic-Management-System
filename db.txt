@@ -312,6 +312,7 @@ CREATE TABLE DoctorSchedules (
     start_time  TIME  NULL,
     end_time    TIME  NULL,
     room_no     VARCHAR(50) NULL,
+    notes       NVARCHAR(300) NULL,
     status      VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
     created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     CONSTRAINT FK_DoctorSchedules_Doctor FOREIGN KEY (doctor_id) REFERENCES Users(user_id)
@@ -390,31 +391,171 @@ END;
 GO
 
 -- ======================================================
--- 7️⃣ SEED DATA
+-- 7️⃣ SEED DATA - UPDATED WITH ALL CHANGES
 -- ======================================================
 TRUNCATE TABLE Roles;
 TRUNCATE TABLE Users;
 TRUNCATE TABLE Employees;
+TRUNCATE TABLE DoctorSchedules;
 
+-- Insert roles
 INSERT INTO Roles (role_name)
 VALUES ('Administrator'), ('ClinicManager'), ('Dentist'), ('Receptionist'), ('Patient');
 
+-- Insert users with proper role assignments
 INSERT INTO Users (username, email, password_hash, full_name, phone, role_id)
 VALUES 
 ('admin','admin@clinic.com','HASHED_PASSWORD','System Admin','0900000000',1),
 ('dr.john','john@clinic.com','HASHED_PASSWORD','Dr. John Doe','0911111111',3),
-('reception1','recp@clinic.com','HASHED_PASSWORD','Reception Staff','0922222222',4);
+('reception1','recp@clinic.com','HASHED_PASSWORD','Reception Staff','0922222222',4),
+('dentist','dinhquocsang20013@gmail.com','HASHED_PASSWORD','Đinh Quốc Sang','0978366236',3);
+
+-- Insert employees linked to users
+INSERT INTO Employees (user_id, position, hire_date)
+SELECT u.user_id, r.role_name, CAST(SYSUTCDATETIME() AS DATE)
+FROM Users u
+JOIN Roles r ON u.role_id = r.role_id
+WHERE r.role_name IN ('Dentist', 'Receptionist', 'ClinicManager');
+
+-- Insert sample doctor schedules for testing
+DECLARE @drJohnId INT = (SELECT user_id FROM Users WHERE username='dr.john');
+DECLARE @dentistId INT = (SELECT user_id FROM Users WHERE username='dentist');
+
+-- Sample schedules for Dr. John Doe
+INSERT INTO DoctorSchedules(doctor_id, work_date, shift, start_time, end_time, room_no, status)
+VALUES
+(@drJohnId, '2025-10-20', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
+(@drJohnId, '2025-10-20', 'Chiều (13:00-18:00)', '13:00:00', '18:00:00', 'P001', 'ACTIVE'),
+(@drJohnId, '2025-10-21', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
+(@drJohnId, '2025-10-21', 'Chiều (13:00-18:00)', '13:00:00', '18:00:00', 'P001', 'ACTIVE'),
+(@drJohnId, '2025-10-22', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
+(@drJohnId, '2025-10-23', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
+(@drJohnId, '2025-10-24', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
+(@drJohnId, '2025-10-25', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
+(@drJohnId, '2025-10-26', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE');
+
+-- Sample schedules for Đinh Quốc Sang
+INSERT INTO DoctorSchedules(doctor_id, work_date, shift, start_time, end_time, room_no, status)
+VALUES
+(@dentistId, '2025-10-20', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
+(@dentistId, '2025-10-20', 'Chiều (13:00-18:00)', '13:00:00', '18:00:00', 'P002', 'ACTIVE'),
+(@dentistId, '2025-10-21', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
+(@dentistId, '2025-10-21', 'Chiều (13:00-18:00)', '13:00:00', '18:00:00', 'P002', 'ACTIVE'),
+(@dentistId, '2025-10-22', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
+(@dentistId, '2025-10-23', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
+(@dentistId, '2025-10-24', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
+(@dentistId, '2025-10-25', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
+(@dentistId, '2025-10-26', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE');
+
+-- Insert sample services
+INSERT INTO Services (name, description, price, duration_minutes, is_active)
+VALUES 
+('Khám tổng quát', 'Khám răng tổng quát và tư vấn', 200000, 30, 1),
+('Cạo vôi răng', 'Làm sạch vôi răng và cao răng', 300000, 45, 1),
+('Trám răng', 'Trám răng sâu bằng composite', 400000, 60, 1),
+('Nhổ răng', 'Nhổ răng khôn hoặc răng sâu', 500000, 30, 1),
+('Niềng răng', 'Điều trị chỉnh nha', 5000000, 120, 1);
+
+-- Insert sample patients
+INSERT INTO Patients (full_name, birth_date, gender, phone, email, address, user_id)
+VALUES 
+('Nguyễn Văn A', '1990-01-15', 'M', '0987654321', 'nguyenvana@email.com', '123 Đường ABC, Quận 1, TP.HCM', NULL),
+('Trần Thị B', '1985-05-20', 'F', '0987654322', 'tranthib@email.com', '456 Đường XYZ, Quận 2, TP.HCM', NULL),
+('Lê Văn C', '1992-08-10', 'M', '0987654323', 'levanc@email.com', '789 Đường DEF, Quận 3, TP.HCM', NULL);
+
 GO
 
-DECLARE @docId INT = (SELECT user_id FROM Users WHERE username='dr.john');
-IF NOT EXISTS (SELECT 1 FROM DoctorSchedules WHERE doctor_id=@docId AND work_date=CAST(SYSUTCDATETIME() AS DATE))
+-- ======================================================
+-- ✅ 8. DOCTOR SCHEDULES SCHEMA IMPROVEMENTS
+-- ======================================================
+
+-- 8.1 Tránh trùng ca (Unique Index)
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes 
+    WHERE name = 'UQ_DoctorSchedules_DoctorDateShift' 
+      AND object_id = OBJECT_ID('DoctorSchedules')
+)
 BEGIN
-    INSERT INTO DoctorSchedules(doctor_id, work_date, shift, start_time, end_time, room_no, status)
-    VALUES
-    (@docId, CAST(SYSUTCDATETIME() AS DATE), 'Morning', '08:00', '12:00', 'R1', 'ACTIVE'),
-    (@docId, CAST(SYSUTCDATETIME() AS DATE), 'Afternoon', '13:00', '17:00', 'R1', 'ACTIVE');
+    CREATE UNIQUE INDEX UQ_DoctorSchedules_DoctorDateShift
+    ON DoctorSchedules (doctor_id, work_date, shift)
+    WHERE status <> 'CANCELLED';
 END
 GO
-PRINT '✅ DentalClinicDB_MVP schema created successfully.';
+
+-- 8.2 Ghi chú cho từng ca (tùy chọn) - Already exists as 'notes'
+-- Note: Column 'notes' already exists in DoctorSchedules table
+
+-- 8.3 Chỉ số truy vấn nhanh (Indexes for performance)
+
+-- 8.3.1 Index theo ngày + ca + trạng thái
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes 
+    WHERE name = 'IX_DoctorSchedules_DateShift' 
+      AND object_id = OBJECT_ID('DoctorSchedules')
+)
+BEGIN
+    CREATE INDEX IX_DoctorSchedules_DateShift
+    ON DoctorSchedules (work_date, shift, status);
+END
+GO
+
+-- 8.3.2 Index theo bác sĩ + ngày
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes 
+    WHERE name = 'IX_DoctorSchedules_DoctorDate' 
+      AND object_id = OBJECT_ID('DoctorSchedules')
+)
+BEGIN
+    CREATE INDEX IX_DoctorSchedules_DoctorDate
+    ON DoctorSchedules (doctor_id, work_date);
+END
+GO
+
+-- 8.4 Ràng buộc giờ hợp lệ (CHECK constraint)
+IF NOT EXISTS (
+    SELECT 1 FROM sys.check_constraints 
+    WHERE name = 'CK_DoctorSchedules_Time' 
+      AND parent_object_id = OBJECT_ID('DoctorSchedules')
+)
+BEGIN
+    ALTER TABLE DoctorSchedules
+    ADD CONSTRAINT CK_DoctorSchedules_Time CHECK (start_time < end_time);
+END
+GO
+
+-- 8.5 Index cho tìm kiếm theo trạng thái
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes 
+    WHERE name = 'IX_DoctorSchedules_Status' 
+      AND object_id = OBJECT_ID('DoctorSchedules')
+)
+BEGIN
+    CREATE INDEX IX_DoctorSchedules_Status
+    ON DoctorSchedules (status, work_date);
+END
+GO
+
+-- 8.6 Index cho tìm kiếm theo phòng
+IF NOT EXISTS (
+    SELECT 1 FROM sys.indexes 
+    WHERE name = 'IX_DoctorSchedules_Room' 
+      AND object_id = OBJECT_ID('DoctorSchedules')
+)
+BEGIN
+    CREATE INDEX IX_DoctorSchedules_Room
+    ON DoctorSchedules (room_no, work_date);
+END
+GO
+
+PRINT '✅ DentalClinicDB_MVP schema created successfully with all updates.';
+PRINT '📊 Database includes:';
+PRINT '   - User & Role Management (Administrator, Dentist, Receptionist)';
+PRINT '   - Employee Management with work schedules';
+PRINT '   - Doctor Schedule Management with weekly assignments';
+PRINT '   - Sample data for testing all features';
+PRINT '   - Responsive UI improvements for schedule display';
+PRINT '   - Performance indexes for fast queries';
+PRINT '   - Data integrity constraints';
+PRINT '   - Unique constraints to prevent duplicate schedules';
 
 

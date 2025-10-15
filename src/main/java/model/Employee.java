@@ -59,6 +59,46 @@ public class Employee {
         this.user = user;
     }
 
+    // Helper methods for display
+    public String getFullName() {
+        return user != null ? user.getFullName() : "N/A";
+    }
+
+    public String getEmail() {
+        return user != null ? user.getEmail() : "N/A";
+    }
+
+    public String getPhone() {
+        return user != null ? user.getPhone() : "N/A";
+    }
+
+    public boolean isActive() {
+        return user != null ? user.isActive() : false;
+    }
+
+    public String getDepartment() {
+        // Default department based on position
+        if (position != null) {
+            switch (position.toLowerCase()) {
+                case "bác sĩ":
+                case "dentist":
+                    return "Nha khoa tổng quát";
+                case "y tá":
+                case "nurse":
+                    return "Điều dưỡng";
+                case "lễ tân":
+                case "receptionist":
+                    return "Lễ tân";
+                case "kế toán":
+                case "accountant":
+                    return "Kế toán";
+                default:
+                    return "Khác";
+            }
+        }
+        return "Khác";
+    }
+
     @Override
     public String toString() {
         return "Employee{" +

@@ -12,6 +12,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @WebServlet("/home")
@@ -46,9 +47,14 @@ public class HomeServlet extends HttpServlet {
         } catch (Exception e) {
             // Log the error
             getServletContext().log("Error loading homepage data", e);
+            e.printStackTrace(); // Print stack trace for debugging
             
-            // Set error message and forward to error page or home page with error
+            // Set empty lists to avoid null pointer exceptions
+            request.setAttribute("dentists", new ArrayList<>());
+            request.setAttribute("services", new ArrayList<>());
             request.setAttribute("errorMessage", "Unable to load page content. Please try again later.");
+            
+            // Forward to home page with error message
             request.getRequestDispatcher("/home.jsp").forward(request, response);
         }
     }

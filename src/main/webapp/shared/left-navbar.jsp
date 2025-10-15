@@ -23,7 +23,8 @@
                 <li><a href="${ctx}/admin/users">Người Dùng</a></li>
                 <li><a href="${ctx}/admin/roles">Vai Trò & Quyền Hạn</a></li>
                 <li><a href="${ctx}/admin/employees">Nhân Viên</a></li>
-                <li><a href="${ctx}/admin/schedules">Lịch Trình</a></li>
+                <li><a href="${ctx}/admin/schedules">Phân Công Lịch</a></li>
+                <li><a href="${ctx}/admin/weekly-schedule">Lịch Tuần</a></li>
                 <li><a href="${ctx}/admin/notifications">Thông Báo</a></li>
                 <li><a href="${ctx}/admin/services">Dịch Vụ</a></li>
                 <li><a href="${ctx}/admin/pricing">Giá Cả</a></li>

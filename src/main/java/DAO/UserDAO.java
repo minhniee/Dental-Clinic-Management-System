@@ -120,6 +120,162 @@ public class UserDAO {
     }
 
     /**
+     * Get all users with their roles
+     */
+    public java.util.List<User> getAllUsers() {
+        String sql = "SELECT u.*, r.role_name " +
+                    "FROM Users u " +
+                    "INNER JOIN Roles r ON u.role_id = r.role_id " +
+                    "ORDER BY u.created_at DESC";
+        
+        java.util.List<User> users = new java.util.ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                users.add(mapResultSetToUser(rs));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting all users", e);
+        }
+        return users;
+    }
+
+    /**
+     * Get user by ID
+     */
+    public User getUserById(int userId) {
+        String sql = "SELECT u.*, r.role_name " +
+                    "FROM Users u " +
+                    "INNER JOIN Roles r ON u.role_id = r.role_id " +
+                    "WHERE u.user_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToUser(rs);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting user by ID: " + userId, e);
+        }
+        return null;
+    }
+
+    /**
+     * Update user role
+     */
+    public boolean updateUserRole(int userId, int roleId) {
+        String sql = "UPDATE Users SET role_id = ? WHERE user_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, roleId);
+            statement.setInt(2, userId);
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating user role for user: " + userId, e);
+            return false;
+        }
+    }
+
+    /**
+     * Update user status (active/inactive)
+     */
+    public boolean updateUserStatus(int userId, boolean isActive) {
+        String sql = "UPDATE Users SET is_active = ? WHERE user_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setBoolean(1, isActive);
+            statement.setInt(2, userId);
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating user status for user: " + userId, e);
+            return false;
+        }
+    }
+
+    /**
+     * Update user information
+     */
+    public boolean updateUser(User user) {
+        String sql = "UPDATE Users SET username = ?, email = ?, full_name = ?, phone = ? WHERE user_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getFullName());
+            statement.setString(4, user.getPhone());
+            statement.setInt(5, user.getUserId());
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating user: " + user.getUserId(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Create new user
+     */
+    public boolean createUser(User user) {
+        String sql = "INSERT INTO Users (username, email, password_hash, full_name, phone, role_id, is_active) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, user.getUsername());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPasswordHash());
+            statement.setString(4, user.getFullName());
+            statement.setString(5, user.getPhone());
+            statement.setInt(6, user.getRoleId());
+            statement.setBoolean(7, user.isActive());
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error creating user: " + user.getUsername(), e);
+            return false;
+        }
+    }
+
+    /**
+     * Check if username exists
+     */
+    public boolean usernameExists(String username) {
+        String sql = "SELECT 1 FROM Users WHERE username = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, username);
+            ResultSet rs = statement.executeQuery();
+            return rs.next();
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error checking if username exists: " + username, e);
+            return false;
+        }
+    }
+
+    /**
      * Map ResultSet to User object
      */
     private User mapResultSetToUser(ResultSet rs) throws SQLException {
