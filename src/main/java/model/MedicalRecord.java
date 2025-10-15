@@ -1,6 +1,7 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MedicalRecord {
     private int recordId;
@@ -10,6 +11,7 @@ public class MedicalRecord {
     private LocalDateTime createdAt;
     private Patient patient;
     private User dentist;
+    private List<TreatmentPlan> treatmentPlans;
 
     public MedicalRecord() {
     }
@@ -76,6 +78,14 @@ public class MedicalRecord {
 
     public void setDentist(User dentist) {
         this.dentist = dentist;
+    }
+
+    public List<TreatmentPlan> getTreatmentPlans() {
+        return treatmentPlans;
+    }
+
+    public void setTreatmentPlans(List<TreatmentPlan> treatmentPlans) {
+        this.treatmentPlans = treatmentPlans;
     }
 
     @Override
