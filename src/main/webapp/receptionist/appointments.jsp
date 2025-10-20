@@ -400,6 +400,15 @@
                                                            Cập nhật
                                                             <i class="fas fa-edit"></i>
                                                         </a>
+                                                        <c:if test="${appointment.status eq 'SCHEDULED'}">
+                                                            <form method="POST" action="${pageContext.request.contextPath}/receptionist/appointments" style="display: inline;">
+                                                                <input type="hidden" name="action" value="confirm">
+                                                                <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
+                                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                                    <i class="fas fa-check-circle"></i> Xác nhận
+                                                                </button>
+                                                            </form>
+                                                        </c:if>
                                                         <c:if test="${appointment.status ne 'COMPLETED' and appointment.status ne 'CANCELLED'}">
                                                             <form method="POST" action="${pageContext.request.contextPath}/receptionist/appointments" style="display: inline;">
                                                                 <input type="hidden" name="action" value="update_status">
@@ -409,6 +418,12 @@
                                                                     <i class="fas fa-check"></i> Hoàn thành
                                                                 </button>
                                                             </form>
+                                                        </c:if>
+                                                        <c:if test="${appointment.status ne 'COMPLETED' and appointment.status ne 'CANCELLED'}">
+                                                            <button type="button" class="btn btn-secondary btn-sm" 
+                                                                    onclick="showCancelModal(${appointment.appointmentId})">
+                                                                <i class="fas fa-times"></i> Hủy
+                                                            </button>
                                                         </c:if>
                                                         <c:if test="${appointment.status eq 'COMPLETED'}">
                                                             <a href="${pageContext.request.contextPath}/receptionist/invoices?action=new&appointmentId=${appointment.appointmentId}" 
@@ -441,6 +456,25 @@
         </main>
     </div>
 
+    <!-- Cancel Appointment Modal -->
+    <div id="cancelModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-content" style="background-color: #fefefe; margin: 15% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 0.5rem;">
+            <h3>Hủy Lịch Hẹn</h3>
+            <form method="POST" action="${pageContext.request.contextPath}/receptionist/appointments" id="cancelForm">
+                <input type="hidden" name="action" value="cancel">
+                <input type="hidden" name="appointmentId" id="cancelAppointmentId">
+                <div class="form-group">
+                    <label for="cancelReason">Lý do hủy (tùy chọn):</label>
+                    <textarea id="cancelReason" name="reason" class="form-control" rows="3" placeholder="Nhập lý do hủy lịch hẹn..."></textarea>
+                </div>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
+                    <button type="button" class="btn btn-secondary" onclick="closeCancelModal()">Hủy</button>
+                    <button type="submit" class="btn btn-primary">Xác nhận hủy</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         // Set today's date as default if no date is selected
         document.addEventListener('DOMContentLoaded', function() {
@@ -450,6 +484,24 @@
                 dateInput.value = today;
             }
         });
+
+        function showCancelModal(appointmentId) {
+            document.getElementById('cancelAppointmentId').value = appointmentId;
+            document.getElementById('cancelModal').style.display = 'block';
+        }
+
+        function closeCancelModal() {
+            document.getElementById('cancelModal').style.display = 'none';
+            document.getElementById('cancelReason').value = '';
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('cancelModal');
+            if (event.target == modal) {
+                closeCancelModal();
+            }
+        }
     </script>
 </body>
 </html>

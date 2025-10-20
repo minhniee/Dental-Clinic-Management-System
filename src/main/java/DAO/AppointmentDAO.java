@@ -263,6 +263,56 @@ public class AppointmentDAO {
     }
 
     /**
+     * Confirm an appointment
+     */
+    public boolean confirmAppointment(int appointmentId, String confirmationCode) {
+        String sql = "UPDATE Appointments SET status = 'CONFIRMED', confirmation_code = ?, confirmed_at = ? WHERE appointment_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, confirmationCode);
+            statement.setTimestamp(2, Timestamp.valueOf(LocalDateTime.now()));
+            statement.setInt(3, appointmentId);
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error confirming appointment: " + appointmentId, e);
+            return false;
+        }
+    }
+
+    /**
+     * Cancel an appointment
+     */
+    public boolean cancelAppointment(int appointmentId, String reason) {
+        String sql = "UPDATE Appointments SET status = 'CANCELLED', notes = CONCAT(COALESCE(notes, ''), ?) WHERE appointment_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            String cancelNote = (reason != null && !reason.trim().isEmpty()) ? 
+                "\n[CANCELLED: " + reason + "]" : "\n[CANCELLED]";
+            statement.setString(1, cancelNote);
+            statement.setInt(2, appointmentId);
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error cancelling appointment: " + appointmentId, e);
+            return false;
+        }
+    }
+
+    /**
+     * Generate confirmation code
+     */
+    public String generateConfirmationCode() {
+        return String.format("APT%06d", System.currentTimeMillis() % 1000000);
+    }
+
+    /**
      * Map ResultSet to Appointment object with related data
      */
     private Appointment mapResultSetToAppointment(ResultSet rs) throws SQLException {
