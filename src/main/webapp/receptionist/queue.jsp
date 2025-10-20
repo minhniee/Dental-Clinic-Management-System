@@ -200,6 +200,43 @@
             margin-bottom: 1rem;
             color: #94a3b8;
         }
+
+        .auto-refresh {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            color: #0369a1;
+        }
+
+        .auto-refresh input[type="checkbox"] {
+            margin: 0;
+        }
+
+        .queue-item {
+            transition: all 0.3s ease;
+        }
+
+        .queue-item.updating {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        .status-transition {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .status-transition .btn {
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+        }
     </style>
 </head>
 <body>
@@ -241,6 +278,13 @@
                         </div>
                     </c:if>
 
+                    <!-- Auto-refresh Control -->
+                    <div class="auto-refresh">
+                        <input type="checkbox" id="autoRefresh" checked>
+                        <label for="autoRefresh">Tự động làm mới mỗi 30 giây</label>
+                        <span id="lastUpdate" style="margin-left: auto; font-size: 0.75rem; color: #64748b;"></span>
+                    </div>
+
                     <!-- Queue Header -->
                     <div class="queue-header">
                         <div class="actions-container">
@@ -250,6 +294,10 @@
                                 <i class="fas fa-user-plus"></i>
                                 Check-in Bệnh Nhân
                             </a>
+                            <button type="button" id="refreshBtn" class="btn btn-secondary">
+                                <i class="fas fa-sync-alt"></i>
+                                Làm Mới
+                            </button>
                         </div>
 
                         <!-- Queue Statistics -->
@@ -349,13 +397,14 @@
                                                     </c:choose>
                                                 </td>
                                                 <td>
-                                                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                                    <div class="status-transition">
                                                         <c:if test="${queueItem.status eq 'WAITING'}">
                                                             <form method="POST" action="${pageContext.request.contextPath}/receptionist/queue" style="display: inline;">
                                                                 <input type="hidden" name="action" value="update_status">
                                                                 <input type="hidden" name="appointmentId" value="${queueItem.appointmentId}">
                                                                 <input type="hidden" name="status" value="CHECKED_IN">
-                                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                                <button type="submit" class="btn btn-primary btn-sm" 
+                                                                        onclick="showLoading(this)">
                                                                     <i class="fas fa-check"></i> Check-in
                                                                 </button>
                                                             </form>
@@ -366,7 +415,8 @@
                                                                 <input type="hidden" name="action" value="update_status">
                                                                 <input type="hidden" name="appointmentId" value="${queueItem.appointmentId}">
                                                                 <input type="hidden" name="status" value="CALLED">
-                                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                                <button type="submit" class="btn btn-primary btn-sm"
+                                                                        onclick="showLoading(this)">
                                                                     <i class="fas fa-bullhorn"></i> Gọi
                                                                 </button>
                                                             </form>
@@ -377,8 +427,21 @@
                                                                 <input type="hidden" name="action" value="update_status">
                                                                 <input type="hidden" name="appointmentId" value="${queueItem.appointmentId}">
                                                                 <input type="hidden" name="status" value="IN_TREATMENT">
-                                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                                <button type="submit" class="btn btn-primary btn-sm"
+                                                                        onclick="showLoading(this)">
                                                                     <i class="fas fa-stethoscope"></i> Bắt đầu
+                                                                </button>
+                                                            </form>
+                                                        </c:if>
+                                                        
+                                                        <c:if test="${queueItem.status eq 'IN_TREATMENT'}">
+                                                            <form method="POST" action="${pageContext.request.contextPath}/receptionist/queue" style="display: inline;">
+                                                                <input type="hidden" name="action" value="update_status">
+                                                                <input type="hidden" name="appointmentId" value="${queueItem.appointmentId}">
+                                                                <input type="hidden" name="status" value="COMPLETED">
+                                                                <button type="submit" class="btn btn-primary btn-sm"
+                                                                        onclick="showLoading(this)">
+                                                                    <i class="fas fa-check-circle"></i> Hoàn thành
                                                                 </button>
                                                             </form>
                                                         </c:if>
@@ -415,5 +478,119 @@
             </div>
         </main>
     </div>
+
+    <script>
+        let autoRefreshInterval;
+        let isRefreshing = false;
+
+        // Auto-refresh functionality
+        function startAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+            
+            autoRefreshInterval = setInterval(function() {
+                if (!isRefreshing) {
+                    refreshQueue();
+                }
+            }, 30000); // 30 seconds
+        }
+
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+                autoRefreshInterval = null;
+            }
+        }
+
+        function refreshQueue() {
+            if (isRefreshing) return;
+            
+            isRefreshing = true;
+            const refreshBtn = document.getElementById('refreshBtn');
+            const originalContent = refreshBtn.innerHTML;
+            
+            refreshBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang tải...';
+            refreshBtn.disabled = true;
+            
+            fetch(window.location.href)
+                .then(response => response.text())
+                .then(html => {
+                    // Parse the response and update the queue table
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    const newQueueTable = doc.querySelector('.queue-table');
+                    
+                    if (newQueueTable) {
+                        document.querySelector('.queue-table').innerHTML = newQueueTable.innerHTML;
+                    }
+                    
+                    // Update statistics
+                    const newStats = doc.querySelector('.queue-stats');
+                    if (newStats) {
+                        document.querySelector('.queue-stats').innerHTML = newStats.innerHTML;
+                    }
+                    
+                    // Update last update time
+                    updateLastUpdateTime();
+                })
+                .catch(error => {
+                    console.error('Error refreshing queue:', error);
+                })
+                .finally(() => {
+                    isRefreshing = false;
+                    refreshBtn.innerHTML = originalContent;
+                    refreshBtn.disabled = false;
+                });
+        }
+
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('vi-VN');
+            document.getElementById('lastUpdate').textContent = `Cập nhật lần cuối: ${timeString}`;
+        }
+
+        function showLoading(button) {
+            const originalContent = button.innerHTML;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+            button.disabled = true;
+            
+            // Re-enable after 3 seconds as fallback
+            setTimeout(() => {
+                button.innerHTML = originalContent;
+                button.disabled = false;
+            }, 3000);
+        }
+
+        // Event listeners
+        document.getElementById('autoRefresh').addEventListener('change', function() {
+            if (this.checked) {
+                startAutoRefresh();
+            } else {
+                stopAutoRefresh();
+            }
+        });
+
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            refreshQueue();
+        });
+
+        // Start auto-refresh on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (document.getElementById('autoRefresh').checked) {
+                startAutoRefresh();
+            }
+            updateLastUpdateTime();
+        });
+
+        // Stop auto-refresh when page is hidden
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else if (document.getElementById('autoRefresh').checked) {
+                startAutoRefresh();
+            }
+        });
+    </script>
 </body>
 </html>

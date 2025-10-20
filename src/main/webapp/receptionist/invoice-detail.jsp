@@ -527,6 +527,18 @@
                             <i class="fas fa-arrow-left"></i>
                             Quay Lại
                         </a>
+                        <a href="${pageContext.request.contextPath}/receptionist/receipt?action=print_invoice&invoiceId=${invoice.invoiceId}" 
+                           class="btn btn-primary" target="_blank">
+                            <i class="fas fa-print"></i>
+                            In Hóa Đơn
+                        </a>
+                        <c:if test="${not empty payments}">
+                            <a href="${pageContext.request.contextPath}/receptionist/receipt?action=print_receipt&invoiceId=${invoice.invoiceId}" 
+                               class="btn btn-primary" target="_blank">
+                                <i class="fas fa-receipt"></i>
+                                In Biên Lai
+                            </a>
+                        </c:if>
                         <c:if test="${not empty invoice.patient}">
                             <a href="${pageContext.request.contextPath}/receptionist/patients?action=view&id=${invoice.patient.patientId}" 
                                class="btn btn-secondary">

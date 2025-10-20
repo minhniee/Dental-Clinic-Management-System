@@ -235,6 +235,80 @@
                         </div>
                     </c:if>
 
+                    <!-- Patient Search Section -->
+                    <c:if test="${action eq 'create'}">
+                        <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1.5rem; margin-bottom: 2rem;">
+                            <h3 style="margin: 0 0 1rem 0; color: #0f172a; font-size: 1.125rem;">
+                                <i class="fas fa-search" style="margin-right: 0.5rem; color: #06b6d4;"></i>
+                                Tìm Kiếm Bệnh Nhân Hiện Có
+                            </h3>
+                            <p style="margin: 0 0 1rem 0; color: #64748b; font-size: 0.875rem;">
+                                Nhập số điện thoại để kiểm tra xem bệnh nhân đã có trong hệ thống chưa
+                            </p>
+                            <form method="GET" action="${pageContext.request.contextPath}/receptionist/patients" style="display: flex; gap: 1rem; align-items: end;">
+                                <input type="hidden" name="action" value="new">
+                                <div style="flex: 1;">
+                                    <label for="searchPhone" style="display: block; font-weight: 600; color: #0f172a; margin-bottom: 0.5rem; font-size: 0.875rem;">
+                                        Số Điện Thoại
+                                    </label>
+                                    <input type="tel" 
+                                           id="searchPhone" 
+                                           name="phone" 
+                                           class="form-control" 
+                                           value="${searchPhone}"
+                                           placeholder="0123456789"
+                                           style="margin-bottom: 0;">
+                                </div>
+                                <input type="hidden" name="searchAction" value="search">
+                                <button type="submit" class="btn btn-primary" style="margin-bottom: 0;">
+                                    <i class="fas fa-search"></i>
+                                    Tìm Kiếm
+                                </button>
+                            </form>
+                            
+                            <!-- Search Results -->
+                            <c:if test="${not empty existingPatient}">
+                                <div style="margin-top: 1rem; padding: 1rem; background: #d1fae5; border: 1px solid #bbf7d0; border-radius: 0.5rem;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                                        <div>
+                                            <h4 style="margin: 0 0 0.5rem 0; color: #059669; font-size: 1rem;">
+                                                <i class="fas fa-user-check" style="margin-right: 0.5rem;"></i>
+                                                Tìm Thấy Bệnh Nhân
+                                            </h4>
+                                            <p style="margin: 0; color: #047857; font-size: 0.875rem;">
+                                                <strong>${existingPatient.fullName}</strong> - ${existingPatient.phone}
+                                                <c:if test="${not empty existingPatient.email}">
+                                                    - ${existingPatient.email}
+                                                </c:if>
+                                            </p>
+                                        </div>
+                                        <div style="display: flex; gap: 0.5rem;">
+                                            <a href="${pageContext.request.contextPath}/receptionist/patients?action=quick_appointment&patientId=${existingPatient.patientId}" 
+                                               class="btn btn-primary btn-sm">
+                                                <i class="fas fa-calendar-plus"></i>
+                                                Đặt Lịch
+                                            </a>
+                                            <a href="${pageContext.request.contextPath}/receptionist/patients?action=view&id=${existingPatient.patientId}" 
+                                               class="btn btn-secondary btn-sm">
+                                                <i class="fas fa-eye"></i>
+                                                Xem Chi Tiết
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </c:if>
+                            
+                            <c:if test="${not empty noPatientFound}">
+                                <div style="margin-top: 1rem; padding: 1rem; background: #fef3c7; border: 1px solid #fde68a; border-radius: 0.5rem;">
+                                    <p style="margin: 0; color: #d97706; font-size: 0.875rem;">
+                                        <i class="fas fa-exclamation-triangle" style="margin-right: 0.5rem;"></i>
+                                        Không tìm thấy bệnh nhân với số điện thoại "${searchPhone}". Vui lòng tạo hồ sơ mới bên dưới.
+                                    </p>
+                                </div>
+                            </c:if>
+                        </div>
+                    </c:if>
+
                     <!-- Patient Registration Form -->
                     <form method="POST" action="${pageContext.request.contextPath}/receptionist/patients" class="needs-validation" novalidate>
                         <input type="hidden" name="action" value="${action eq 'update' ? 'update' : 'create'}">
@@ -292,7 +366,7 @@
                                        name="phone" 
                                        class="form-control" 
                                        required 
-                                       value="${patient.phone}"
+                                       value="${not empty patient.phone ? patient.phone : searchPhone}"
                                        placeholder="0123456789">
                                 <div class="help-text">Số điện thoại là bắt buộc để liên lạc</div>
                             </div>
