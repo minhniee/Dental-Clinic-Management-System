@@ -1,10 +1,9 @@
 -- ===================================================================
--- 🦷 Dental Clinic Management System (MVP Version) - FIXED & CLEANED
--- SQL Server Script - Minimal schema + Online Booking + Schedules
+-- 🦷 Dental Clinic Management System (Full Version, Cleaned)
+-- SQL Server Script - Complete schema + seed data (no trigger)
 -- ===================================================================
 
-
-use master
+USE master;
 IF DB_ID('DentalClinicDB_MVP') IS NOT NULL
 BEGIN
     ALTER DATABASE DentalClinicDB_MVP SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
@@ -16,8 +15,6 @@ CREATE DATABASE DentalClinicDB_MVP;
 GO
 USE DentalClinicDB_MVP;
 GO
-
-
 
 -- ======================================================
 -- 1️⃣ USER & ROLE MANAGEMENT
@@ -34,15 +31,15 @@ CREATE TABLE Roles (
 GO
 
 CREATE TABLE Users (
-    user_id     INT IDENTITY(1,1) PRIMARY KEY,
-    username    VARCHAR(100) NOT NULL UNIQUE,
-    email       VARCHAR(200) NOT NULL UNIQUE,
+    user_id       INT IDENTITY(1,1) PRIMARY KEY,
+    username      VARCHAR(100) NOT NULL UNIQUE,
+    email         VARCHAR(200) NOT NULL UNIQUE,
     password_hash VARCHAR(500) NULL,
-    full_name   VARCHAR(200) NULL,
-    phone       VARCHAR(50)  NULL,
-    role_id     INT NOT NULL,
-    is_active   BIT NOT NULL DEFAULT 1,
-    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    full_name     VARCHAR(200) NULL,
+    phone         VARCHAR(50)  NULL,
+    role_id       INT NOT NULL,
+    is_active     BIT NOT NULL DEFAULT 1,
+    created_at    DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     CONSTRAINT FK_Users_Roles FOREIGN KEY (role_id) REFERENCES Roles(role_id)
 );
 GO
@@ -60,28 +57,21 @@ GO
 -- 2️⃣ PATIENT MANAGEMENT
 -- ======================================================
 IF OBJECT_ID('dbo.PatientFiles','U') IS NOT NULL DROP TABLE dbo.PatientFiles;
-IF OBJECT_ID('dbo.Patients','U')     IS NOT NULL DROP TABLE dbo.Patients;
+IF OBJECT_ID('dbo.Patients','U') IS NOT NULL DROP TABLE dbo.Patients;
 GO
 
 CREATE TABLE Patients (
     patient_id  INT IDENTITY(1,1) PRIMARY KEY,
     full_name   VARCHAR(200) NOT NULL,
     birth_date  DATE NULL,
-    gender      CHAR(1) NULL,                    -- M/F/O
+    gender      CHAR(1) NULL CHECK (gender IN ('M','F','O')),
     phone       VARCHAR(50) NULL,
     email       VARCHAR(150) NULL,
     address     VARCHAR(300) NULL,
     created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-    user_id     INT NULL,
-    CONSTRAINT FK_Patients_Users FOREIGN KEY (user_id) REFERENCES Users(user_id),
-    CONSTRAINT CK_Patients_Gender CHECK (gender IS NULL OR gender IN ('M','F','O'))
+    user_id     INT NULL UNIQUE,
+    CONSTRAINT FK_Patients_Users FOREIGN KEY (user_id) REFERENCES Users(user_id)
 );
-GO
-
--- Create filtered unique index for user_id (only applies to non-null values)
-CREATE UNIQUE INDEX IX_Patients_UserID_NotNull
-ON Patients(user_id)
-WHERE user_id IS NOT NULL;
 GO
 
 CREATE TABLE PatientFiles (
@@ -96,66 +86,50 @@ GO
 -- ======================================================
 -- 3️⃣ APPOINTMENT & QUEUE
 -- ======================================================
-IF OBJECT_ID('dbo.WaitingQueue','U')   IS NOT NULL DROP TABLE dbo.WaitingQueue;
-IF OBJECT_ID('dbo.Appointments','U')   IS NOT NULL DROP TABLE dbo.Appointments;
-IF OBJECT_ID('dbo.Services','U')       IS NOT NULL DROP TABLE dbo.Services;
+IF OBJECT_ID('dbo.WaitingQueue','U') IS NOT NULL DROP TABLE dbo.WaitingQueue;
+IF OBJECT_ID('dbo.Appointments','U') IS NOT NULL DROP TABLE dbo.Appointments;
+IF OBJECT_ID('dbo.Services','U') IS NOT NULL DROP TABLE dbo.Services;
 GO
 
 CREATE TABLE Services (
     service_id        INT IDENTITY(1,1) PRIMARY KEY,
-    name              VARCHAR(150) NOT NULL,
+    name              VARCHAR(150) NOT NULL UNIQUE,
     description       NVARCHAR(500) NULL,
-    price             DECIMAL(18,2) NOT NULL,
-    duration_minutes  INT NULL,
-    is_active         BIT NOT NULL DEFAULT 1,
-    CONSTRAINT CK_Services_Price CHECK (price >= 0),
-    CONSTRAINT CK_Services_Duration CHECK (duration_minutes IS NULL OR duration_minutes > 0)
+    price             DECIMAL(18,2) NOT NULL CHECK (price >= 0),
+    duration_minutes  INT NULL CHECK (duration_minutes > 0),
+    is_active         BIT NOT NULL DEFAULT 1
 );
-GO
-CREATE UNIQUE INDEX UX_Services_Name ON Services(name);
 GO
 
 CREATE TABLE Appointments (
     appointment_id    INT IDENTITY(1,1) PRIMARY KEY,
     patient_id        INT NOT NULL,
-    dentist_id        INT  NOT NULL,
-    service_id        INT  NOT NULL,
+    dentist_id        INT NOT NULL,
+    service_id        INT NOT NULL,
     appointment_date  DATETIME2 NOT NULL,
-    status            VARCHAR(50) NOT NULL DEFAULT 'SCHEDULED',
+    status            VARCHAR(50) NOT NULL DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED','CONFIRMED','COMPLETED','CANCELLED')),
     notes             NVARCHAR(500) NULL,
     created_at        DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-
-    -- 🔹 NEW FIXED COLUMN
-    source            VARCHAR(20) NOT NULL DEFAULT 'INTERNAL',   -- INTERNAL / ONLINE
-
-    booking_channel   VARCHAR(20) NULL,                          -- WEB / MOBILE / KIOSK
+    source            VARCHAR(20) NOT NULL DEFAULT 'INTERNAL' CHECK (source IN ('INTERNAL','ONLINE')),
+    booking_channel   VARCHAR(20) NULL CHECK (booking_channel IN ('WEB','MOBILE','KIOSK')),
     created_by_patient_id INT NULL,
     created_by_user_id    INT NULL,
     confirmation_code VARCHAR(10) NULL,
     confirmed_at      DATETIME2 NULL,
-
     CONSTRAINT FK_Appointments_Patient FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
     CONSTRAINT FK_Appointments_Dentist FOREIGN KEY (dentist_id) REFERENCES Users(user_id),
     CONSTRAINT FK_Appointments_Service FOREIGN KEY (service_id) REFERENCES Services(service_id),
     CONSTRAINT FK_Appointments_CreatedByPatient FOREIGN KEY (created_by_patient_id) REFERENCES Patients(patient_id),
-    CONSTRAINT FK_Appointments_CreatedByUser FOREIGN KEY (created_by_user_id) REFERENCES Users(user_id),
-    CONSTRAINT CK_Appointments_Status CHECK (status IN ('SCHEDULED','CONFIRMED','COMPLETED','CANCELLED')),
-    CONSTRAINT CK_Appointments_Source CHECK (source IN ('INTERNAL','ONLINE')),
-    CONSTRAINT CK_Appointments_BookingChannel CHECK (booking_channel IS NULL OR booking_channel IN ('WEB','MOBILE','KIOSK'))
+    CONSTRAINT FK_Appointments_CreatedByUser FOREIGN KEY (created_by_user_id) REFERENCES Users(user_id)
 );
-GO
-
-CREATE INDEX IX_Appointments_PatientDate ON Appointments(patient_id, appointment_date);
-CREATE INDEX IX_Appointments_DentistDate ON Appointments(dentist_id, appointment_date);
 GO
 
 CREATE TABLE WaitingQueue (
     queue_id          INT IDENTITY(1,1) PRIMARY KEY,
     appointment_id    INT NOT NULL UNIQUE,
     position_in_queue INT NULL,
-    status            VARCHAR(50) NOT NULL DEFAULT 'WAITING', -- WAITING / CHECKED_IN / CALLED / IN_TREATMENT / COMPLETED / NO_SHOW
-    CONSTRAINT FK_WaitingQueue_Appointments FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id),
-    CONSTRAINT CK_WaitingQueue_Status CHECK (status IN ('WAITING','CHECKED_IN','CALLED','IN_TREATMENT','COMPLETED','NO_SHOW'))
+    status            VARCHAR(50) NOT NULL DEFAULT 'WAITING' CHECK (status IN ('WAITING','CHECKED_IN','CALLED','IN_TREATMENT','COMPLETED','NO_SHOW')),
+    CONSTRAINT FK_WaitingQueue_Appointments FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id)
 );
 GO
 
@@ -163,11 +137,11 @@ GO
 -- 4️⃣ MEDICAL RECORDS & TREATMENT
 -- ======================================================
 IF OBJECT_ID('dbo.PrescriptionItems','U') IS NOT NULL DROP TABLE dbo.PrescriptionItems;
-IF OBJECT_ID('dbo.Prescriptions','U')     IS NOT NULL DROP TABLE dbo.Prescriptions;
+IF OBJECT_ID('dbo.Prescriptions','U') IS NOT NULL DROP TABLE dbo.Prescriptions;
 IF OBJECT_ID('dbo.TreatmentSessions','U') IS NOT NULL DROP TABLE dbo.TreatmentSessions;
-IF OBJECT_ID('dbo.TreatmentPlans','U')    IS NOT NULL DROP TABLE dbo.TreatmentPlans;
-IF OBJECT_ID('dbo.Examinations','U')      IS NOT NULL DROP TABLE dbo.Examinations;
-IF OBJECT_ID('dbo.MedicalRecords','U')    IS NOT NULL DROP TABLE dbo.MedicalRecords;
+IF OBJECT_ID('dbo.TreatmentPlans','U') IS NOT NULL DROP TABLE dbo.TreatmentPlans;
+IF OBJECT_ID('dbo.Examinations','U') IS NOT NULL DROP TABLE dbo.Examinations;
+IF OBJECT_ID('dbo.MedicalRecords','U') IS NOT NULL DROP TABLE dbo.MedicalRecords;
 GO
 
 CREATE TABLE MedicalRecords (
@@ -195,10 +169,9 @@ CREATE TABLE TreatmentPlans (
     plan_id         INT IDENTITY(1,1) PRIMARY KEY,
     record_id       INT NOT NULL,
     plan_summary    NVARCHAR(MAX) NULL,
-    estimated_cost  DECIMAL(18,2) NULL,
+    estimated_cost  DECIMAL(18,2) NULL CHECK (estimated_cost >= 0),
     created_at      DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-    CONSTRAINT FK_TreatmentPlans_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id),
-    CONSTRAINT CK_TreatmentPlans_Cost CHECK (estimated_cost IS NULL OR estimated_cost >= 0)
+    CONSTRAINT FK_TreatmentPlans_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id)
 );
 GO
 
@@ -207,9 +180,8 @@ CREATE TABLE TreatmentSessions (
     plan_id         INT NOT NULL,
     session_date    DATETIME2 NOT NULL,
     procedure_done  NVARCHAR(500) NULL,
-    session_cost    DECIMAL(18,2) NULL,
-    CONSTRAINT FK_TreatmentSessions_Plan FOREIGN KEY (plan_id) REFERENCES TreatmentPlans(plan_id),
-    CONSTRAINT CK_TreatmentSessions_Cost CHECK (session_cost IS NULL OR session_cost >= 0)
+    session_cost    DECIMAL(18,2) NULL CHECK (session_cost >= 0),
+    CONSTRAINT FK_TreatmentSessions_Plan FOREIGN KEY (plan_id) REFERENCES TreatmentPlans(plan_id)
 );
 GO
 
@@ -239,42 +211,37 @@ GO
 -- 5️⃣ INVENTORY MANAGEMENT
 -- ======================================================
 IF OBJECT_ID('dbo.StockTransactions','U') IS NOT NULL DROP TABLE dbo.StockTransactions;
-IF OBJECT_ID('dbo.InventoryItems','U')   IS NOT NULL DROP TABLE dbo.InventoryItems;
+IF OBJECT_ID('dbo.InventoryItems','U') IS NOT NULL DROP TABLE dbo.InventoryItems;
 GO
 
 CREATE TABLE InventoryItems (
     item_id     INT IDENTITY(1,1) PRIMARY KEY,
-    name        VARCHAR(200) NOT NULL,
+    name        VARCHAR(200) NOT NULL UNIQUE,
     unit        VARCHAR(50) NULL,
-    quantity    INT NOT NULL DEFAULT 0,
-    min_stock   INT NOT NULL DEFAULT 0,
-    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-    CONSTRAINT CK_Inventory_Positive CHECK (quantity >= 0 AND min_stock >= 0)
+    quantity    INT NOT NULL DEFAULT 0 CHECK (quantity >= 0),
+    min_stock   INT NOT NULL DEFAULT 0 CHECK (min_stock >= 0),
+    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
 );
-GO
-CREATE UNIQUE INDEX UX_InventoryItems_Name ON InventoryItems(name);
 GO
 
 CREATE TABLE StockTransactions (
     transaction_id   INT IDENTITY(1,1) PRIMARY KEY,
     item_id          INT NOT NULL,
-    transaction_type VARCHAR(20) NOT NULL, -- IN / OUT
-    quantity         INT NOT NULL,
+    transaction_type VARCHAR(20) NOT NULL CHECK (transaction_type IN ('IN','OUT')),
+    quantity         INT NOT NULL CHECK (quantity > 0),
     performed_by     INT NULL,
     performed_at     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     CONSTRAINT FK_StockTransactions_Item FOREIGN KEY (item_id) REFERENCES InventoryItems(item_id),
-    CONSTRAINT FK_StockTransactions_User FOREIGN KEY (performed_by) REFERENCES Users(user_id),
-    CONSTRAINT CK_StockTransactions_Type CHECK (transaction_type IN ('IN','OUT')),
-    CONSTRAINT CK_StockTransactions_Qty CHECK (quantity > 0)
+    CONSTRAINT FK_StockTransactions_User FOREIGN KEY (performed_by) REFERENCES Users(user_id)
 );
 GO
 
 -- ======================================================
 -- 6️⃣ BILLING & PAYMENT
 -- ======================================================
-IF OBJECT_ID('dbo.Payments','U')     IS NOT NULL DROP TABLE dbo.Payments;
+IF OBJECT_ID('dbo.Payments','U') IS NOT NULL DROP TABLE dbo.Payments;
 IF OBJECT_ID('dbo.InvoiceItems','U') IS NOT NULL DROP TABLE dbo.InvoiceItems;
-IF OBJECT_ID('dbo.Invoices','U')     IS NOT NULL DROP TABLE dbo.Invoices;
+IF OBJECT_ID('dbo.Invoices','U') IS NOT NULL DROP TABLE dbo.Invoices;
 GO
 
 CREATE TABLE Invoices (
@@ -314,283 +281,105 @@ CREATE TABLE Payments (
 GO
 
 -- ======================================================
--- 1️⃣bis Doctor Schedule
+-- 7️⃣ ADDITIONAL MODULES (NEW)
 -- ======================================================
-IF OBJECT_ID('dbo.DoctorSchedules','U') IS NOT NULL DROP TABLE dbo.DoctorSchedules;
+-- ScheduleRequests
+IF OBJECT_ID('dbo.ScheduleRequests','U') IS NOT NULL DROP TABLE dbo.ScheduleRequests;
 GO
-CREATE TABLE DoctorSchedules (
-    schedule_id INT IDENTITY(1,1) PRIMARY KEY,
-    doctor_id   INT NOT NULL,
-    work_date   DATE NOT NULL,
-    shift       VARCHAR(50) NOT NULL,
-    start_time  TIME  NULL,
-    end_time    TIME  NULL,
-    room_no     VARCHAR(50) NULL,
-    notes       NVARCHAR(300) NULL,
-    status      VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
-    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-    CONSTRAINT FK_DoctorSchedules_Doctor FOREIGN KEY (doctor_id) REFERENCES Users(user_id)
+CREATE TABLE ScheduleRequests (
+    request_id   INT IDENTITY(1,1) PRIMARY KEY,
+    employee_id  INT NOT NULL,
+    date         DATE NOT NULL,
+    shift        VARCHAR(50) NOT NULL CHECK (shift IN ('Morning','Afternoon','FullDay')),
+    reason       NVARCHAR(500) NULL,
+    status       VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','APPROVED','REJECTED')),
+    created_at   DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    reviewed_by  INT NULL,
+    reviewed_at  DATETIME2 NULL,
+    CONSTRAINT FK_ScheduleRequests_Employee FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+    CONSTRAINT FK_ScheduleRequests_Reviewer FOREIGN KEY (reviewed_by) REFERENCES Users(user_id)
+);
+GO
+
+-- SystemConfigs
+IF OBJECT_ID('dbo.SystemConfigs','U') IS NOT NULL DROP TABLE dbo.SystemConfigs;
+GO
+CREATE TABLE SystemConfigs (
+    config_id    INT IDENTITY(1,1) PRIMARY KEY,
+    config_key   VARCHAR(100) NOT NULL UNIQUE,
+    config_value NVARCHAR(MAX) NULL,
+    updated_at   DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    updated_by   INT NULL,
+    CONSTRAINT FK_SystemConfigs_UpdatedBy FOREIGN KEY (updated_by) REFERENCES Users(user_id)
+);
+GO
+
+-- PatientImages
+IF OBJECT_ID('dbo.PatientImages','U') IS NOT NULL DROP TABLE dbo.PatientImages;
+GO
+CREATE TABLE PatientImages (
+    image_id     INT IDENTITY(1,1) PRIMARY KEY,
+    patient_id   INT NOT NULL,
+    record_id    INT NULL,
+    file_path    NVARCHAR(500) NOT NULL,
+    image_type   VARCHAR(50) NOT NULL DEFAULT 'OTHER' CHECK (image_type IN ('X-RAY','BEFORE','AFTER','OTHER')),
+    uploaded_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    uploaded_by  INT NULL,
+    CONSTRAINT FK_PatientImages_Patient FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT FK_PatientImages_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id),
+    CONSTRAINT FK_PatientImages_Uploader FOREIGN KEY (uploaded_by) REFERENCES Users(user_id)
 );
 GO
 
 -- ======================================================
--- 3️⃣bis Appointment Requests (Online)
--- ======================================================
-IF OBJECT_ID('dbo.AppointmentRequests','U') IS NOT NULL DROP TABLE dbo.AppointmentRequests;
-GO
-CREATE TABLE AppointmentRequests (
-    request_id          INT IDENTITY(1,1) PRIMARY KEY,
-    patient_id          INT NULL,
-    full_name           VARCHAR(200) NULL,
-    phone               VARCHAR(50) NULL,
-    email               VARCHAR(150) NULL,
-    service_id          INT NULL,
-    preferred_doctor_id INT NULL,
-    preferred_date      DATE NOT NULL,
-    preferred_shift     VARCHAR(50) NULL,
-    notes               NVARCHAR(500) NULL,
-    status              VARCHAR(20) NOT NULL DEFAULT 'PENDING',
-    otp_code            VARCHAR(10) NULL,
-    otp_expires_at      DATETIME2 NULL,
-    created_at          DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
-    confirmed_at        DATETIME2 NULL,
-    CONSTRAINT FK_Req_Service   FOREIGN KEY (service_id) REFERENCES Services(service_id),
-    CONSTRAINT FK_Req_Doctor    FOREIGN KEY (preferred_doctor_id) REFERENCES Users(user_id),
-    CONSTRAINT FK_Req_Patient   FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
-);
-GO
-
--- ======================================================
--- 🔒 TRIGGER chống trùng giờ
--- ======================================================
-IF OBJECT_ID('dbo.TR_Appointments_NoOverlap','TR') IS NOT NULL
-    DROP TRIGGER dbo.TR_Appointments_NoOverlap;
-GO
-CREATE TRIGGER TR_Appointments_NoOverlap
-ON Appointments
-AFTER INSERT, UPDATE
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    ;WITH ap AS (
-        SELECT i.appointment_id, i.dentist_id, i.service_id,
-               i.appointment_date AS a_start,
-               DATEADD(MINUTE, ISNULL(s.duration_minutes,30), i.appointment_date) AS a_end
-        FROM inserted i
-        LEFT JOIN Services s ON s.service_id = i.service_id
-        WHERE i.dentist_id IS NOT NULL
-    )
-    IF EXISTS (
-        SELECT 1
-        FROM ap a
-        JOIN Appointments x
-          ON x.dentist_id = a.dentist_id
-         AND x.appointment_id <> a.appointment_id
-         AND x.status IN ('SCHEDULED','CONFIRMED')
-        LEFT JOIN Services sx ON sx.service_id = x.service_id
-        CROSS APPLY (
-            SELECT x.appointment_date AS x_start,
-                   DATEADD(MINUTE, ISNULL(sx.duration_minutes,30), x.appointment_date) AS x_end
-        ) t
-        WHERE a.a_start < t.x_end
-          AND a.a_end   > t.x_start
-    )
-    BEGIN
-        RAISERROR (N'Lịch hẹn trùng giờ của bác sĩ.', 16, 1);
-        ROLLBACK TRANSACTION;
-        RETURN;
-    END
-END;
-GO
-
--- ======================================================
--- 7️⃣ SEED DATA - UPDATED WITH ALL CHANGES
+-- 8️⃣ SEED DATA
 -- ======================================================
 TRUNCATE TABLE Roles;
 TRUNCATE TABLE Users;
 TRUNCATE TABLE Employees;
-TRUNCATE TABLE DoctorSchedules;
 
--- Insert roles
 INSERT INTO Roles (role_name)
 VALUES ('Administrator'), ('ClinicManager'), ('Dentist'), ('Receptionist'), ('Patient');
+GO
 
--- Insert users with proper role assignments
 INSERT INTO Users (username, email, password_hash, full_name, phone, role_id)
-VALUES 
-('admin','admin@clinic.com','HASHED_PASSWORD','System Admin','0900000000',1),
-('dr.john','john@clinic.com','HASHED_PASSWORD','Dr. John Doe','0911111111',3),
-('reception1','recp@clinic.com','HASHED_PASSWORD','Reception Staff','0922222222',4),
-('dentist','dinhquocsang20013@gmail.com','HASHED_PASSWORD','Đinh Quốc Sang','0978366236',3);
-
--- Insert employees linked to users
-INSERT INTO Employees (user_id, position, hire_date)
-SELECT u.user_id, r.role_name, CAST(SYSUTCDATETIME() AS DATE)
-FROM Users u
-JOIN Roles r ON u.role_id = r.role_id
-WHERE r.role_name IN ('Dentist', 'Receptionist', 'ClinicManager');
+VALUES
 ('admin','admin@clinic.com','1','System Admin','0900000000',1),
 ('dr.john','john@clinic.com','1','Dr. John Doe','0911111111',3),
 ('reception1','recp@clinic.com','1','Reception Staff','0922222222',4);
 GO
 
--- Insert sample doctor schedules for testing
-DECLARE @drJohnId INT = (SELECT user_id FROM Users WHERE username='dr.john');
-DECLARE @dentistId INT = (SELECT user_id FROM Users WHERE username='dentist');
-
--- Sample schedules for Dr. John Doe
-INSERT INTO DoctorSchedules(doctor_id, work_date, shift, start_time, end_time, room_no, status)
-VALUES
-(@drJohnId, '2025-10-20', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
-(@drJohnId, '2025-10-20', 'Chiều (13:00-18:00)', '13:00:00', '18:00:00', 'P001', 'ACTIVE'),
-(@drJohnId, '2025-10-21', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
-(@drJohnId, '2025-10-21', 'Chiều (13:00-18:00)', '13:00:00', '18:00:00', 'P001', 'ACTIVE'),
-(@drJohnId, '2025-10-22', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
-(@drJohnId, '2025-10-23', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
-(@drJohnId, '2025-10-24', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
-(@drJohnId, '2025-10-25', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE'),
-(@drJohnId, '2025-10-26', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P001', 'ACTIVE');
-
--- Sample schedules for Đinh Quốc Sang
-INSERT INTO DoctorSchedules(doctor_id, work_date, shift, start_time, end_time, room_no, status)
-VALUES
-(@dentistId, '2025-10-20', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
-(@dentistId, '2025-10-20', 'Chiều (13:00-18:00)', '13:00:00', '18:00:00', 'P002', 'ACTIVE'),
-(@dentistId, '2025-10-21', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
-(@dentistId, '2025-10-21', 'Chiều (13:00-18:00)', '13:00:00', '18:00:00', 'P002', 'ACTIVE'),
-(@dentistId, '2025-10-22', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
-(@dentistId, '2025-10-23', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
-(@dentistId, '2025-10-24', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
-(@dentistId, '2025-10-25', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE'),
-(@dentistId, '2025-10-26', 'Sáng (7:00-12:00)', '07:00:00', '12:00:00', 'P002', 'ACTIVE');
-
--- Insert sample services
-INSERT INTO Services (name, description, price, duration_minutes, is_active)
-VALUES
-('Khám tổng quát', 'Khám răng tổng quát và tư vấn', 200000, 30, 1),
-('Cạo vôi răng', 'Làm sạch vôi răng và cao răng', 300000, 45, 1),
-('Trám răng', 'Trám răng sâu bằng composite', 400000, 60, 1),
-('Nhổ răng', 'Nhổ răng khôn hoặc răng sâu', 500000, 30, 1),
-('Niềng răng', 'Điều trị chỉnh nha', 5000000, 120, 1);
-
--- Insert sample patients
-INSERT INTO Patients (full_name, birth_date, gender, phone, email, address, user_id)
-VALUES
-('Nguyễn Văn A', '1990-01-15', 'M', '0987654321', 'nguyenvana@email.com', '123 Đường ABC, Quận 1, TP.HCM', NULL),
-('Trần Thị B', '1985-05-20', 'F', '0987654322', 'tranthib@email.com', '456 Đường XYZ, Quận 2, TP.HCM', NULL),
-('Lê Văn C', '1992-08-10', 'M', '0987654323', 'levanc@email.com', '789 Đường DEF, Quận 3, TP.HCM', NULL);
-
-GO
-
--- ======================================================
--- ✅ 8. DOCTOR SCHEDULES SCHEMA IMPROVEMENTS
--- ======================================================
-
--- 8.1 Tránh trùng ca (Unique Index)
-IF NOT EXISTS (
-    SELECT 1 FROM sys.indexes
-    WHERE name = 'UQ_DoctorSchedules_DoctorDateShift'
-      AND object_id = OBJECT_ID('DoctorSchedules')
-)
+DECLARE @docId INT = (SELECT user_id FROM Users WHERE username='dr.john');
+IF NOT EXISTS (SELECT 1 FROM DoctorSchedules WHERE doctor_id=@docId AND work_date=CAST(SYSUTCDATETIME() AS DATE))
 BEGIN
-    CREATE UNIQUE INDEX UQ_DoctorSchedules_DoctorDateShift
-    ON DoctorSchedules (doctor_id, work_date, shift)
-    WHERE status <> 'CANCELLED';
+    INSERT INTO DoctorSchedules(doctor_id, work_date, shift, start_time, end_time, room_no, status)
+    VALUES
+    (@docId, CAST(SYSUTCDATETIME() AS DATE), 'Morning', '08:00', '12:00', 'R1', 'ACTIVE'),
+    (@docId, CAST(SYSUTCDATETIME() AS DATE), 'Afternoon', '13:00', '17:00', 'R1', 'ACTIVE');
 END
 GO
 
--- 8.2 Ghi chú cho từng ca (tùy chọn) - Already exists as 'notes'
--- Note: Column 'notes' already exists in DoctorSchedules table
-
--- 8.3 Chỉ số truy vấn nhanh (Indexes for performance)
-
--- 8.3.1 Index theo ngày + ca + trạng thái
-IF NOT EXISTS (
-    SELECT 1 FROM sys.indexes
-    WHERE name = 'IX_DoctorSchedules_DateShift'
-      AND object_id = OBJECT_ID('DoctorSchedules')
-)
-BEGIN
-    CREATE INDEX IX_DoctorSchedules_DateShift
-    ON DoctorSchedules (work_date, shift, status);
-END
-GO
-
--- 8.3.2 Index theo bác sĩ + ngày
-IF NOT EXISTS (
-    SELECT 1 FROM sys.indexes
-    WHERE name = 'IX_DoctorSchedules_DoctorDate'
-      AND object_id = OBJECT_ID('DoctorSchedules')
-)
-BEGIN
-    CREATE INDEX IX_DoctorSchedules_DoctorDate
-    ON DoctorSchedules (doctor_id, work_date);
-END
-GO
 INSERT INTO InventoryItems(name, unit, quantity, min_stock)
 VALUES
 ('Gloves (box)', 'box', 50, 10),
 ('Masks (box)',  'box', 40, 10),
 ('Mouthwash',    'bottle', 20, 5);
 GO
+
 INSERT INTO Services(name, description, price, duration_minutes, is_active) VALUES
 ('Oral Examination', 'General oral health check', 100000, 20, 1),
 ('Teeth Cleaning', 'Scaling and polishing',       300000, 40, 1),
 ('Filling',        'Composite filling',           500000, 45, 1),
 ('Root Canal',     'Endodontic treatment',       1500000, 90, 1);
 GO
-PRINT '✅ DentalClinicDB_MVP schema created successfully.';
 
--- 8.4 Ràng buộc giờ hợp lệ (CHECK constraint)
-IF NOT EXISTS (
-    SELECT 1 FROM sys.check_constraints
-    WHERE name = 'CK_DoctorSchedules_Time'
-      AND parent_object_id = OBJECT_ID('DoctorSchedules')
-)
-BEGIN
-    ALTER TABLE DoctorSchedules
-    ADD CONSTRAINT CK_DoctorSchedules_Time CHECK (start_time < end_time);
-END
+INSERT INTO SystemConfigs(config_key, config_value)
+VALUES
+('clinic_name', N'Nha khoa An Tâm'),
+('clinic_phone', '0901234567'),
+('clinic_email', 'contact@antamclinic.com'),
+('payment_methods', 'CASH,CARD,TRANSFER'),
+('logo_url', '/assets/logo.png');
 GO
 
--- 8.5 Index cho tìm kiếm theo trạng thái
-IF NOT EXISTS (
-    SELECT 1 FROM sys.indexes
-    WHERE name = 'IX_DoctorSchedules_Status'
-      AND object_id = OBJECT_ID('DoctorSchedules')
-)
-BEGIN
-    CREATE INDEX IX_DoctorSchedules_Status
-    ON DoctorSchedules (status, work_date);
-END
-GO
-
--- 8.6 Index cho tìm kiếm theo phòng
-IF NOT EXISTS (
-    SELECT 1 FROM sys.indexes
-    WHERE name = 'IX_DoctorSchedules_Room'
-      AND object_id = OBJECT_ID('DoctorSchedules')
-)
-BEGIN
-    CREATE INDEX IX_DoctorSchedules_Room
-    ON DoctorSchedules (room_no, work_date);
-END
-GO
-
-PRINT '✅ DentalClinicDB_MVP schema created successfully with all updates.';
-PRINT '📊 Database includes:';
-PRINT '   - User & Role Management (Administrator, Dentist, Receptionist)';
-PRINT '   - Employee Management with work schedules';
-PRINT '   - Doctor Schedule Management with weekly assignments';
-PRINT '   - Sample data for testing all features';
-PRINT '   - Responsive UI improvements for schedule display';
-PRINT '   - Performance indexes for fast queries';
-PRINT '   - Data integrity constraints';
-PRINT '   - Unique constraints to prevent duplicate schedules';
-
-
-
-
-
-
+PRINT '✅ DentalClinicDB_MVP full schema (no trigger) created successfully.';
