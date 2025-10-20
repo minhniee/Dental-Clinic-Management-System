@@ -70,6 +70,9 @@ public class PatientServlet extends HttpServlet {
                 case "search":
                     handleSearchPatients(request, response);
                     break;
+                case "quick_appointment":
+                    handleQuickAppointment(request, response);
+                    break;
                 default:
                     handleListPatients(request, response);
                     break;
@@ -228,6 +231,23 @@ public class PatientServlet extends HttpServlet {
     private void handleNewPatient(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        // Check if we're searching for existing patient
+        String phone = request.getParameter("phone");
+        String searchAction = request.getParameter("searchAction");
+        
+        if ("search".equals(searchAction) && phone != null && !phone.trim().isEmpty()) {
+            // Search for existing patient by phone
+            Patient existingPatient = PatientMDAO.getPatientByPhone(phone.trim());
+            if (existingPatient != null) {
+                request.setAttribute("existingPatient", existingPatient);
+                request.setAttribute("searchPhone", phone.trim());
+                request.setAttribute("showExistingPatient", true);
+            } else {
+                request.setAttribute("noPatientFound", true);
+                request.setAttribute("searchPhone", phone.trim());
+            }
+        }
+        
         request.setAttribute("action", "create");
         request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
     }
@@ -236,6 +256,35 @@ public class PatientServlet extends HttpServlet {
             throws ServletException, IOException {
         
         handleListPatients(request, response);
+    }
+
+    private void handleQuickAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        String patientIdParam = request.getParameter("patientId");
+        if (patientIdParam == null || patientIdParam.isEmpty()) {
+            request.setAttribute("errorMessage", "Patient ID is required");
+            handleNewPatient(request, response);
+            return;
+        }
+        
+        try {
+            int patientId = Integer.parseInt(patientIdParam);
+            Patient patient = PatientMDAO.getPatientById(patientId);
+            
+            if (patient == null) {
+                request.setAttribute("errorMessage", "Patient not found");
+                handleNewPatient(request, response);
+                return;
+            }
+            
+            // Redirect to appointment creation with pre-selected patient
+            response.sendRedirect(request.getContextPath() + "/receptionist/appointments?action=new&patientId=" + patientId);
+            
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMessage", "Invalid patient ID");
+            handleNewPatient(request, response);
+        }
     }
 
     private void handleCreatePatient(HttpServletRequest request, HttpServletResponse response)

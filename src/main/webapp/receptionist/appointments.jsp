@@ -362,6 +362,11 @@
                                                         </c:when>
                                                         <c:when test="${appointment.status eq 'CONFIRMED'}">
                                                             <span class="status-badge status-confirmed">Đã xác nhận</span>
+                                                            <c:if test="${not empty appointment.confirmationCode}">
+                                                                <br><small style="color: #64748b; font-size: 0.75rem;">
+                                                                    Mã: ${appointment.confirmationCode}
+                                                                </small>
+                                                            </c:if>
                                                         </c:when>
                                                         <c:when test="${appointment.status eq 'COMPLETED'}">
                                                             <span class="status-badge status-completed">Hoàn thành</span>
@@ -400,13 +405,35 @@
                                                            Cập nhật
                                                             <i class="fas fa-edit"></i>
                                                         </a>
-                                                        <c:if test="${appointment.status ne 'COMPLETED' and appointment.status ne 'CANCELLED'}">
+                                                        <c:if test="${appointment.status eq 'SCHEDULED'}">
+                                                            <form method="POST" action="${pageContext.request.contextPath}/receptionist/appointments" style="display: inline;">
+                                                                <input type="hidden" name="action" value="confirm">
+                                                                <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
+                                                                <button type="submit" class="btn btn-primary btn-sm">
+                                                                    <i class="fas fa-check-circle"></i> Xác nhận
+                                                                </button>
+                                                            </form>
+                                                        </c:if>
+                                                        
+                                                        <c:if test="${appointment.status eq 'CONFIRMED'}">
                                                             <form method="POST" action="${pageContext.request.contextPath}/receptionist/appointments" style="display: inline;">
                                                                 <input type="hidden" name="action" value="update_status">
                                                                 <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
                                                                 <input type="hidden" name="status" value="COMPLETED">
                                                                 <button type="submit" class="btn btn-primary btn-sm">
                                                                     <i class="fas fa-check"></i> Hoàn thành
+                                                                </button>
+                                                            </form>
+                                                        </c:if>
+                                                        
+                                                        <c:if test="${appointment.status ne 'COMPLETED' and appointment.status ne 'CANCELLED'}">
+                                                            <form method="POST" action="${pageContext.request.contextPath}/receptionist/appointments" style="display: inline;">
+                                                                <input type="hidden" name="action" value="update_status">
+                                                                <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
+                                                                <input type="hidden" name="status" value="CANCELLED">
+                                                                <button type="submit" class="btn btn-secondary btn-sm"
+                                                                        onclick="return confirm('Bạn có chắc chắn muốn hủy lịch hẹn này?')">
+                                                                    <i class="fas fa-times"></i> Hủy
                                                                 </button>
                                                             </form>
                                                         </c:if>
