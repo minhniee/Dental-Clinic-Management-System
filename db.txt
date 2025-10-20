@@ -231,6 +231,7 @@ CREATE TABLE StockTransactions (
     quantity         INT NOT NULL CHECK (quantity > 0),
     performed_by     INT NULL,
     performed_at     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    notes            NVARCHAR(500) NULL,
     CONSTRAINT FK_StockTransactions_Item FOREIGN KEY (item_id) REFERENCES InventoryItems(item_id),
     CONSTRAINT FK_StockTransactions_User FOREIGN KEY (performed_by) REFERENCES Users(user_id)
 );

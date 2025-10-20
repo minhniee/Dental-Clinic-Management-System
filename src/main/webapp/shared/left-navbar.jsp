@@ -29,7 +29,8 @@
                 <li><a href="${ctx}/admin/services">Dịch Vụ</a></li>
                 <li><a href="${ctx}/admin/pricing">Giá Cả</a></li>
                 <li><a href="${ctx}/admin/promotions">Khuyến Mãi</a></li>
-                <li><a href="${ctx}/admin/inventory">Tồn Kho</a></li>
+                <li><a href="${ctx}/admin/inventory">📦 Quản Lý Kho</a></li>
+                <li><a href="${ctx}/admin/stock-transactions">📊 Giao Dịch Kho</a></li>
                 <li><a href="${ctx}/admin/analytics">Phân Tích</a></li>
                 <li class="divider"></li>
                 <li><a href="${ctx}/admin/reports/financial">Báo Cáo Tài Chính</a></li>
@@ -48,7 +49,8 @@
                 <li><a href="${ctx}/manager/queue">Hàng Chờ</a></li>
                 <li><a href="${ctx}/manager/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
                 <li><a href="${ctx}/manager/invoices">Hóa Đơn</a></li>
-                <li><a href="${ctx}/manager/inventory">Tồn Kho</a></li>
+                <li><a href="${ctx}/admin/inventory">📦 Quản Lý Kho</a></li>
+                <li><a href="${ctx}/admin/stock-transactions">📊 Giao Dịch Kho</a></li>
                 <li><a href="${ctx}/manager/feedback">Phản Hồi</a></li>
                 <li><a href="${ctx}/manager/analytics">Phân Tích</a></li>
                 <li class="divider"></li>

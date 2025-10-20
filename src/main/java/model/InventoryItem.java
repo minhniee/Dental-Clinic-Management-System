@@ -10,18 +10,16 @@ public class InventoryItem {
     private int minStock;
     private LocalDateTime createdAt;
 
-    public InventoryItem() {
-    }
+    public InventoryItem() {}
 
-    public InventoryItem(int itemId, String name, String unit, int quantity, int minStock, LocalDateTime createdAt) {
-        this.itemId = itemId;
+    public InventoryItem(String name, String unit, int quantity, int minStock) {
         this.name = name;
         this.unit = unit;
         this.quantity = quantity;
         this.minStock = minStock;
-        this.createdAt = createdAt;
     }
 
+    // Getters and Setters
     public int getItemId() {
         return itemId;
     }
@@ -68,6 +66,30 @@ public class InventoryItem {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    // Helper methods
+    public boolean isLowStock() {
+        return quantity <= minStock;
+    }
+
+    public boolean isOutOfStock() {
+        return quantity == 0;
+    }
+
+    public int getStockStatus() {
+        if (quantity == 0) return 0; // Out of stock
+        if (quantity <= minStock) return 1; // Low stock
+        return 2; // Adequate stock
+    }
+
+    public String getStockStatusText() {
+        switch (getStockStatus()) {
+            case 0: return "Hết hàng";
+            case 1: return "Sắp hết";
+            case 2: return "Đủ hàng";
+            default: return "Không xác định";
+        }
     }
 
     @Override
