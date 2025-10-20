@@ -356,9 +356,7 @@ GO
 -- ======================================================
 -- 8️⃣ SEED DATA
 -- ======================================================
-TRUNCATE TABLE Roles;
-TRUNCATE TABLE Users;
-TRUNCATE TABLE Employees;
+
 
 INSERT INTO Roles (role_name)
 VALUES ('Administrator'), ('ClinicManager'), ('Dentist'), ('Receptionist'), ('Patient');
