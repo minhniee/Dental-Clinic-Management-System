@@ -3,9 +3,13 @@ package controller;
 import DAO.AppointmentRequestDAO;
 import DAO.DentistDAO;
 import DAO.ServiceDAO;
+import DAO.AppointmentDAO;
+import DAO.PatientDAO;
 import model.AppointmentRequest;
 import model.User;
 import model.Service;
+import model.Appointment;
+import model.Patient;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -28,6 +32,8 @@ public class OnlineAppointmentServlet extends HttpServlet {
     private AppointmentRequestDAO appointmentRequestDAO;
     private DentistDAO dentistDAO;
     private ServiceDAO serviceDAO;
+    private AppointmentDAO appointmentDAO;
+    private PatientDAO patientDAO;
 
     @Override
     public void init() throws ServletException {
@@ -35,6 +41,8 @@ public class OnlineAppointmentServlet extends HttpServlet {
         appointmentRequestDAO = new AppointmentRequestDAO();
         dentistDAO = new DentistDAO();
         serviceDAO = new ServiceDAO();
+        appointmentDAO = new AppointmentDAO();
+        patientDAO = new PatientDAO();
     }
 
     @Override
@@ -117,6 +125,21 @@ public class OnlineAppointmentServlet extends HttpServlet {
         try {
             // Get filter parameters
             String statusFilter = request.getParameter("status");
+            
+            // Handle success/error messages from redirect
+            String success = request.getParameter("success");
+            String error = request.getParameter("error");
+            
+            if ("confirmed".equals(success)) {
+                request.setAttribute("successMessage", "Appointment request confirmed and actual appointment created successfully");
+            } else if ("confirmed_with_error".equals(success)) {
+                request.setAttribute("successMessage", "Appointment request confirmed, but failed to create actual appointment: " + 
+                    (error != null ? error : "Unknown error"));
+            } else if ("updated".equals(success)) {
+                request.setAttribute("successMessage", "Status updated successfully");
+            } else if ("update_failed".equals(error)) {
+                request.setAttribute("errorMessage", "Failed to update status");
+            }
             
             List<AppointmentRequest> appointmentRequests;
             
@@ -219,18 +242,41 @@ public class OnlineAppointmentServlet extends HttpServlet {
             }
             
             int requestId = Integer.parseInt(requestIdStr);
-            boolean success = appointmentRequestDAO.updateRequestStatus(requestId, newStatus);
             
-            if (success) {
-                request.setAttribute("successMessage", "Status updated successfully");
-            } else {
-                request.setAttribute("errorMessage", "Failed to update status");
+            // Get the appointment request details
+            AppointmentRequest appointmentRequest = appointmentRequestDAO.getAppointmentRequestById(requestId);
+            if (appointmentRequest == null) {
+                request.setAttribute("errorMessage", "Appointment request not found");
+                handleListAppointmentRequests(request, response);
+                return;
             }
+            
+            // Update the request status
+            boolean success = appointmentRequestDAO.updateRequestStatus(requestId, newStatus);
             
             // Redirect back to list with filter
             String statusFilter = request.getParameter("statusFilter");
-            response.sendRedirect(request.getContextPath() + "/receptionist/online-appointments?status=" + 
-                (statusFilter != null ? statusFilter : ""));
+            String redirectUrl = request.getContextPath() + "/receptionist/online-appointments?status=" + 
+                (statusFilter != null ? statusFilter : "");
+            
+            if (success) {
+                // If confirming, create actual appointment
+                if ("CONFIRMED".equals(newStatus)) {
+                    try {
+                        createAppointmentFromRequest(appointmentRequest, request);
+                        redirectUrl += "&success=confirmed";
+                    } catch (Exception e) {
+                        logger.log(Level.WARNING, "Error creating appointment from request", e);
+                        redirectUrl += "&success=confirmed_with_error&error=" + java.net.URLEncoder.encode(e.getMessage(), "UTF-8");
+                    }
+                } else {
+                    redirectUrl += "&success=updated";
+                }
+            } else {
+                redirectUrl += "&error=update_failed";
+            }
+            
+            response.sendRedirect(redirectUrl);
             
         } catch (NumberFormatException e) {
             request.setAttribute("errorMessage", "Invalid request ID format");
@@ -239,5 +285,72 @@ public class OnlineAppointmentServlet extends HttpServlet {
             request.setAttribute("errorMessage", "Error updating status: " + e.getMessage());
             handleListAppointmentRequests(request, response);
         }
+    }
+    
+    private void createAppointmentFromRequest(AppointmentRequest request, HttpServletRequest httpRequest) throws Exception {
+        // First, ensure patient exists
+        Patient patient = null;
+        if (request.getPatientId() != null) {
+            patient = patientDAO.getPatientById(request.getPatientId());
+        }
+        
+        // If no patient ID or patient not found, create new patient
+        if (patient == null) {
+            patient = new Patient();
+            patient.setFullName(request.getFullName());
+            patient.setPhone(request.getPhone());
+            patient.setEmail(request.getEmail());
+            patient.setCreatedAt(java.time.LocalDateTime.now());
+            
+            boolean patientCreated = patientDAO.createPatient(patient);
+            if (!patientCreated) {
+                throw new Exception("Failed to create patient");
+            }
+            // Get the created patient ID - we need to find it by phone/email
+            Patient createdPatient = patientDAO.getPatientByPhone(request.getPhone());
+            if (createdPatient == null) {
+                throw new Exception("Failed to retrieve created patient");
+            }
+            patient.setPatientId(createdPatient.getPatientId());
+        }
+        
+        // Create appointment
+        Appointment appointment = new Appointment();
+        appointment.setPatientId(patient.getPatientId());
+        appointment.setDentistId(request.getPreferredDoctorId());
+        appointment.setServiceId(request.getServiceId());
+        
+        // Set appointment date - use preferred date with default time
+        if (request.getPreferredDate() != null) {
+            // Default to 9:00 AM if no specific time mentioned
+            java.time.LocalDateTime appointmentDateTime = request.getPreferredDate().atTime(9, 0);
+            appointment.setAppointmentDate(appointmentDateTime);
+        } else {
+            // Default to tomorrow at 9:00 AM if no date specified
+            appointment.setAppointmentDate(java.time.LocalDate.now().plusDays(1).atTime(9, 0));
+        }
+        
+        appointment.setStatus("SCHEDULED");
+        appointment.setNotes(request.getNotes());
+        appointment.setSource("ONLINE");
+        appointment.setBookingChannel("WEB");
+        appointment.setCreatedByPatientId(patient.getPatientId());
+        
+        // Set created by user if available
+        HttpSession session = httpRequest.getSession(false);
+        if (session != null) {
+            User currentUser = (User) session.getAttribute("user");
+            if (currentUser != null) {
+                appointment.setCreatedByUserId(currentUser.getUserId());
+            }
+        }
+        
+        // Create appointment in database
+        int appointmentId = appointmentDAO.createAppointment(appointment);
+        if (appointmentId <= 0) {
+            throw new Exception("Failed to create appointment");
+        }
+        
+        logger.info("Created appointment ID: " + appointmentId + " from request ID: " + request.getRequestId());
     }
 }

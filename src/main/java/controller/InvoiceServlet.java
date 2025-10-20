@@ -75,6 +75,9 @@ public class InvoiceServlet extends HttpServlet {
                 case "new":
                     handleNewInvoice(request, response);
                     break;
+                case "create_from_appointment":
+                    handleCreateFromAppointment(request, response);
+                    break;
                 default:
                     handleListInvoices(request, response);
                     break;
@@ -227,6 +230,80 @@ public class InvoiceServlet extends HttpServlet {
         request.setAttribute("patients", patients);
         request.setAttribute("services", services);
         request.getRequestDispatcher("/receptionist/create-invoice.jsp").forward(request, response);
+    }
+
+    private void handleCreateFromAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        String appointmentIdParam = request.getParameter("appointmentId");
+        if (appointmentIdParam == null || appointmentIdParam.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Appointment ID is required");
+            handleListInvoices(request, response);
+            return;
+        }
+        
+        try {
+            int appointmentId = Integer.parseInt(appointmentIdParam);
+            Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
+            
+            if (appointment == null) {
+                request.setAttribute("errorMessage", "Appointment not found");
+                handleListInvoices(request, response);
+                return;
+            }
+            
+            // Check if appointment is completed
+            if (!"COMPLETED".equals(appointment.getStatus())) {
+                request.setAttribute("errorMessage", "Appointment must be completed before creating invoice");
+                handleListInvoices(request, response);
+                return;
+            }
+            
+            // Check if invoice already exists for this appointment
+            Invoice existingInvoice = invoiceDAO.getInvoiceByAppointment(appointmentId);
+            if (existingInvoice != null) {
+                request.setAttribute("errorMessage", "Invoice already exists for this appointment");
+                response.sendRedirect(request.getContextPath() + "/receptionist/invoices?action=view&id=" + existingInvoice.getInvoiceId());
+                return;
+            }
+            
+            // Create invoice automatically with service from appointment
+            Invoice invoice = new Invoice();
+            invoice.setPatientId(appointment.getPatientId());
+            invoice.setAppointmentId(appointmentId);
+            invoice.setStatus("UNPAID");
+            invoice.setCreatedAt(LocalDateTime.now());
+            
+            int invoiceId = invoiceDAO.createInvoice(invoice);
+            
+            if (invoiceId > 0) {
+                // Add service item from appointment
+                Service service = serviceDAO.getServiceById(appointment.getServiceId());
+                if (service != null) {
+                    InvoiceItem item = new InvoiceItem();
+                    item.setInvoiceId(invoiceId);
+                    item.setServiceId(service.getServiceId());
+                    item.setQuantity(1);
+                    item.setUnitPrice(service.getPrice());
+                    item.setTotalPrice(service.getPrice());
+                    
+                    invoiceDAO.addInvoiceItem(invoiceId, item);
+                    
+                    // Update invoice amounts
+                    invoiceDAO.updateInvoiceAmounts(invoiceId, service.getPrice(), BigDecimal.ZERO);
+                }
+                
+                request.setAttribute("successMessage", "Invoice created automatically from appointment");
+                response.sendRedirect(request.getContextPath() + "/receptionist/invoices?action=view&id=" + invoiceId);
+            } else {
+                request.setAttribute("errorMessage", "Failed to create invoice from appointment");
+                handleListInvoices(request, response);
+            }
+            
+        } catch (NumberFormatException e) {
+            request.setAttribute("errorMessage", "Invalid appointment ID");
+            handleListInvoices(request, response);
+        }
     }
 
     private void handleCreateInvoice(HttpServletRequest request, HttpServletResponse response)

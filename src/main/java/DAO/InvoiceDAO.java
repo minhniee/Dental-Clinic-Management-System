@@ -55,13 +55,40 @@ public class InvoiceDAO {
     }
 
     /**
+     * Get invoice by appointment ID
+     */
+    public Invoice getInvoiceByAppointment(int appointmentId) {
+        String sql = "SELECT * FROM Invoices WHERE appointment_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, appointmentId);
+            ResultSet rs = statement.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToInvoice(rs);
+            }
+            return null;
+            
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting invoice by appointment ID: " + appointmentId, e);
+            return null;
+        }
+    }
+
+    /**
      * Get invoice by ID with items
      */
     public Invoice getInvoiceById(int invoiceId) {
-        String sql = "SELECT i.*, p.full_name as patient_name, p.phone as patient_phone, " +
-                     "a.appointment_date FROM Invoices i " +
+        String sql = "SELECT i.*, p.full_name as patient_name, p.phone as patient_phone, p.email as patient_email, " +
+                     "a.appointment_date, a.status as appointment_status, " +
+                     "u.full_name as dentist_name, s.name as service_name " +
+                     "FROM Invoices i " +
                      "LEFT JOIN Patients p ON i.patient_id = p.patient_id " +
                      "LEFT JOIN Appointments a ON i.appointment_id = a.appointment_id " +
+                     "LEFT JOIN Users u ON a.dentist_id = u.user_id " +
+                     "LEFT JOIN Services s ON a.service_id = s.service_id " +
                      "WHERE i.invoice_id = ?";
         
         try (Connection connection = new DBContext().getConnection();
@@ -74,13 +101,41 @@ public class InvoiceDAO {
                 Invoice invoice = mapResultSetToInvoice(rs);
                 invoice.setItems(getInvoiceItems(invoiceId));
                 
-                // Set patient and appointment objects if needed
+                // Set patient object
                 if (rs.getString("patient_name") != null) {
                     Patient patient = new Patient();
                     patient.setPatientId(rs.getInt("patient_id"));
                     patient.setFullName(rs.getString("patient_name"));
                     patient.setPhone(rs.getString("patient_phone"));
+                    patient.setEmail(rs.getString("patient_email"));
                     invoice.setPatient(patient);
+                }
+                
+                // Set appointment object if exists
+                if (rs.getInt("appointment_id") > 0) {
+                    Appointment appointment = new Appointment();
+                    appointment.setAppointmentId(rs.getInt("appointment_id"));
+                    Timestamp appointmentDate = rs.getTimestamp("appointment_date");
+                    if (appointmentDate != null) {
+                        appointment.setAppointmentDate(appointmentDate.toLocalDateTime());
+                    }
+                    appointment.setStatus(rs.getString("appointment_status"));
+                    
+                    // Set dentist info
+                    if (rs.getString("dentist_name") != null) {
+                        model.User dentist = new model.User();
+                        dentist.setFullName(rs.getString("dentist_name"));
+                        appointment.setDentist(dentist);
+                    }
+                    
+                    // Set service info
+                    if (rs.getString("service_name") != null) {
+                        Service service = new Service();
+                        service.setName(rs.getString("service_name"));
+                        appointment.setService(service);
+                    }
+                    
+                    invoice.setAppointment(appointment);
                 }
                 
                 return invoice;

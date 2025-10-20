@@ -1,8 +1,6 @@
 package controller;
 
 import DAO.AppointmentDAO;
-import DAO.PatientMDAO;
-import DAO.UserDAO;
 import DAO.WaitingQueueDAO;
 import model.User;
 
@@ -23,16 +21,12 @@ public class ReceptionistDashboardServlet extends HttpServlet {
 
     private AppointmentDAO appointmentDAO;
     private WaitingQueueDAO waitingQueueDAO;
-    private PatientMDAO PatientMDAO;
-    private UserDAO userDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
         appointmentDAO = new AppointmentDAO();
         waitingQueueDAO = new WaitingQueueDAO();
-        PatientMDAO = new PatientMDAO();
-        userDAO = new UserDAO();
     }
 
     @Override
@@ -53,18 +47,48 @@ public class ReceptionistDashboardServlet extends HttpServlet {
         }
 
         try {
+            // Test database connection first
+            try {
+                appointmentDAO.getAppointmentsByDate(Date.valueOf(LocalDate.now()));
+                System.out.println("Database connection successful");
+            } catch (Exception e) {
+                System.err.println("Database connection failed: " + e.getMessage());
+                e.printStackTrace();
+            }
+            
             // Get today's date
             LocalDate today = LocalDate.now();
             Date todaySqlDate = Date.valueOf(today);
 
-            // Get dashboard statistics
-            DashboardStatistics stats = getDashboardStatistics(todaySqlDate);
+            // Get dashboard statistics with error handling
+            DashboardStatistics stats;
+            try {
+                stats = getDashboardStatistics(todaySqlDate);
+            } catch (Exception e) {
+                System.err.println("Error getting dashboard statistics: " + e.getMessage());
+                e.printStackTrace();
+                stats = new DashboardStatistics(0, 0, 0, 0, 0, 0);
+            }
             
-            // Get today's appointments
-            List<model.Appointment> todayAppointments = appointmentDAO.getAppointmentsByDate(todaySqlDate);
+            // Get today's appointments with error handling
+            List<model.Appointment> todayAppointments;
+            try {
+                todayAppointments = appointmentDAO.getAppointmentsByDate(todaySqlDate);
+            } catch (Exception e) {
+                System.err.println("Error getting today's appointments: " + e.getMessage());
+                e.printStackTrace();
+                todayAppointments = new java.util.ArrayList<>();
+            }
             
-            // Get current queue
-            List<model.WaitingQueue> currentQueue = waitingQueueDAO.getCurrentQueue();
+            // Get current queue with error handling
+            List<model.WaitingQueue> currentQueue;
+            try {
+                currentQueue = waitingQueueDAO.getCurrentQueue();
+            } catch (Exception e) {
+                System.err.println("Error getting current queue: " + e.getMessage());
+                e.printStackTrace();
+                currentQueue = new java.util.ArrayList<>();
+            }
 
             // Set attributes for JSP
             request.setAttribute("stats", stats);
@@ -76,6 +100,8 @@ public class ReceptionistDashboardServlet extends HttpServlet {
             request.getRequestDispatcher("/receptionist/dashboard.jsp").forward(request, response);
 
         } catch (Exception e) {
+            System.err.println("Critical error in ReceptionistDashboardServlet: " + e.getMessage());
+            e.printStackTrace();
             request.setAttribute("errorMessage", "Error loading dashboard: " + e.getMessage());
             request.getRequestDispatcher("/receptionist/dashboard.jsp").forward(request, response);
         }
@@ -83,42 +109,62 @@ public class ReceptionistDashboardServlet extends HttpServlet {
 
     private DashboardStatistics getDashboardStatistics(Date today) {
         try {
-            // Queue statistics
-            WaitingQueueDAO.QueueStatistics queueStats = waitingQueueDAO.getQueueStatistics();
+            // Queue statistics with error handling
+            WaitingQueueDAO.QueueStatistics queueStats;
+            try {
+                queueStats = waitingQueueDAO.getQueueStatistics();
+            } catch (Exception e) {
+                System.err.println("Error getting queue statistics: " + e.getMessage());
+                e.printStackTrace();
+                queueStats = new WaitingQueueDAO.QueueStatistics(0, 0, 0, 0, 0, 0);
+            }
             
-            // Today's appointments
-            List<model.Appointment> todayAppointments = appointmentDAO.getAppointmentsByDate(today);
+            // Today's appointments with error handling
+            List<model.Appointment> todayAppointments;
+            try {
+                todayAppointments = appointmentDAO.getAppointmentsByDate(today);
+            } catch (Exception e) {
+                System.err.println("Error getting today's appointments: " + e.getMessage());
+                e.printStackTrace();
+                todayAppointments = new java.util.ArrayList<>();
+            }
             
             // Count appointments by status
             int scheduledToday = 0;
             int completedToday = 0;
             int cancelledToday = 0;
             
-            for (model.Appointment appointment : todayAppointments) {
-                switch (appointment.getStatus()) {
-                    case "SCHEDULED":
-                    case "CONFIRMED":
-                        scheduledToday++;
-                        break;
-                    case "COMPLETED":
-                        completedToday++;
-                        break;
-                    case "CANCELLED":
-                        cancelledToday++;
-                        break;
+            if (todayAppointments != null) {
+                for (model.Appointment appointment : todayAppointments) {
+                    if (appointment != null && appointment.getStatus() != null) {
+                        switch (appointment.getStatus()) {
+                            case "SCHEDULED":
+                            case "CONFIRMED":
+                                scheduledToday++;
+                                break;
+                            case "COMPLETED":
+                                completedToday++;
+                                break;
+                            case "CANCELLED":
+                                cancelledToday++;
+                                break;
+                        }
+                    }
                 }
             }
 
             return new DashboardStatistics(
-                queueStats.getWaitingCount(),
+                queueStats != null ? queueStats.getWaitingCount() : 0,
                 scheduledToday,
                 completedToday,
                 cancelledToday,
-                queueStats.getTotalToday() + completedToday, // Total completed today
-                todayAppointments.size()
+                (queueStats != null ? queueStats.getTotalToday() : 0) + completedToday,
+                todayAppointments != null ? todayAppointments.size() : 0
             );
             
         } catch (Exception e) {
+            System.err.println("Critical error in getDashboardStatistics: " + e.getMessage());
+            e.printStackTrace();
             // Return default statistics if error occurs
             return new DashboardStatistics(0, 0, 0, 0, 0, 0);
         }

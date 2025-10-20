@@ -2,6 +2,8 @@ package model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 
 public class AppointmentRequest {
     private int requestId;
@@ -212,5 +214,35 @@ public class AppointmentRequest {
                 ", createdAt=" + createdAt +
                 ", confirmedAt=" + confirmedAt +
                 '}';
+    }
+
+    /**
+     * Helper method to get preferredDate as java.util.Date for JSP formatting
+     */
+    public Date getPreferredDateAsDate() {
+        if (preferredDate != null) {
+            return Date.from(preferredDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to get createdAt as java.util.Date for JSP formatting
+     */
+    public Date getCreatedAtAsDate() {
+        if (createdAt != null) {
+            return Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
+    /**
+     * Helper method to get confirmedAt as java.util.Date for JSP formatting
+     */
+    public Date getConfirmedAtAsDate() {
+        if (confirmedAt != null) {
+            return Date.from(confirmedAt.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
     }
 }

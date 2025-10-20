@@ -2,11 +2,8 @@ package DAO;
 
 import context.DBContext;
 import model.Patient;
-import model.User;
 
 import java.sql.*;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -37,23 +34,24 @@ public class PatientDAO {
         return null;
     }
 
+
     /**
-     * Get patient by user ID
+     * Get patient by phone number
      */
-    public Patient getPatientByUserId(int userId) {
-        String sql = "SELECT * FROM Patients WHERE user_id = ?";
+    public Patient getPatientByPhone(String phone) {
+        String sql = "SELECT * FROM Patients WHERE phone = ?";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             
-            statement.setInt(1, userId);
+            statement.setString(1, phone);
             ResultSet rs = statement.executeQuery();
             
             if (rs.next()) {
                 return mapResultSetToPatient(rs);
             }
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error getting patient by user ID: " + userId, e);
+            logger.log(Level.SEVERE, "Error getting patient by phone: " + phone, e);
         }
         return null;
     }
@@ -106,8 +104,8 @@ public class PatientDAO {
      * Create new patient
      */
     public boolean createPatient(Patient patient) {
-        String sql = "INSERT INTO Patients (full_name, birth_date, gender, phone, email, address, user_id) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Patients (full_name, birth_date, gender, phone, email, address) " +
+                    "VALUES (?, ?, ?, ?, ?, ?)";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -118,7 +116,6 @@ public class PatientDAO {
             statement.setString(4, patient.getPhone());
             statement.setString(5, patient.getEmail());
             statement.setString(6, patient.getAddress());
-            statement.setObject(7, patient.getUserId());
             
             int rowsAffected = statement.executeUpdate();
             
@@ -140,7 +137,7 @@ public class PatientDAO {
      */
     public boolean updatePatient(Patient patient) {
         String sql = "UPDATE Patients SET full_name = ?, birth_date = ?, gender = ?, " +
-                    "phone = ?, email = ?, address = ?, user_id = ? WHERE patient_id = ?";
+                    "phone = ?, email = ?, address = ? WHERE patient_id = ?";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -151,8 +148,7 @@ public class PatientDAO {
             statement.setString(4, patient.getPhone());
             statement.setString(5, patient.getEmail());
             statement.setString(6, patient.getAddress());
-            statement.setObject(7, patient.getUserId());
-            statement.setInt(8, patient.getPatientId());
+            statement.setInt(7, patient.getPatientId());
             
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
@@ -182,9 +178,6 @@ public class PatientDAO {
         
         Timestamp createdAt = rs.getTimestamp("created_at");
         patient.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
-        
-        int userId = rs.getInt("user_id");
-        patient.setUserId(rs.wasNull() ? null : userId);
         
         return patient;
     }

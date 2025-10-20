@@ -108,6 +108,59 @@ public class AppointmentDAO {
     }
 
     /**
+     * Get appointments by status
+     */
+    public List<Appointment> getAppointmentsByStatus(String status) {
+        String sql = "SELECT a.*, p.full_name as patient_name, p.phone as patient_phone, " +
+                     "u.full_name as dentist_name, s.name as service_name, s.price as service_price " +
+                     "FROM Appointments a " +
+                     "LEFT JOIN Patients p ON a.patient_id = p.patient_id " +
+                     "LEFT JOIN Users u ON a.dentist_id = u.user_id " +
+                     "LEFT JOIN Services s ON a.service_id = s.service_id " +
+                     "WHERE a.status = ? " +
+                     "ORDER BY a.appointment_date DESC";
+        
+        List<Appointment> appointments = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, status);
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                Appointment appointment = mapResultSetToAppointment(rs);
+                appointments.add(appointment);
+            }
+            
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting appointments by status: " + status, e);
+        }
+        
+        return appointments;
+    }
+
+    /**
+     * Update appointment confirmation details
+     */
+    public boolean updateAppointmentConfirmation(int appointmentId, LocalDateTime confirmedAt) {
+        String sql = "UPDATE Appointments SET status = 'CONFIRMED', confirmed_at = ? WHERE appointment_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setTimestamp(1, Timestamp.valueOf(confirmedAt));
+            statement.setInt(2, appointmentId);
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating appointment confirmation: " + appointmentId, e);
+            return false;
+        }
+    }
+
+    /**
      * Update appointment
      */
     public boolean updateAppointment(Appointment appointment) {

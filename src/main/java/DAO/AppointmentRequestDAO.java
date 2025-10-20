@@ -102,7 +102,12 @@ public class AppointmentRequestDAO {
      * Update appointment request status
      */
     public boolean updateRequestStatus(int requestId, String status) {
-        String sql = "UPDATE AppointmentRequests SET status = ?, confirmed_at = GETDATE() WHERE request_id = ?";
+        String sql;
+        if ("CONFIRMED".equals(status)) {
+            sql = "UPDATE AppointmentRequests SET status = ?, confirmed_at = GETDATE() WHERE request_id = ?";
+        } else {
+            sql = "UPDATE AppointmentRequests SET status = ? WHERE request_id = ?";
+        }
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {

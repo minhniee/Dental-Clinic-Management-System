@@ -443,10 +443,10 @@
                                                         <c:when test="${not empty request.preferredDate}">
                                                             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                                                                 <span style="font-weight: 600; color: #0f172a;">
-                                                                    <fmt:formatDate value="${request.preferredDate}" pattern="dd/MM/yyyy"/>
+                                                                    <fmt:formatDate value="${request.preferredDateAsDate}" pattern="dd/MM/yyyy"/>
                                                                 </span>
                                                                 <span style="font-size: 0.75rem; color: #64748b;">
-                                                                    <fmt:formatDate value="${request.preferredDate}" pattern="EEEE"/>
+                                                                    <fmt:formatDate value="${request.preferredDateAsDate}" pattern="EEEE"/>
                                                                 </span>
                                                             </div>
                                                         </c:when>
@@ -496,10 +496,10 @@
                                                         <c:when test="${not empty request.createdAt}">
                                                             <div style="display: flex; flex-direction: column; gap: 0.25rem;">
                                                                 <span style="font-weight: 500;">
-                                                                    <fmt:formatDate value="${request.createdAt}" pattern="dd/MM/yyyy"/>
+                                                                    <fmt:formatDate value="${request.createdAtAsDate}" pattern="dd/MM/yyyy"/>
                                                                 </span>
                                                                 <span style="font-size: 0.75rem; color: #64748b;">
-                                                                    <fmt:formatDate value="${request.createdAt}" pattern="HH:mm"/>
+                                                                    <fmt:formatDate value="${request.createdAtAsDate}" pattern="HH:mm"/>
                                                                 </span>
                                                             </div>
                                                         </c:when>

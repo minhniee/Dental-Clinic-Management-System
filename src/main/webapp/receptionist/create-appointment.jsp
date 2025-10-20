@@ -251,24 +251,52 @@
                             <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
                         </c:if>
 
-                        <div class="form-row">
-                            <!-- Patient Selection -->
-                            <div class="form-group">
-                                <label for="patientId">
-                                    Bệnh Nhân <span class="required">*</span>
-                                </label>
-                                <select id="patientId" name="patientId" class="form-control" required>
-                                    <option value="">Chọn bệnh nhân</option>
-                                    <c:forEach var="patient" items="${patients}">
-                                        <option value="${patient.patientId}" 
-                                                ${(action eq 'update' and appointment.patientId eq patient.patientId) or 
-                                                  (not empty selectedPatient and selectedPatient.patientId eq patient.patientId) ? 'selected' : ''}>
-                                            ${patient.fullName} - ${patient.phone}
-                                        </option>
-                                    </c:forEach>
-                                </select>
-                                <div class="help-text">Tìm kiếm bệnh nhân theo tên hoặc số điện thoại</div>
+                        <!-- Patient Selection Section -->
+                        <div class="form-group full-width">
+                            <label>
+                                Bệnh Nhân <span class="required">*</span>
+                            </label>
+                            
+                            <!-- Quick Patient Search -->
+                            <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.5rem; padding: 1rem; margin-bottom: 1rem;">
+                                <h4 style="margin: 0 0 0.5rem 0; color: #0f172a; font-size: 0.875rem; font-weight: 600;">
+                                    <i class="fas fa-search" style="margin-right: 0.5rem; color: #06b6d4;"></i>
+                                    Tìm Kiếm Nhanh Bệnh Nhân
+                                </h4>
+                                <div style="display: flex; gap: 1rem; align-items: end;">
+                                    <div style="flex: 1;">
+                                        <input type="tel" 
+                                               id="quickSearchPhone" 
+                                               class="form-control" 
+                                               placeholder="Nhập số điện thoại để tìm kiếm"
+                                               style="margin-bottom: 0;">
+                                    </div>
+                                    <button type="button" id="quickSearchBtn" class="btn btn-primary" style="margin-bottom: 0;">
+                                        <i class="fas fa-search"></i>
+                                        Tìm Kiếm
+                                    </button>
+                                    <a href="${pageContext.request.contextPath}/receptionist/patients?action=new" 
+                                       class="btn btn-secondary" style="margin-bottom: 0;">
+                                        <i class="fas fa-user-plus"></i>
+                                        Đăng Ký Mới
+                                    </a>
+                                </div>
+                                <div id="quickSearchResult" style="margin-top: 1rem; display: none;"></div>
                             </div>
+                            
+                            <!-- Patient Selection Dropdown -->
+                            <select id="patientId" name="patientId" class="form-control" required>
+                                <option value="">Chọn bệnh nhân từ danh sách</option>
+                                <c:forEach var="patient" items="${patients}">
+                                    <option value="${patient.patientId}" 
+                                            ${(action eq 'update' and appointment.patientId eq patient.patientId) or 
+                                              (not empty selectedPatient and selectedPatient.patientId eq patient.patientId) ? 'selected' : ''}>
+                                        ${patient.fullName} - ${patient.phone}
+                                    </option>
+                                </c:forEach>
+                            </select>
+                            <div class="help-text">Chọn bệnh nhân từ danh sách hoặc sử dụng tìm kiếm nhanh ở trên</div>
+                        </div>
 
                             <!-- Dentist Selection -->
                             <div class="form-group">
@@ -387,10 +415,14 @@
         document.addEventListener('DOMContentLoaded', function() {
             const dateTimeInput = document.getElementById('appointmentDateTime');
             
+            // Set minimum date/time to now
+            const now = new Date();
+            const minDateTime = now.toISOString().slice(0, 16);
+            dateTimeInput.min = minDateTime;
+            
             // Only set default if this is a new appointment and no value is set
             <c:if test="${action ne 'update'}">
                 if (!dateTimeInput.value) {
-                    const now = new Date();
                     // Round to next 15 minutes
                     const rounded = new Date(Math.ceil(now.getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000));
                     dateTimeInput.value = rounded.toISOString().slice(0, 16);
@@ -400,15 +432,17 @@
 
         // Check for conflicts when date/time changes
         document.getElementById('appointmentDateTime').addEventListener('change', function() {
-            // Basic validation - in a full implementation, you could make an AJAX call
-            // to check for conflicts, but for now we'll just do basic time validation
             const selectedDate = new Date(this.value);
             const now = new Date();
             
             if (selectedDate <= now) {
+                // Reset to minimum allowed time
+                const minDateTime = now.toISOString().slice(0, 16);
+                this.value = minDateTime;
+                
                 document.getElementById('conflictWarning').style.display = 'block';
                 document.getElementById('conflictWarning').innerHTML = 
-                    '<i class="fas fa-exclamation-triangle"></i><strong>Cảnh báo:</strong> Thời gian đã chọn không thể là thời gian trong quá khứ.';
+                    '<i class="fas fa-exclamation-triangle"></i><strong>Cảnh báo:</strong> Không thể chọn thời gian trong quá khứ. Đã tự động điều chỉnh về thời gian hiện tại.';
             } else {
                 document.getElementById('conflictWarning').style.display = 'none';
             }
@@ -427,6 +461,50 @@
             // Could display estimated duration here
             if (duration && duration !== 'null') {
                 console.log('Service duration: ' + duration + ' minutes');
+            }
+        });
+
+        // Quick patient search functionality
+        document.getElementById('quickSearchBtn').addEventListener('click', function() {
+            const phone = document.getElementById('quickSearchPhone').value.trim();
+            const resultDiv = document.getElementById('quickSearchResult');
+            
+            if (!phone) {
+                resultDiv.innerHTML = '<div style="color: #dc2626; font-size: 0.875rem;">Vui lòng nhập số điện thoại</div>';
+                resultDiv.style.display = 'block';
+                return;
+            }
+            
+            // Show loading
+            resultDiv.innerHTML = '<div style="color: #64748b; font-size: 0.875rem;"><i class="fas fa-spinner fa-spin"></i> Đang tìm kiếm...</div>';
+            resultDiv.style.display = 'block';
+            
+            // Make AJAX request to search for patient
+            fetch('${pageContext.request.contextPath}/receptionist/patients?action=search&phone=' + encodeURIComponent(phone))
+                .then(response => response.text())
+                .then(html => {
+                    // Parse the response to extract patient data
+                    // This is a simplified approach - in a real app you'd use JSON API
+                    if (html.includes('existingPatient')) {
+                        // Patient found - extract patient info and update dropdown
+                        resultDiv.innerHTML = '<div style="color: #059669; font-size: 0.875rem;"><i class="fas fa-check-circle"></i> Tìm thấy bệnh nhân. Vui lòng chọn từ danh sách bên dưới.</div>';
+                        
+                        // You could also auto-select the patient here
+                        // For now, we'll just show success message
+                    } else {
+                        resultDiv.innerHTML = '<div style="color: #d97706; font-size: 0.875rem;"><i class="fas fa-exclamation-triangle"></i> Không tìm thấy bệnh nhân với số điện thoại này. Vui lòng đăng ký bệnh nhân mới.</div>';
+                    }
+                })
+                .catch(error => {
+                    resultDiv.innerHTML = '<div style="color: #dc2626; font-size: 0.875rem;"><i class="fas fa-exclamation-circle"></i> Lỗi khi tìm kiếm. Vui lòng thử lại.</div>';
+                });
+        });
+
+        // Auto-search when Enter is pressed in phone field
+        document.getElementById('quickSearchPhone').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                document.getElementById('quickSearchBtn').click();
             }
         });
     </script>

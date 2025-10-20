@@ -35,14 +35,10 @@ public class PatientMDAO {
         
         // Use conditional SQL based on whether user_id is provided
         String sql;
-        if (patient.getUserId() != null) {
-            sql = "INSERT INTO Patients (full_name, birth_date, gender, phone, email, address, created_at, user_id) " +
-                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-        } else {
+
             sql = "INSERT INTO Patients (full_name, birth_date, gender, phone, email, address, created_at) " +
                   "VALUES (?, ?, ?, ?, ?, ?, ?)";
-        }
-        
+
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
@@ -55,9 +51,7 @@ public class PatientMDAO {
             statement.setTimestamp(7, Timestamp.valueOf(LocalDateTime.now()));
             
             // Only set user_id parameter if it's not null
-            if (patient.getUserId() != null) {
-                statement.setInt(8, patient.getUserId());
-            }
+
             
             int rowsAffected = statement.executeUpdate();
             
@@ -101,7 +95,7 @@ public class PatientMDAO {
      */
     public boolean updatePatient(Patient patient) {
         String sql = "UPDATE Patients SET full_name = ?, birth_date = ?, gender = ?, " +
-                     "phone = ?, email = ?, address = ?, user_id = ? WHERE patient_id = ?";
+                     "phone = ?, email = ?, address = ? WHERE patient_id = ?";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -112,8 +106,7 @@ public class PatientMDAO {
             statement.setString(4, patient.getPhone());
             statement.setString(5, patient.getEmail());
             statement.setString(6, patient.getAddress());
-            statement.setObject(7, patient.getUserId(), Types.INTEGER);
-            statement.setInt(8, patient.getPatientId());
+            statement.setInt(7, patient.getPatientId());
             
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
@@ -270,10 +263,7 @@ public class PatientMDAO {
             patient.setCreatedAt(createdAt.toLocalDateTime());
         }
         
-        int userId = rs.getInt("user_id");
-        if (!rs.wasNull()) {
-            patient.setUserId(userId);
-        }
+
         
         return patient;
     }

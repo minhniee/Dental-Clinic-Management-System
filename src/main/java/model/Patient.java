@@ -14,14 +14,12 @@ public class Patient {
     private String email;
     private String address;
     private LocalDateTime createdAt;
-    private Integer userId;
-    private User user;
 
     public Patient() {
     }
 
     public Patient(int patientId, String fullName, LocalDate birthDate, String  gender,
-                   String phone, String email, String address, LocalDateTime createdAt, Integer userId) {
+                   String phone, String email, String address, LocalDateTime createdAt) {
         this.patientId = patientId;
         this.fullName = fullName;
         this.birthDate = birthDate;
@@ -30,7 +28,6 @@ public class Patient {
         this.email = email;
         this.address = address;
         this.createdAt = createdAt;
-        this.userId = userId;
     }
 
     public int getPatientId() {
@@ -97,21 +94,6 @@ public class Patient {
         this.createdAt = createdAt;
     }
 
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     /**
      * Helper method to get birthDate as java.util.Date for JSP formatting
@@ -144,7 +126,6 @@ public class Patient {
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
                 ", createdAt=" + createdAt +
-                ", userId=" + userId +
                 '}';
     }
 }

@@ -4,6 +4,7 @@ import DAO.AppointmentDAO;
 import DAO.PatientMDAO;
 import DAO.DentistDAO;
 import DAO.ServiceDAO;
+import DAO.WaitingQueueDAO;
 import model.Appointment;
 import model.Patient;
 import model.User;
@@ -22,10 +23,13 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
 @WebServlet("/receptionist/appointments")
 public class AppointmentServlet extends HttpServlet {
 
+    private static final Logger logger = Logger.getLogger(AppointmentServlet.class.getName());
     private AppointmentDAO appointmentDAO;
     private PatientMDAO PatientMDAO;
     private DentistDAO dentistDAO;
@@ -115,6 +119,9 @@ public class AppointmentServlet extends HttpServlet {
                     break;
                 case "update_status":
                     handleUpdateStatus(request, response);
+                    break;
+                case "confirm":
+                    handleConfirmAppointment(request, response);
                     break;
                 default:
                     request.setAttribute("errorMessage", "Invalid action");
@@ -265,7 +272,89 @@ public class AppointmentServlet extends HttpServlet {
     private void handleCalendarView(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        handleListAppointments(request, response);
+        // Get week parameter
+        String weekParam = request.getParameter("week");
+        String dentistIdParam = request.getParameter("dentistId");
+        
+        // Parse week and get calendar days
+        LocalDate startOfWeek = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
+        if (weekParam != null && !weekParam.trim().isEmpty()) {
+            try {
+                // Parse week format: YYYY-WXX
+                String[] parts = weekParam.split("-W");
+                int year = Integer.parseInt(parts[0]);
+                int week = Integer.parseInt(parts[1]);
+                startOfWeek = LocalDate.of(year, 1, 1)
+                    .with(java.time.DayOfWeek.MONDAY)
+                    .plusWeeks(week - 1);
+            } catch (Exception e) {
+                // Use current week if parsing fails
+                startOfWeek = LocalDate.now().with(java.time.DayOfWeek.MONDAY);
+            }
+        }
+        
+        // Generate calendar days (7 days starting from Monday)
+        List<CalendarDay> calendarDays = new ArrayList<>();
+        LocalDate today = LocalDate.now();
+        
+        for (int i = 0; i < 7; i++) {
+            LocalDate day = startOfWeek.plusDays(i);
+            CalendarDay calendarDay = new CalendarDay();
+            calendarDay.setDate(day);
+            calendarDay.setDayOfMonth(day.getDayOfMonth());
+            calendarDay.setIsOtherMonth(!day.getMonth().equals(startOfWeek.getMonth()));
+            calendarDay.setIsToday(day.equals(today));
+            
+            // Get appointments for this day
+            List<Appointment> dayAppointments;
+            if (dentistIdParam != null && !dentistIdParam.trim().isEmpty()) {
+                try {
+                    int dentistId = Integer.parseInt(dentistIdParam);
+                    dayAppointments = appointmentDAO.getAppointmentsByDateAndDentist(java.sql.Date.valueOf(day), dentistId);
+                } catch (NumberFormatException e) {
+                    dayAppointments = appointmentDAO.getAppointmentsByDate(java.sql.Date.valueOf(day));
+                }
+            } else {
+                dayAppointments = appointmentDAO.getAppointmentsByDate(java.sql.Date.valueOf(day));
+            }
+            calendarDay.setAppointments(dayAppointments);
+            calendarDays.add(calendarDay);
+        }
+        
+        // Load data for dropdowns
+        List<User> dentists = dentistDAO.getAllActiveDentists();
+        
+        request.setAttribute("calendarDays", calendarDays);
+        request.setAttribute("dentists", dentists);
+        request.setAttribute("selectedWeek", weekParam);
+        request.setAttribute("selectedDentistId", dentistIdParam);
+        
+        request.getRequestDispatcher("/receptionist/appointment-calendar.jsp").forward(request, response);
+    }
+    
+    // Helper class for calendar day
+    public static class CalendarDay {
+        private LocalDate date;
+        private int dayOfMonth;
+        private boolean isOtherMonth;
+        private boolean isToday;
+        private List<Appointment> appointments;
+        
+        // Getters and setters
+        public LocalDate getDate() { return date; }
+        public void setDate(LocalDate date) { this.date = date; }
+        
+        public int getDayOfMonth() { return dayOfMonth; }
+        public void setDayOfMonth(int dayOfMonth) { this.dayOfMonth = dayOfMonth; }
+        
+        public boolean getIsOtherMonth() { return isOtherMonth; }
+        public void setIsOtherMonth(boolean isOtherMonth) { this.isOtherMonth = isOtherMonth; }
+        
+        public boolean getIsToday() { return isToday; }
+        public void setIsToday(boolean isToday) { this.isToday = isToday; }
+        
+        public List<Appointment> getAppointments() { return appointments; }
+        public void setAppointments(List<Appointment> appointments) { this.appointments = appointments; }
     }
 
     private void handleCreateAppointment(HttpServletRequest request, HttpServletResponse response)
@@ -533,11 +622,48 @@ public class AppointmentServlet extends HttpServlet {
         
         try {
             int appointmentId = Integer.parseInt(appointmentIdParam);
+            
+            // Get current appointment to validate status transition
+            Appointment currentAppointment = appointmentDAO.getAppointmentById(appointmentId);
+            if (currentAppointment == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Appointment not found");
+                return;
+            }
+            
+            // Validate status transition
+            if (!isValidStatusTransition(currentAppointment.getStatus(), status)) {
+                String errorMsg = "Invalid status transition from " + currentAppointment.getStatus() + " to " + status;
+                logger.warning(errorMsg);
+                request.setAttribute("errorMessage", errorMsg);
+                handleListAppointments(request, response);
+                return;
+            }
+            
+            // Update status
+            logger.info("Updating appointment " + appointmentId + " from " + currentAppointment.getStatus() + " to " + status);
             boolean success = appointmentDAO.updateAppointmentStatus(appointmentId, status);
             
             if (success) {
+                logger.info("Successfully updated appointment " + appointmentId + " status to " + status);
+                
+                // If updating to CONFIRMED, set confirmation timestamp
+                if ("CONFIRMED".equals(status)) {
+                    appointmentDAO.updateAppointmentConfirmation(appointmentId, java.time.LocalDateTime.now());
+                }
+                
+                // If updating to COMPLETED, add to queue for billing
+                if ("COMPLETED".equals(status)) {
+                    // Add to waiting queue for billing process
+                    WaitingQueueDAO waitingQueueDAO = new WaitingQueueDAO();
+                    if (!waitingQueueDAO.isInQueue(appointmentId)) {
+                        waitingQueueDAO.addToQueue(appointmentId);
+                    }
+                }
+                
+                request.setAttribute("successMessage", "Appointment status updated to " + status);
                 response.sendRedirect(request.getContextPath() + "/receptionist/appointments?action=list");
             } else {
+                logger.warning("Failed to update appointment " + appointmentId + " status to " + status);
                 request.setAttribute("errorMessage", "Failed to update appointment status");
                 handleListAppointments(request, response);
             }
@@ -545,5 +671,75 @@ public class AppointmentServlet extends HttpServlet {
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid appointment ID");
         }
+    }
+    
+    private boolean isValidStatusTransition(String currentStatus, String newStatus) {
+        // Define valid status transitions
+        switch (currentStatus) {
+            case "SCHEDULED":
+                return "CONFIRMED".equals(newStatus) || "CANCELLED".equals(newStatus) || "COMPLETED".equals(newStatus);
+            case "CONFIRMED":
+                return "CANCELLED".equals(newStatus) || "COMPLETED".equals(newStatus);
+            case "COMPLETED":
+                return false; // Cannot change from completed
+            case "CANCELLED":
+                return "SCHEDULED".equals(newStatus); // Can reschedule cancelled appointments
+            default:
+                return false;
+        }
+    }
+    
+    private void handleConfirmAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        String appointmentIdParam = request.getParameter("appointmentId");
+        String confirmationCode = request.getParameter("confirmationCode");
+        
+        if (appointmentIdParam == null || appointmentIdParam.trim().isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing appointment ID");
+            return;
+        }
+        
+        try {
+            int appointmentId = Integer.parseInt(appointmentIdParam);
+            
+            // Get current appointment
+            Appointment appointment = appointmentDAO.getAppointmentById(appointmentId);
+            if (appointment == null) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "Appointment not found");
+                return;
+            }
+            
+            // Generate confirmation code if not provided
+            if (confirmationCode == null || confirmationCode.trim().isEmpty()) {
+                confirmationCode = generateConfirmationCode();
+            }
+            
+            // Update appointment with confirmation
+            appointment.setStatus("CONFIRMED");
+            appointment.setConfirmationCode(confirmationCode);
+            appointment.setConfirmedAt(java.time.LocalDateTime.now());
+            
+            boolean success = appointmentDAO.updateAppointment(appointment);
+            
+            if (success) {
+                request.setAttribute("successMessage", "Appointment confirmed with code: " + confirmationCode);
+                request.setAttribute("confirmationCode", confirmationCode);
+            } else {
+                request.setAttribute("errorMessage", "Failed to confirm appointment");
+            }
+            
+            // Show appointment details with confirmation
+            request.setAttribute("appointment", appointment);
+            request.getRequestDispatcher("/receptionist/appointment-detail.jsp").forward(request, response);
+            
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid appointment ID");
+        }
+    }
+    
+    private String generateConfirmationCode() {
+        // Generate a 6-digit confirmation code
+        return String.format("%06d", (int) (Math.random() * 1000000));
     }
 }

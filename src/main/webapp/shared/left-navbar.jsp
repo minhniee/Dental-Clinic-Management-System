@@ -68,7 +68,7 @@
                 <li><a class="${fn:endsWith(currentPath, '/receptionist/queue') ? 'active' : ''}" href="${ctx}/receptionist/queue">Hàng Chờ</a></li>
                 <li><a href="${ctx}/receptionist/invoices">Hóa Đơn & Thanh Toán</a></li>
                 <li><a class="${fn:endsWith(currentPath, '/receptionist/online-appointments') ? 'active' : ''}" href="${ctx}/receptionist/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
-                <li><a href="${ctx}/receptionist/feedback">Phản Hồi</a></li>
+                
             </ul>
         </c:if>
 
