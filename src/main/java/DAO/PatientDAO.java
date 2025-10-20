@@ -163,6 +163,92 @@ public class PatientDAO {
     }
 
     /**
+     * Search patients by phone number
+     */
+    public Patient getPatientByPhone(String phone) {
+        String sql = "SELECT * FROM Patients WHERE phone = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, phone);
+            ResultSet rs = statement.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToPatient(rs);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting patient by phone: " + phone, e);
+        }
+        return null;
+    }
+
+    /**
+     * Search patients by email
+     */
+    public Patient getPatientByEmail(String email) {
+        String sql = "SELECT * FROM Patients WHERE email = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, email);
+            ResultSet rs = statement.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToPatient(rs);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting patient by email: " + email, e);
+        }
+        return null;
+    }
+
+    /**
+     * Search patients by phone or email
+     */
+    public Patient getPatientByPhoneOrEmail(String phone, String email) {
+        String sql = "SELECT * FROM Patients WHERE phone = ? OR email = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, phone);
+            statement.setString(2, email);
+            ResultSet rs = statement.executeQuery();
+            
+            if (rs.next()) {
+                return mapResultSetToPatient(rs);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting patient by phone or email", e);
+        }
+        return null;
+    }
+
+    /**
+     * Search patients by name (partial match)
+     */
+    public List<Patient> searchPatientsByName(String name) {
+        String sql = "SELECT * FROM Patients WHERE full_name LIKE ? ORDER BY full_name";
+        List<Patient> patients = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setString(1, "%" + name + "%");
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                patients.add(mapResultSetToPatient(rs));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error searching patients by name: " + name, e);
+        }
+        return patients;
+    }
+
+    /**
      * Map ResultSet to Patient object
      */
     private Patient mapResultSetToPatient(ResultSet rs) throws SQLException {
