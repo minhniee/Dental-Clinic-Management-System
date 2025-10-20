@@ -116,6 +116,12 @@ public class AppointmentServlet extends HttpServlet {
                 case "update_status":
                     handleUpdateStatus(request, response);
                     break;
+                case "confirm":
+                    handleConfirmAppointment(request, response);
+                    break;
+                case "cancel":
+                    handleCancelAppointment(request, response);
+                    break;
                 default:
                     request.setAttribute("errorMessage", "Invalid action");
                     handleListAppointments(request, response);
@@ -541,6 +547,68 @@ public class AppointmentServlet extends HttpServlet {
                 request.setAttribute("errorMessage", "Failed to update appointment status");
                 handleListAppointments(request, response);
             }
+            
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid appointment ID");
+        }
+    }
+
+    private void handleConfirmAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        String appointmentIdParam = request.getParameter("appointmentId");
+        
+        if (appointmentIdParam == null || appointmentIdParam.trim().isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing appointment ID");
+            return;
+        }
+        
+        try {
+            int appointmentId = Integer.parseInt(appointmentIdParam);
+            
+            // Generate confirmation code
+            String confirmationCode = appointmentDAO.generateConfirmationCode();
+            
+            // Confirm appointment
+            boolean success = appointmentDAO.confirmAppointment(appointmentId, confirmationCode);
+            
+            if (success) {
+                request.setAttribute("successMessage", "Appointment confirmed successfully with code: " + confirmationCode);
+            } else {
+                request.setAttribute("errorMessage", "Failed to confirm appointment");
+            }
+            
+            response.sendRedirect(request.getContextPath() + "/receptionist/appointments?action=list");
+            
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid appointment ID");
+        }
+    }
+
+    private void handleCancelAppointment(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        
+        String appointmentIdParam = request.getParameter("appointmentId");
+        String reason = request.getParameter("reason");
+        
+        if (appointmentIdParam == null || appointmentIdParam.trim().isEmpty()) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing appointment ID");
+            return;
+        }
+        
+        try {
+            int appointmentId = Integer.parseInt(appointmentIdParam);
+            
+            // Cancel appointment
+            boolean success = appointmentDAO.cancelAppointment(appointmentId, reason);
+            
+            if (success) {
+                request.setAttribute("successMessage", "Appointment cancelled successfully");
+            } else {
+                request.setAttribute("errorMessage", "Failed to cancel appointment");
+            }
+            
+            response.sendRedirect(request.getContextPath() + "/receptionist/appointments?action=list");
             
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid appointment ID");

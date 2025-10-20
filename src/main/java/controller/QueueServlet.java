@@ -2,6 +2,7 @@ package controller;
 
 import DAO.WaitingQueueDAO;
 import DAO.AppointmentDAO;
+import DAO.InvoiceDAO;
 import model.WaitingQueue;
 
 import jakarta.servlet.ServletException;
@@ -13,18 +14,23 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.logging.Logger;
 
 @WebServlet("/receptionist/queue")
 public class QueueServlet extends HttpServlet {
 
+    private static final Logger logger = Logger.getLogger(QueueServlet.class.getName());
     private WaitingQueueDAO waitingQueueDAO;
     private AppointmentDAO appointmentDAO;
+    private InvoiceDAO invoiceDAO;
+    private InvoiceDAO invoiceDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
         waitingQueueDAO = new WaitingQueueDAO();
         appointmentDAO = new AppointmentDAO();
+        invoiceDAO = new InvoiceDAO();
     }
 
     @Override
@@ -200,6 +206,8 @@ public class QueueServlet extends HttpServlet {
             boolean success = waitingQueueDAO.updateQueueStatus(appointmentId, status);
             
             if (success) {
+                // Update appointment status based on queue status
+                updateAppointmentStatusFromQueue(appointmentId, status);
                 request.setAttribute("successMessage", "Queue status updated successfully");
             } else {
                 request.setAttribute("errorMessage", "Failed to update queue status");
@@ -209,6 +217,40 @@ public class QueueServlet extends HttpServlet {
             
         } catch (NumberFormatException e) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid appointment ID");
+        }
+    }
+
+    private void updateAppointmentStatusFromQueue(int appointmentId, String queueStatus) {
+        String appointmentStatus = null;
+        
+        switch (queueStatus) {
+            case "CHECKED_IN":
+                appointmentStatus = "CONFIRMED";
+                break;
+            case "CALLED":
+                appointmentStatus = "CONFIRMED";
+                break;
+            case "IN_TREATMENT":
+                appointmentStatus = "IN_PROGRESS";
+                break;
+            case "COMPLETED":
+                appointmentStatus = "COMPLETED";
+                break;
+            case "NO_SHOW":
+                appointmentStatus = "NO_SHOW";
+                break;
+        }
+        
+        if (appointmentStatus != null) {
+            appointmentDAO.updateAppointmentStatus(appointmentId, appointmentStatus);
+            
+            // Auto-generate invoice when appointment is completed
+            if ("COMPLETED".equals(appointmentStatus)) {
+                int invoiceId = invoiceDAO.autoGenerateInvoiceForAppointment(appointmentId);
+                if (invoiceId > 0) {
+                    logger.info("Auto-generated invoice " + invoiceId + " for completed appointment " + appointmentId);
+                }
+            }
         }
     }
 

@@ -350,6 +350,84 @@ public class InvoiceDAO {
     }
 
     /**
+     * Check if invoice already exists for appointment
+     */
+    public boolean invoiceExistsForAppointment(int appointmentId) {
+        String sql = "SELECT COUNT(*) FROM Invoices WHERE appointment_id = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, appointmentId);
+            ResultSet rs = statement.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error checking if invoice exists for appointment: " + appointmentId, e);
+        }
+        
+        return false;
+    }
+
+    /**
+     * Auto-generate invoice for completed appointment
+     */
+    public int autoGenerateInvoiceForAppointment(int appointmentId) {
+        // Check if invoice already exists
+        if (invoiceExistsForAppointment(appointmentId)) {
+            logger.info("Invoice already exists for appointment: " + appointmentId);
+            return -1;
+        }
+
+        String sql = "SELECT a.*, p.patient_id, p.full_name as patient_name, s.service_id, s.name as service_name, s.price as service_price " +
+                     "FROM Appointments a " +
+                     "INNER JOIN Patients p ON a.patient_id = p.patient_id " +
+                     "INNER JOIN Services s ON a.service_id = s.service_id " +
+                     "WHERE a.appointment_id = ? AND a.status = 'COMPLETED'";
+
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, appointmentId);
+            ResultSet rs = statement.executeQuery();
+            
+            if (rs.next()) {
+                // Create invoice
+                Invoice invoice = new Invoice();
+                invoice.setPatientId(rs.getInt("patient_id"));
+                invoice.setAppointmentId(appointmentId);
+                invoice.setTotalAmount(rs.getBigDecimal("service_price"));
+                invoice.setDiscountAmount(BigDecimal.ZERO);
+                invoice.setStatus("UNPAID");
+                invoice.setCreatedAt(LocalDateTime.now());
+                
+                int invoiceId = createInvoice(invoice);
+                
+                if (invoiceId > 0) {
+                    // Add service as invoice item
+                    InvoiceItem item = new InvoiceItem();
+                    item.setInvoiceId(invoiceId);
+                    item.setServiceId(rs.getInt("service_id"));
+                    item.setQuantity(1);
+                    item.setUnitPrice(rs.getBigDecimal("service_price"));
+                    item.setTotalPrice(rs.getBigDecimal("service_price"));
+                    
+                    addInvoiceItem(invoiceId, item);
+                    
+                    logger.info("Auto-generated invoice " + invoiceId + " for appointment " + appointmentId);
+                    return invoiceId;
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error auto-generating invoice for appointment: " + appointmentId, e);
+        }
+        
+        return -1;
+    }
+
+    /**
      * Map ResultSet to InvoiceItem object
      */
     private InvoiceItem mapResultSetToInvoiceItem(ResultSet rs) throws SQLException {
