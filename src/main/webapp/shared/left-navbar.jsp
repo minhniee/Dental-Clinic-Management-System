@@ -76,13 +76,10 @@
         <c:if test="${role eq 'dentist'}">
             <ul>
                 <li><a class="${fn:endsWith(currentPath, '/dentist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/dentist/dashboard.jsp">Tổng Quan</a></li>
-                <li><a href="${ctx}/dentist/patients">Bệnh Nhân</a></li>
-                <li><a href="${ctx}/dentist/medical-record">Hồ Sơ Y Tế</a></li>
-                <li><a href="${ctx}/dentist/examinations">Khám Bệnh</a></li>
-                <li><a href="${ctx}/dentist/treatment-plan">Kế Hoạch Điều Trị</a></li>
-                <li><a href="${ctx}/dentist/clinical-results">Kết Quả Lâm Sàng</a></li>
-                <li><a href="${ctx}/dentist/prescriptions">Đơn Thuốc</a></li>
-                <li><a href="${ctx}/dentist/history">Lịch Sử</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/schedule') ? 'active' : ''}" href="${ctx}/dentist/schedule?action=daily">📅 Lịch Trình Hàng Ngày</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/schedule') ? 'active' : ''}" href="${ctx}/dentist/schedule?action=weekly">📅 Lịch Trình Hàng Tuần</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/patients') ? 'active' : ''}" href="${ctx}/dentist/patients">👥 Danh Sách Bệnh Nhân</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/medical-history') ? 'active' : ''}" href="${ctx}/dentist/medical-history">📋 Lịch Sử Khám Bệnh</a></li>
             </ul>
         </c:if>
 

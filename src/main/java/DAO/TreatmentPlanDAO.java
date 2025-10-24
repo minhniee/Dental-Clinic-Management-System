@@ -5,16 +5,15 @@ import model.TreatmentPlan;
 
 import java.math.BigDecimal;
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class TreatmentPlanDAO {
-
+    
     private static final Logger logger = Logger.getLogger(TreatmentPlanDAO.class.getName());
-
+    
     /**
      * Get treatment plans by record ID
      */
@@ -36,7 +35,7 @@ public class TreatmentPlanDAO {
         }
         return plans;
     }
-
+    
     /**
      * Get treatment plan by ID
      */
@@ -57,26 +56,27 @@ public class TreatmentPlanDAO {
         }
         return null;
     }
-
+    
     /**
      * Create new treatment plan
      */
-    public boolean createTreatmentPlan(TreatmentPlan treatmentPlan) {
-        String sql = "INSERT INTO TreatmentPlans (record_id, plan_summary, estimated_cost) VALUES (?, ?, ?)";
+    public boolean createTreatmentPlan(TreatmentPlan plan) {
+        String sql = "INSERT INTO TreatmentPlans (record_id, plan_summary, notes, estimated_cost) VALUES (?, ?, ?, ?)";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
-            statement.setInt(1, treatmentPlan.getRecordId());
-            statement.setString(2, treatmentPlan.getPlanSummary());
-            statement.setBigDecimal(3, treatmentPlan.getEstimatedCost());
+            statement.setInt(1, plan.getRecordId());
+            statement.setString(2, plan.getPlanSummary());
+            statement.setString(3, plan.getNotes());
+            statement.setBigDecimal(4, plan.getEstimatedCost());
             
             int rowsAffected = statement.executeUpdate();
             
             if (rowsAffected > 0) {
                 ResultSet generatedKeys = statement.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    treatmentPlan.setPlanId(generatedKeys.getInt(1));
+                    plan.setPlanId(generatedKeys.getInt(1));
                 }
                 return true;
             }
@@ -85,28 +85,29 @@ public class TreatmentPlanDAO {
         }
         return false;
     }
-
+    
     /**
      * Update treatment plan
      */
-    public boolean updateTreatmentPlan(TreatmentPlan treatmentPlan) {
-        String sql = "UPDATE TreatmentPlans SET plan_summary = ?, estimated_cost = ? WHERE plan_id = ?";
+    public boolean updateTreatmentPlan(TreatmentPlan plan) {
+        String sql = "UPDATE TreatmentPlans SET plan_summary = ?, notes = ?, estimated_cost = ? WHERE plan_id = ?";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             
-            statement.setString(1, treatmentPlan.getPlanSummary());
-            statement.setBigDecimal(2, treatmentPlan.getEstimatedCost());
-            statement.setInt(3, treatmentPlan.getPlanId());
+            statement.setString(1, plan.getPlanSummary());
+            statement.setString(2, plan.getNotes());
+            statement.setBigDecimal(3, plan.getEstimatedCost());
+            statement.setInt(4, plan.getPlanId());
             
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error updating treatment plan: " + treatmentPlan.getPlanId(), e);
+            logger.log(Level.SEVERE, "Error updating treatment plan: " + plan.getPlanId(), e);
             return false;
         }
     }
-
+    
     /**
      * Delete treatment plan
      */
@@ -124,7 +125,7 @@ public class TreatmentPlanDAO {
             return false;
         }
     }
-
+    
     /**
      * Map ResultSet to TreatmentPlan object
      */
@@ -133,6 +134,7 @@ public class TreatmentPlanDAO {
         plan.setPlanId(rs.getInt("plan_id"));
         plan.setRecordId(rs.getInt("record_id"));
         plan.setPlanSummary(rs.getString("plan_summary"));
+        plan.setNotes(rs.getString("notes"));
         
         BigDecimal estimatedCost = rs.getBigDecimal("estimated_cost");
         plan.setEstimatedCost(estimatedCost);

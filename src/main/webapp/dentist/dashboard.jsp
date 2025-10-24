@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bảng Điều Khiển Bác Sĩ Nha Khoa - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <c:if test="${empty sessionScope.user}">
@@ -34,59 +35,89 @@
             <div class="container">
         <div class="welcome-section">
             <h2>Chào Mừng Đến Bảng Điều Khiển Bác Sĩ Nha Khoa</h2>
-            <p>Quản lý lịch hẹn bệnh nhân, xem hồ sơ y tế và truy cập các công cụ lập kế hoạch điều trị. 
+            <p>Quản lý lịch hẹn bệnh nhân, theo dõi hàng đợi khám bệnh và truy cập lịch sử y tế. 
                Tập trung vào việc cung cấp dịch vụ chăm sóc nha khoa xuất sắc cho bệnh nhân.</p>
         </div>
         
         <div class="dashboard-grid">
-            <div class="card">
-                <h3>📅 Lịch Trình Của Tôi</h3>
+            <div class="card" onclick="window.location.href='${pageContext.request.contextPath}/dentist/schedule?action=daily'">
+                <h3>📅 Lịch Trình Hàng Ngày</h3>
                 <p>Xem lịch hẹn hàng ngày, bệnh nhân sắp tới và tình trạng lịch trình. Quản lý lịch của bạn một cách hiệu quả.</p>
+                <div class="card-action">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </div>
             
-            <div class="card">
-                <h3>📋 Hồ Sơ Bệnh Nhân</h3>
-                <p>Truy cập hồ sơ y tế bệnh nhân, lịch sử điều trị và ghi chú khám bệnh. Cập nhật thông tin bệnh nhân một cách an toàn.</p>
+            <div class="card" onclick="window.location.href='${pageContext.request.contextPath}/dentist/schedule?action=weekly'">
+                <h3>📅 Lịch Trình Hàng Tuần</h3>
+                <p>Xem tổng quan lịch hẹn trong tuần, lập kế hoạch và điều chỉnh lịch trình làm việc.</p>
+                <div class="card-action">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </div>
             
-            <div class="card">
-                <h3>💊 Đơn Thuốc</h3>
-                <p>Tạo và quản lý đơn thuốc cho bệnh nhân. Theo dõi lịch sử thuốc và khuyến nghị liều lượng.</p>
+            <div class="card" onclick="window.location.href='${pageContext.request.contextPath}/dentist/patients'">
+                <h3>👥 Danh Sách Bệnh Nhân</h3>
+                <p>Quản lý danh sách bệnh nhân, theo dõi trạng thái khám bệnh và đánh dấu đã khám.</p>
+                <div class="card-action">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </div>
             
-            <div class="card">
-                <h3>🔬 Kế Hoạch Điều Trị</h3>
-                <p>Phát triển kế hoạch điều trị toàn diện cho bệnh nhân. Theo dõi tiến độ điều trị và kết quả.</p>
+            <div class="card" onclick="window.location.href='${pageContext.request.contextPath}/dentist/medical-history'">
+                <h3>📋 Lịch Sử Khám Bệnh</h3>
+                <p>Truy cập lịch sử khám bệnh của từng bệnh nhân, xem hồ sơ y tế và theo dõi tiến độ điều trị.</p>
+                <div class="card-action">
+                    <i class="fas fa-arrow-right"></i>
+                </div>
             </div>
         </div>
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-number">8</div>
-                <div class="stat-label">Bệnh Nhân Hôm Nay</div>
+                <div class="stat-icon">👥</div>
+                <div class="stat-number">${patientsNotExaminedToday}</div>
+                <div class="stat-label">Bệnh Nhân Chưa Khám</div>
+                <div class="stat-description">Cần khám hôm nay</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">3</div>
-                <div class="stat-label">Theo Dõi Chờ Xử Lý</div>
+                <div class="stat-icon">✅</div>
+                <div class="stat-number">${patientsExaminedToday}</div>
+                <div class="stat-label">Đã Khám</div>
+                <div class="stat-description">Hoàn thành hôm nay</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">15</div>
-                <div class="stat-label">Lịch Hẹn Tuần Này</div>
+                <div class="stat-icon">📅</div>
+                <div class="stat-number">${totalAppointmentsToday}</div>
+                <div class="stat-label">Lịch Hẹn Hôm Nay</div>
+                <div class="stat-description">Tổng số cuộc hẹn</div>
             </div>
             <div class="stat-card">
-                <div class="stat-number">98%</div>
-                <div class="stat-label">Sự Hài Lòng Của Bệnh Nhân</div>
+                <div class="stat-icon">⏰</div>
+                <div class="stat-number">${patientsWaitingInQueue}</div>
+                <div class="stat-label">Đang Chờ</div>
+                <div class="stat-description">Trong hàng đợi</div>
             </div>
         </div>
         
-        <div class="card" style="margin-top: 2rem;">
-            <h3>📋 Lịch Hẹn Hôm Nay</h3>
-            <p>• 9:00 - John Smith (Khám định kỳ)<br>
-               • 10:30 - Sarah Johnson (Làm sạch)<br>
-               • 14:00 - Mike Davis (Trám răng)<br>
-               • 15:30 - Lisa Wilson (Tư vấn)<br>
-               • 16:30 - Robert Brown (Theo dõi)</p>
+        <div class="quick-actions">
+            <h3>🚀 Thao Tác Nhanh</h3>
+            <div class="action-buttons">
+                <a href="${pageContext.request.contextPath}/dentist/patients" class="action-btn primary">
+                    <i class="fas fa-users"></i>
+                    <span>Xem Danh Sách Bệnh Nhân</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/dentist/schedule?action=daily" class="action-btn secondary">
+                    <i class="fas fa-calendar-day"></i>
+                    <span>Lịch Hàng Ngày</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/dentist/medical-history" class="action-btn secondary">
+                    <i class="fas fa-history"></i>
+                    <span>Lịch Sử Khám Bệnh</span>
+                </a>
+            </div>
         </div>
+
             </div>
         </main>
     </div>

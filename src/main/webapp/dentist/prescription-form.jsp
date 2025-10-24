@@ -1,29 +1,73 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kê Đơn Thuốc - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
+    <title>Kê Đơn Thuốc - ${patient.fullName} - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
     <style>
-        .form-container {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            max-width: 1000px;
-            margin: 0 auto;
+        .page-header {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 1rem 1rem;
         }
         
-        .section-title {
-            color: #0f172a;
-            font-size: 1.5rem;
+        .page-header h1 {
+            color: white;
             font-weight: 700;
+        }
+        
+        .page-header .text-muted {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .prescription-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .prescription-header {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border-bottom: 3px solid #10b981;
+            border-radius: 1rem 1rem 0 0 !important;
+            padding: 1.5rem;
+        }
+        
+        .prescription-header h2 {
+            color: #047857;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .prescription-body {
+            padding: 2rem;
+            background: #fefefe;
+        }
+        
+        .form-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
             margin-bottom: 1.5rem;
-            border-bottom: 2px solid #06b6d4;
-            padding-bottom: 0.5rem;
+        }
+        
+        .form-section h4 {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
         }
         
         .form-group {
@@ -32,381 +76,579 @@
         
         .form-label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: #0f172a;
             font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
         
         .form-control {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
+            padding: 0.875rem;
+            border: 2px solid #e5e7eb;
             border-radius: 0.5rem;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+            font-size: 0.95rem;
+            transition: all 0.2s ease-in-out;
+            background: white;
         }
         
         .form-control:focus {
-            outline: none;
-            border-color: #06b6d4;
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+            border-color: #10b981;
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
+        
+        .form-control:focus {
+            transform: translateY(-1px);
         }
         
         .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
+            padding: 0.875rem 2rem;
             border-radius: 0.5rem;
-            font-size: 1rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            margin-right: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
         }
         
         .btn-primary {
-            background-color: #06b6d4;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
             color: white;
+            box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);
         }
         
         .btn-primary:hover {
-            background-color: #0891b2;
-        }
-        
-        .btn-success {
-            background-color: #10b981;
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
-        }
-        
-        .btn-success:hover {
-            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(16, 185, 129, 0.4);
         }
         
         .btn-secondary {
-            background-color: #6b7280;
+            background: #6b7280;
             color: white;
         }
         
         .btn-secondary:hover {
-            background-color: #4b5563;
+            background: #4b5563;
+            color: white;
+            transform: translateY(-1px);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            color: white;
+            transform: translateY(-1px);
         }
         
         .btn-danger {
-            background-color: #ef4444;
+            background: #ef4444;
             color: white;
         }
         
         .btn-danger:hover {
-            background-color: #dc2626;
+            background: #dc2626;
+            color: white;
+            transform: translateY(-1px);
         }
         
-        .alert {
-            padding: 1rem;
+        .patient-info {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 1px solid #6ee7b7;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .patient-info h3 {
+            color: #047857;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .patient-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .patient-detail {
+            display: flex;
+            align-items: center;
+            color: #374151;
+        }
+        
+        .patient-detail i {
+            color: #10b981;
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: #ef4444;
+            font-weight: bold;
+        }
+        
+        .form-note {
+            background: #d1fae5;
+            border: 1px solid #10b981;
             border-radius: 0.5rem;
+            padding: 1rem;
             margin-bottom: 1.5rem;
+            color: #047857;
         }
         
-        .alert-error {
-            background-color: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-        
-        .form-help {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
+        .form-note i {
+            color: #10b981;
+            margin-right: 0.5rem;
         }
         
         .medication-item {
-            background-color: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 0.5rem;
+            background: #f0fdf4;
+            border: 2px solid #bbf7d0;
+            border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 1rem;
             position: relative;
         }
         
-        .medication-item:last-child {
-            margin-bottom: 0;
-        }
-        
-        .medication-header {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-        
-        .medication-number {
-            background-color: #06b6d4;
-            color: white;
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .medication-item h5 {
+            color: #047857;
             font-weight: 600;
-            margin-right: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
         }
         
-        .remove-medication {
+        .medication-item .remove-btn {
             position: absolute;
             top: 1rem;
             right: 1rem;
-            background-color: #ef4444;
+            background: #ef4444;
             color: white;
             border: none;
             border-radius: 50%;
             width: 30px;
             height: 30px;
-            cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
         
-        .remove-medication:hover {
-            background-color: #dc2626;
+        .medication-item .remove-btn:hover {
+            background: #dc2626;
+            transform: scale(1.1);
         }
         
         .medication-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 1fr 1fr 1fr;
             gap: 1rem;
         }
         
-        .medication-grid.full-width {
-            grid-template-columns: 1fr;
+        .medication-grid .form-group {
+            margin-bottom: 0;
         }
         
         .add-medication-btn {
-            background-color: #10b981;
+            background: #10b981;
             color: white;
-            border: none;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            font-size: 1rem;
-            font-weight: 600;
+            border: 2px dashed #6ee7b7;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            text-align: center;
             cursor: pointer;
-            transition: all 0.2s;
-            width: 100%;
-            margin-top: 1rem;
+            transition: all 0.2s ease;
+            margin-bottom: 1.5rem;
         }
         
         .add-medication-btn:hover {
-            background-color: #059669;
+            background: #059669;
+            border-color: #10b981;
+            transform: translateY(-2px);
         }
         
-        .empty-state {
-            text-align: center;
-            padding: 2rem;
-            color: #6b7280;
-            background-color: #f8fafc;
-            border: 2px dashed #d1d5db;
+        .add-medication-btn i {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+        
+        .medication-examples {
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
             border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
         }
         
-        .empty-state i {
-            font-size: 3rem;
+        .medication-examples h5 {
+            color: #047857;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .medication-examples ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+        
+        .medication-examples li {
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        
+        .prescription-summary {
+            background: #f0fdf4;
+            border: 2px solid #10b981;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .prescription-summary h4 {
+            color: #047857;
+            font-weight: 700;
             margin-bottom: 1rem;
-            color: #d1d5db;
+        }
+        
+        .prescription-summary .summary-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #d1fae5;
+        }
+        
+        .prescription-summary .summary-item:last-child {
+            border-bottom: none;
+            font-weight: 700;
+            color: #047857;
+        }
+        
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1rem 0;
+            }
+            
+            .prescription-body {
+                padding: 1rem;
+            }
+            
+            .patient-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .medication-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <c:if test="${empty sessionScope.user}">
-        <c:redirect url="/login.jsp"/>
+        <c:redirect url="/login"/>
     </c:if>
-
-    <div class="header">
-        <h1>🦷 Kê Đơn Thuốc</h1>
-        <div class="user-info">
-            <span>Chào mừng, ${sessionScope.user.fullName}</span>
-            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
-        </div>
-    </div>
-
+    
     <div class="dashboard-layout">
         <jsp:include page="/shared/left-navbar.jsp"/>
         <main class="dashboard-content">
-            <div class="container">
-                
-                <!-- Error Message -->
-                <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        ${errorMessage}
-                    </div>
-                </c:if>
-                
-                <!-- Form Container -->
-                <div class="form-container">
-                    <h2 class="section-title">
-                        <i class="fas fa-prescription me-2"></i>
-                        Thông Tin Đơn Thuốc
-                    </h2>
-                    
-                    <form action="${pageContext.request.contextPath}/create-prescription" method="POST" id="prescriptionForm">
-                        <input type="hidden" name="patient_id" value="${param.patient_id}">
-                        
-                        <div class="form-group">
-                            <label for="notes" class="form-label">
-                                Ghi Chú Đơn Thuốc
-                            </label>
-                            <textarea id="notes" name="notes" class="form-control" rows="4" 
-                                      placeholder="Nhập ghi chú về đơn thuốc, hướng dẫn sử dụng chung, lưu ý đặc biệt..."></textarea>
-                            <div class="form-help">
-                                Ví dụ: Uống thuốc sau khi ăn, tránh uống rượu bia, tái khám sau 1 tuần...
+            <div class="container-fluid">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="mb-1">💊 Kê Đơn Thuốc Điện Tử</h1>
+                                <p class="text-muted mb-0">Bệnh nhân: <strong>${patient.fullName}</strong></p>
                             </div>
-                        </div>
-                        
-                        <!-- Medications Section -->
-                        <div class="form-group">
-                            <label class="form-label">
-                                Danh Sách Thuốc <span class="text-danger">*</span>
-                            </label>
-                            
-                            <div id="medications-container">
-                                <div class="empty-state" id="empty-state">
-                                    <i class="fas fa-pills"></i>
-                                    <p>Chưa có thuốc nào được thêm</p>
-                                    <p>Nhấn nút "Thêm Thuốc" để bắt đầu</p>
-                                </div>
-                            </div>
-                            
-                            <button type="button" class="add-medication-btn" onclick="addMedication()">
-                                <i class="fas fa-plus me-2"></i>
-                                Thêm Thuốc
-                            </button>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>
-                                Tạo Đơn Thuốc
-                            </button>
-                            <a href="${pageContext.request.contextPath}/record-detail?record_id=${param.record_id}" 
+                            <a href="${pageContext.request.contextPath}/medical-record?action=form&patientId=${patient.patientId}" 
                                class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>
-                                Quay Lại
+                                <i class="fas fa-arrow-left me-2"></i>Quay Lại
                             </a>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 
+                <!-- Success/Error Messages -->
+                <c:if test="${not empty successMessage}">
+                    <div class="container">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>${successMessage}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </div>
+                </c:if>
+                <c:if test="${not empty errorMessage}">
+                    <div class="container">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>${errorMessage}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </div>
+                </c:if>
+
+                <!-- Main Content -->
+                <div class="container">
+                    <!-- Patient Information -->
+                    <div class="patient-info">
+                        <h3><i class="fas fa-user me-2"></i>Thông Tin Bệnh Nhân</h3>
+                        <div class="patient-details">
+                            <div class="patient-detail">
+                                <i class="fas fa-id-card"></i>
+                                <span><strong>Mã BN:</strong> ${patient.patientId}</span>
+                            </div>
+                            <div class="patient-detail">
+                                <i class="fas fa-user"></i>
+                                <span><strong>Họ Tên:</strong> ${patient.fullName}</span>
+                            </div>
+                            <div class="patient-detail">
+                                <i class="fas fa-calendar"></i>
+                                <span><strong>Ngày Sinh:</strong> 
+                                    <c:choose>
+                                        <c:when test="${not empty patient.birthDate}">
+                                            <fmt:formatDate value="${patient.birthDateAsDate}" pattern="dd/MM/yyyy"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            Chưa cập nhật
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </div>
+                            <div class="patient-detail">
+                                <i class="fas fa-phone"></i>
+                                <span><strong>SĐT:</strong> ${patient.phone}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Prescription Form -->
+                    <div class="prescription-card">
+                        <div class="prescription-header">
+                            <h2><i class="fas fa-prescription-bottle-alt me-2"></i>Kê Đơn Thuốc Chi Tiết</h2>
+                        </div>
+                        <div class="prescription-body">
+                            <form action="${pageContext.request.contextPath}/medical-record" method="post" id="prescriptionForm">
+                                <input type="hidden" name="action" value="addPrescription">
+                                <input type="hidden" name="recordId" value="${recordId}">
+                                <input type="hidden" name="patientId" value="${patient.patientId}">
+                                
+                                <div class="form-note">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>Lưu ý:</strong> Kê đơn thuốc điện tử cho bệnh nhân. Có thể thêm nhiều loại thuốc khác nhau.
+                                </div>
+                                
+                                <!-- Prescription Date -->
+                                <div class="form-section">
+                                    <h4><i class="fas fa-calendar-alt me-2"></i>Thông Tin Đơn Thuốc</h4>
+                                    <div class="form-group">
+                                        <label class="form-label required-field" for="prescriptionDate">Ngày Kê Đơn</label>
+                                        <input type="date" class="form-control" id="prescriptionDate" name="prescriptionDate" 
+                                               value="${param.prescriptionDate}" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label" for="notes">Ghi Chú Chung</label>
+                                        <textarea class="form-control" id="notes" name="notes" rows="3" 
+                                                  placeholder="Ghi chú chung cho toàn bộ đơn thuốc...&#10;&#10;Ví dụ:&#10;- Uống thuốc sau khi ăn&#10;- Tái khám sau 1 tuần&#10;- Tránh thức ăn cay nóng&#10;- Nếu có phản ứng phụ thì ngừng thuốc và liên hệ bác sĩ"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Medications -->
+                                <div class="form-section">
+                                    <h4><i class="fas fa-pills me-2"></i>Danh Sách Thuốc</h4>
+                                    
+                                    <div class="medication-examples">
+                                        <h5><i class="fas fa-lightbulb me-2"></i>Gợi Ý Các Loại Thuốc Thường Dùng:</h5>
+                                        <ul>
+                                            <li><strong>Giảm đau:</strong> Paracetamol, Ibuprofen, Diclofenac</li>
+                                            <li><strong>Kháng sinh:</strong> Amoxicillin, Ciprofloxacin, Metronidazole</li>
+                                            <li><strong>Chống viêm:</strong> Prednisolone, Dexamethasone</li>
+                                            <li><strong>Gây tê:</strong> Lidocaine, Articaine</li>
+                                            <li><strong>Kháng histamine:</strong> Cetirizine, Loratadine</li>
+                                            <li><strong>Bổ sung:</strong> Vitamin C, Canxi, Fluoride</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div id="medicationsContainer">
+                                        <!-- Medications will be added here dynamically -->
+                                    </div>
+                                    
+                                    <div class="add-medication-btn" onclick="addMedication()">
+                                        <i class="fas fa-plus-circle"></i>
+                                        <div>Thêm Thuốc Mới</div>
+                                        <small>Nhấn để thêm loại thuốc khác</small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Prescription Summary -->
+                                <div class="prescription-summary" id="prescriptionSummary" style="display: none;">
+                                    <h4><i class="fas fa-list-check me-2"></i>Tóm Tắt Đơn Thuốc</h4>
+                                    <div id="summaryContent">
+                                        <!-- Summary will be generated here -->
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                    <a href="${pageContext.request.contextPath}/medical-record?action=form&patientId=${patient.patientId}" 
+                                       class="btn btn-secondary">
+                                        <i class="fas fa-times me-2"></i>Hủy Bỏ
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Lưu Đơn Thuốc
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         let medicationCount = 0;
         
+        // Set today's date as default
+        document.getElementById('prescriptionDate').value = new Date().toISOString().split('T')[0];
+        
+        // Add medication function
         function addMedication() {
             medicationCount++;
-            
-            // Hide empty state
-            const emptyState = document.getElementById('empty-state');
-            if (emptyState) {
-                emptyState.style.display = 'none';
-            }
-            
-            const container = document.getElementById('medications-container');
-            const medicationItem = document.createElement('div');
-            medicationItem.className = 'medication-item';
-            medicationItem.id = 'medication-' + medicationCount;
-            
-            medicationItem.innerHTML = `
-                <div class="medication-header">
-                    <div class="medication-number">${medicationCount}</div>
-                    <h6 class="mb-0">Thuốc ${medicationCount}</h6>
-                </div>
-                <button type="button" class="remove-medication" onclick="removeMedication(${medicationCount})">
-                    <i class="fas fa-times"></i>
-                </button>
-                
-                <div class="medication-grid">
-                    <div class="form-group">
-                        <label class="form-label">Tên Thuốc <span class="text-danger">*</span></label>
-                        <input type="text" name="medication_name_${medicationCount}" class="form-control" 
-                               placeholder="Ví dụ: Amoxicillin, Ibuprofen..." required>
+            const container = document.getElementById('medicationsContainer');
+            const medicationHtml = `
+                <div class="medication-item" id="medication-${medicationCount}">
+                    <h5><i class="fas fa-pills me-2"></i>Thuốc #${medicationCount}</h5>
+                    <button type="button" class="remove-btn" onclick="removeMedication(${medicationCount})">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="medication-grid">
+                        <div class="form-group">
+                            <label class="form-label required-field">Tên Thuốc</label>
+                            <input type="text" class="form-control" name="medicationName" 
+                                   placeholder="Ví dụ: Paracetamol 500mg" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required-field">Liều Lượng</label>
+                            <input type="text" class="form-control" name="dosage" 
+                                   placeholder="Ví dụ: 2 viên/lần" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label required-field">Thời Gian</label>
+                            <input type="text" class="form-control" name="duration" 
+                                   placeholder="Ví dụ: 7 ngày" required>
+                        </div>
                     </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Liều Lượng</label>
-                        <input type="text" name="dosage_${medicationCount}" class="form-control" 
-                               placeholder="Ví dụ: 500mg, 2 viên...">
+                    <div class="form-group mt-3">
+                        <label class="form-label">Hướng Dẫn Sử Dụng</label>
+                        <textarea class="form-control" name="instructions" rows="2" 
+                                  placeholder="Hướng dẫn chi tiết cách sử dụng thuốc...&#10;Ví dụ: Uống sau khi ăn, 2 lần/ngày, sáng và tối"></textarea>
                     </div>
-                </div>
-                
-                <div class="medication-grid">
-                    <div class="form-group">
-                        <label class="form-label">Thời Gian Sử Dụng</label>
-                        <input type="text" name="duration_${medicationCount}" class="form-control" 
-                               placeholder="Ví dụ: 7 ngày, 2 tuần...">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label class="form-label">Cách Sử Dụng</label>
-                        <input type="text" name="instructions_${medicationCount}" class="form-control" 
-                               placeholder="Ví dụ: Uống 3 lần/ngày sau ăn...">
-                    </div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label">Hướng Dẫn Chi Tiết</label>
-                    <textarea name="detailed_instructions_${medicationCount}" class="form-control" rows="2" 
-                              placeholder="Hướng dẫn chi tiết về cách sử dụng thuốc, lưu ý đặc biệt..."></textarea>
                 </div>
             `;
-            
-            container.appendChild(medicationItem);
+            container.insertAdjacentHTML('beforeend', medicationHtml);
+            updateSummary();
         }
         
+        // Remove medication function
         function removeMedication(id) {
-            const medicationItem = document.getElementById('medication-' + id);
-            if (medicationItem) {
-                medicationItem.remove();
-                
-                // Show empty state if no medications left
-                const container = document.getElementById('medications-container');
-                const medications = container.querySelectorAll('.medication-item');
-                if (medications.length === 0) {
-                    const emptyState = document.getElementById('empty-state');
-                    if (emptyState) {
-                        emptyState.style.display = 'block';
-                    }
-                }
+            const medication = document.getElementById(`medication-${id}`);
+            if (medication) {
+                medication.remove();
+                updateSummary();
             }
         }
+        
+        // Update prescription summary
+        function updateSummary() {
+            const medications = document.querySelectorAll('.medication-item');
+            const summary = document.getElementById('prescriptionSummary');
+            const summaryContent = document.getElementById('summaryContent');
+            
+            if (medications.length === 0) {
+                summary.style.display = 'none';
+                return;
+            }
+            
+            let summaryHtml = '';
+            medications.forEach((med, index) => {
+                const name = med.querySelector('input[name="medicationName"]').value || 'Chưa nhập tên';
+                const dosage = med.querySelector('input[name="dosage"]').value || 'Chưa nhập liều';
+                const duration = med.querySelector('input[name="duration"]').value || 'Chưa nhập thời gian';
+                const instructions = med.querySelector('textarea[name="instructions"]').value || 'Chưa có hướng dẫn';
+                
+                summaryHtml += `
+                    <div class="summary-item">
+                        <span><strong>${index + 1}. ${name}</strong></span>
+                        <span>${dosage} - ${duration}</span>
+                    </div>
+                `;
+            });
+            
+            summaryContent.innerHTML = summaryHtml;
+            summary.style.display = 'block';
+        }
+        
+        // Add event listeners for real-time summary update
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input[name="medicationName"], input[name="dosage"], input[name="duration"], textarea[name="instructions"]')) {
+                updateSummary();
+            }
+        });
         
         // Form validation
         document.getElementById('prescriptionForm').addEventListener('submit', function(e) {
             const medications = document.querySelectorAll('.medication-item');
+            
             if (medications.length === 0) {
                 e.preventDefault();
-                alert('Vui lòng thêm ít nhất một loại thuốc vào đơn thuốc.');
-                return false;
+                alert('Vui lòng thêm ít nhất một loại thuốc!');
+                return;
             }
             
-            // Validate required fields
+            const requiredFields = this.querySelectorAll('[required]');
             let isValid = true;
-            medications.forEach((medication, index) => {
-                const medicationName = medication.querySelector('input[name^="medication_name_"]');
-                if (!medicationName.value.trim()) {
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#ef4444';
                     isValid = false;
-                    medicationName.focus();
+                } else {
+                    field.style.borderColor = '#e5e7eb';
                 }
             });
             
             if (!isValid) {
                 e.preventDefault();
-                alert('Vui lòng nhập tên thuốc cho tất cả các loại thuốc.');
-                return false;
+                alert('Vui lòng điền đầy đủ các trường bắt buộc!');
             }
+        });
+        
+        // Auto-resize textareas
+        document.addEventListener('input', function(e) {
+            if (e.target.tagName === 'TEXTAREA') {
+                e.target.style.height = 'auto';
+                e.target.style.height = e.target.scrollHeight + 'px';
+            }
+        });
+        
+        // Add first medication on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            addMedication();
         });
     </script>
 </body>

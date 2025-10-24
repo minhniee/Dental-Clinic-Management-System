@@ -1,29 +1,31 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 public class Prescription {
     private int prescriptionId;
     private int patientId;
     private Integer dentistId;
-    private LocalDateTime createdAt;
     private String notes;
-    private Patient patient;
-    private User dentist;
+    private LocalDate prescriptionDate;
+    private LocalDateTime createdAt;
     private List<PrescriptionItem> prescriptionItems;
+    private User dentist;
 
-    public Prescription() {
-    }
+    // Constructors
+    public Prescription() {}
 
-    public Prescription(int prescriptionId, int patientId, Integer dentistId, LocalDateTime createdAt, String notes) {
+    public Prescription(int prescriptionId, int patientId, Integer dentistId, String notes, LocalDateTime createdAt) {
         this.prescriptionId = prescriptionId;
         this.patientId = patientId;
         this.dentistId = dentistId;
-        this.createdAt = createdAt;
         this.notes = notes;
+        this.createdAt = createdAt;
     }
 
+    // Getters and Setters
     public int getPrescriptionId() {
         return prescriptionId;
     }
@@ -48,14 +50,6 @@ public class Prescription {
         this.dentistId = dentistId;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
     public String getNotes() {
         return notes;
     }
@@ -64,20 +58,20 @@ public class Prescription {
         this.notes = notes;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public LocalDate getPrescriptionDate() {
+        return prescriptionDate;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
+    public void setPrescriptionDate(LocalDate prescriptionDate) {
+        this.prescriptionDate = prescriptionDate;
     }
 
-    public User getDentist() {
-        return dentist;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setDentist(User dentist) {
-        this.dentist = dentist;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
     public List<PrescriptionItem> getPrescriptionItems() {
@@ -88,14 +82,23 @@ public class Prescription {
         this.prescriptionItems = prescriptionItems;
     }
 
+    public User getDentist() {
+        return dentist;
+    }
+
+    public void setDentist(User dentist) {
+        this.dentist = dentist;
+    }
+
     @Override
     public String toString() {
         return "Prescription{" +
                 "prescriptionId=" + prescriptionId +
                 ", patientId=" + patientId +
                 ", dentistId=" + dentistId +
-                ", createdAt=" + createdAt +
                 ", notes='" + notes + '\'' +
+                ", createdAt=" + createdAt +
+                ", prescriptionItems=" + (prescriptionItems != null ? prescriptionItems.size() : 0) + " items" +
                 '}';
     }
 }

@@ -112,7 +112,8 @@ public class AppointmentDAO {
      */
     public List<Appointment> getAppointmentsByStatus(String status) {
         String sql = "SELECT a.*, p.full_name as patient_name, p.phone as patient_phone, " +
-                     "u.full_name as dentist_name, s.name as service_name, s.price as service_price " +
+                     "u.full_name as dentist_name, s.name as service_name, s.price as service_price, " +
+                     "s.duration_minutes as service_duration " +
                      "FROM Appointments a " +
                      "LEFT JOIN Patients p ON a.patient_id = p.patient_id " +
                      "LEFT JOIN Users u ON a.dentist_id = u.user_id " +
@@ -137,6 +138,36 @@ public class AppointmentDAO {
             logger.log(Level.SEVERE, "Error getting appointments by status: " + status, e);
         }
         
+        return appointments;
+    }
+
+    /**
+     * Get appointments by patient ID
+     */
+    public List<Appointment> getAppointmentsByPatientId(int patientId) {
+        String sql = "SELECT a.*, p.full_name as patient_name, p.phone as patient_phone, " +
+                    "u.full_name as dentist_name, s.name as service_name, s.price as service_price, " +
+                    "s.duration_minutes as service_duration " +
+                    "FROM Appointments a " +
+                    "LEFT JOIN Patients p ON a.patient_id = p.patient_id " +
+                    "LEFT JOIN Users u ON a.dentist_id = u.user_id " +
+                    "LEFT JOIN Services s ON a.service_id = s.service_id " +
+                    "WHERE a.patient_id = ? " +
+                    "ORDER BY a.appointment_date DESC";
+        List<Appointment> appointments = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, patientId);
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                appointments.add(mapResultSetToAppointment(rs));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting appointments by patient ID: " + patientId, e);
+        }
         return appointments;
     }
 
@@ -374,12 +405,92 @@ public class AppointmentDAO {
         service.setServiceId(appointment.getServiceId());
         service.setName(rs.getString("service_name"));
         service.setPrice(rs.getBigDecimal("service_price"));
-        service.setDurationMinutes(rs.getInt("service_duration"));
+        
+        int durationMinutes = rs.getInt("service_duration");
         if (rs.wasNull()) {
             service.setDurationMinutes(null);
+        } else {
+            service.setDurationMinutes(durationMinutes);
         }
         appointment.setService(service);
         
         return appointment;
+    }
+
+    /**
+     * Get appointment count for a dentist today
+     */
+    public int getAppointmentCountForDentistToday(int dentistId) {
+        String sql = "SELECT COUNT(*) as appointment_count FROM Appointments " +
+                     "WHERE dentist_id = ? AND CAST(appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
+                     "AND status IN ('SCHEDULED', 'CONFIRMED', 'COMPLETED')";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, dentistId);
+            
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("appointment_count");
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting appointment count for dentist today", e);
+        }
+        return 0;
+    }
+
+    /**
+     * Get count of examined patients for a dentist today
+     */
+    public int getExaminedPatientsCountForDentistToday(int dentistId) {
+        String sql = "SELECT COUNT(DISTINCT a.patient_id) as examined_count " +
+                     "FROM Appointments a " +
+                     "INNER JOIN WaitingQueue wq ON a.appointment_id = wq.appointment_id " +
+                     "WHERE a.dentist_id = ? AND CAST(a.appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
+                     "AND wq.status = 'COMPLETED'";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, dentistId);
+            
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("examined_count");
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting examined patients count for dentist today", e);
+        }
+        return 0;
+    }
+
+    /**
+     * Get count of waiting patients for a dentist today
+     */
+    public int getWaitingPatientsCountForDentistToday(int dentistId) {
+        String sql = "SELECT COUNT(DISTINCT a.patient_id) as waiting_count " +
+                     "FROM Appointments a " +
+                     "LEFT JOIN WaitingQueue wq ON a.appointment_id = wq.appointment_id " +
+                     "WHERE a.dentist_id = ? AND CAST(a.appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
+                     "AND a.status IN ('SCHEDULED', 'CONFIRMED') " +
+                     "AND (wq.appointment_id IS NULL OR wq.status IN ('WAITING', 'CHECKED_IN', 'CALLED'))";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, dentistId);
+            
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("waiting_count");
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting waiting patients count for dentist today", e);
+        }
+        return 0;
     }
 }

@@ -34,10 +34,10 @@ public class PatientListServlet extends HttpServlet {
         }
         
         try {
-            // Get patients who haven't been examined today
+            // Get patients who have appointments today but haven't been examined yet
             List<Patient> patientsNotExamined = patientDAO.getPatientsNotExaminedToday();
             
-            // Get all patients for reference
+            // Get all patients who have appointments today (both examined and not examined)
             List<Patient> allPatients = patientDAO.getAllPatients();
             
             // Set attributes for JSP

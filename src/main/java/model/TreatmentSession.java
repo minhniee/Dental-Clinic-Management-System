@@ -1,20 +1,22 @@
 package model;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class TreatmentSession {
     private int sessionId;
     private int planId;
-    private LocalDateTime sessionDate;
+    private int recordId;
+    private LocalDate sessionDate;
+    private String procedure;
     private String procedureDone;
+    private String notes;
     private BigDecimal sessionCost;
-    private TreatmentPlan treatmentPlan;
 
-    public TreatmentSession() {
-    }
+    // Constructors
+    public TreatmentSession() {}
 
-    public TreatmentSession(int sessionId, int planId, LocalDateTime sessionDate, String procedureDone, BigDecimal sessionCost) {
+    public TreatmentSession(int sessionId, int planId, LocalDate sessionDate, String procedureDone, BigDecimal sessionCost) {
         this.sessionId = sessionId;
         this.planId = planId;
         this.sessionDate = sessionDate;
@@ -22,6 +24,7 @@ public class TreatmentSession {
         this.sessionCost = sessionCost;
     }
 
+    // Getters and Setters
     public int getSessionId() {
         return sessionId;
     }
@@ -38,12 +41,28 @@ public class TreatmentSession {
         this.planId = planId;
     }
 
-    public LocalDateTime getSessionDate() {
+    public int getRecordId() {
+        return recordId;
+    }
+
+    public void setRecordId(int recordId) {
+        this.recordId = recordId;
+    }
+
+    public LocalDate getSessionDate() {
         return sessionDate;
     }
 
-    public void setSessionDate(LocalDateTime sessionDate) {
+    public void setSessionDate(LocalDate sessionDate) {
         this.sessionDate = sessionDate;
+    }
+
+    public String getProcedure() {
+        return procedure;
+    }
+
+    public void setProcedure(String procedure) {
+        this.procedure = procedure;
     }
 
     public String getProcedureDone() {
@@ -54,20 +73,20 @@ public class TreatmentSession {
         this.procedureDone = procedureDone;
     }
 
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     public BigDecimal getSessionCost() {
         return sessionCost;
     }
 
     public void setSessionCost(BigDecimal sessionCost) {
         this.sessionCost = sessionCost;
-    }
-
-    public TreatmentPlan getTreatmentPlan() {
-        return treatmentPlan;
-    }
-
-    public void setTreatmentPlan(TreatmentPlan treatmentPlan) {
-        this.treatmentPlan = treatmentPlan;
     }
 
     @Override

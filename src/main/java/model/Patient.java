@@ -13,13 +13,22 @@ public class Patient {
     private String phone;
     private String email;
     private String address;
+    private String avatar;
     private LocalDateTime createdAt;
+    
+    // Additional properties for queue management
+    private Integer positionInQueue;
+    private String queueStatus;
+    
+    // Additional properties for medical history
+    private Integer medicalRecordCount;
+    private LocalDateTime lastVisitDate;
 
     public Patient() {
     }
 
     public Patient(int patientId, String fullName, LocalDate birthDate, String  gender,
-                   String phone, String email, String address, LocalDateTime createdAt) {
+                   String phone, String email, String address, String avatar, LocalDateTime createdAt) {
         this.patientId = patientId;
         this.fullName = fullName;
         this.birthDate = birthDate;
@@ -27,6 +36,7 @@ public class Patient {
         this.phone = phone;
         this.email = email;
         this.address = address;
+        this.avatar = avatar;
         this.createdAt = createdAt;
     }
 
@@ -86,6 +96,14 @@ public class Patient {
         this.address = address;
     }
 
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
+    }
+
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -115,6 +133,48 @@ public class Patient {
         return null;
     }
 
+    public Integer getPositionInQueue() {
+        return positionInQueue;
+    }
+
+    public void setPositionInQueue(Integer positionInQueue) {
+        this.positionInQueue = positionInQueue;
+    }
+
+    public String getQueueStatus() {
+        return queueStatus;
+    }
+
+    public void setQueueStatus(String queueStatus) {
+        this.queueStatus = queueStatus;
+    }
+
+    public Integer getMedicalRecordCount() {
+        return medicalRecordCount;
+    }
+
+    public void setMedicalRecordCount(Integer medicalRecordCount) {
+        this.medicalRecordCount = medicalRecordCount;
+    }
+
+    public LocalDateTime getLastVisitDate() {
+        return lastVisitDate;
+    }
+
+    public void setLastVisitDate(LocalDateTime lastVisitDate) {
+        this.lastVisitDate = lastVisitDate;
+    }
+
+    /**
+     * Helper method to get lastVisitDate as java.util.Date for JSP formatting
+     */
+    public Date getLastVisitDateAsDate() {
+        if (lastVisitDate != null) {
+            return Date.from(lastVisitDate.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
     @Override
     public String toString() {
         return "Patient{" +
@@ -125,6 +185,7 @@ public class Patient {
                 ", phone='" + phone + '\'' +
                 ", email='" + email + '\'' +
                 ", address='" + address + '\'' +
+                ", avatar='" + avatar + '\'' +
                 ", createdAt=" + createdAt +
                 '}';
     }

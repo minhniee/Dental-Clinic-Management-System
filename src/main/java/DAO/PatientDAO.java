@@ -57,10 +57,17 @@ public class PatientDAO {
     }
 
     /**
-     * Get all patients
+     * Get all patients who have appointments today (both examined and not examined)
      */
     public List<Patient> getAllPatients() {
-        String sql = "SELECT * FROM Patients ORDER BY full_name";
+        String sql = "SELECT DISTINCT p.*, a.appointment_date, wq.position_in_queue, wq.status as queue_status, " +
+                    "COALESCE(wq.position_in_queue, 999) as sort_position FROM Patients p " +
+                    "INNER JOIN Appointments a ON p.patient_id = a.patient_id " +
+                    "LEFT JOIN WaitingQueue wq ON a.appointment_id = wq.appointment_id " +
+                    "WHERE CAST(a.appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
+                    "AND a.status IN ('SCHEDULED', 'CONFIRMED', 'COMPLETED') " +
+                    "ORDER BY sort_position, a.appointment_date ASC, p.full_name";
+        
         List<Patient> patients = new ArrayList<>();
         
         try (Connection connection = new DBContext().getConnection();
@@ -77,14 +84,18 @@ public class PatientDAO {
     }
 
     /**
-     * Get patients who haven't been examined today
+     * Get patients who have appointments today but haven't been examined yet
      */
     public List<Patient> getPatientsNotExaminedToday() {
-        String sql = "SELECT DISTINCT p.* FROM Patients p " +
-                    "LEFT JOIN MedicalRecords mr ON p.patient_id = mr.patient_id " +
-                    "AND CAST(mr.created_at AS DATE) = CAST(GETDATE() AS DATE) " +
-                    "WHERE mr.patient_id IS NULL " +
-                    "ORDER BY p.full_name";
+        String sql = "SELECT DISTINCT p.*, a.appointment_date, wq.position_in_queue, wq.status as queue_status, " +
+                    "COALESCE(wq.position_in_queue, 999) as sort_position FROM Patients p " +
+                    "INNER JOIN Appointments a ON p.patient_id = a.patient_id " +
+                    "LEFT JOIN WaitingQueue wq ON a.appointment_id = wq.appointment_id " +
+                    "WHERE CAST(a.appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
+                    "AND a.status IN ('SCHEDULED', 'CONFIRMED') " +
+                    "AND (wq.appointment_id IS NULL OR wq.status IN ('WAITING', 'CHECKED_IN', 'CALLED')) " +
+                    "ORDER BY sort_position, a.appointment_date ASC, p.full_name";
+        
         List<Patient> patients = new ArrayList<>();
         
         try (Connection connection = new DBContext().getConnection();
@@ -96,6 +107,44 @@ public class PatientDAO {
             }
         } catch (SQLException e) {
             logger.log(Level.SEVERE, "Error getting patients not examined today", e);
+        }
+        return patients;
+    }
+    
+    /**
+     * Get all patients with their medical history summary
+     */
+    public List<Patient> getAllPatientsWithMedicalHistory() {
+        String sql = "SELECT DISTINCT p.*, " +
+                    "COUNT(mr.record_id) as medical_record_count, " +
+                    "MAX(mr.created_at) as last_visit_date " +
+                    "FROM Patients p " +
+                    "LEFT JOIN MedicalRecords mr ON p.patient_id = mr.patient_id " +
+                    "GROUP BY p.patient_id, p.full_name, p.birth_date, p.gender, p.phone, p.email, p.address, p.avatar, p.created_at " +
+                    "ORDER BY p.full_name";
+        
+        List<Patient> patients = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql);
+             ResultSet rs = statement.executeQuery()) {
+            
+            while (rs.next()) {
+                Patient patient = mapResultSetToPatient(rs);
+                
+                // Add medical history summary
+                int recordCount = rs.getInt("medical_record_count");
+                patient.setMedicalRecordCount(recordCount);
+                
+                Timestamp lastVisit = rs.getTimestamp("last_visit_date");
+                if (lastVisit != null) {
+                    patient.setLastVisitDate(lastVisit.toLocalDateTime());
+                }
+                
+                patients.add(patient);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting patients with medical history", e);
         }
         return patients;
     }
@@ -159,6 +208,26 @@ public class PatientDAO {
     }
 
     /**
+     * Update patient avatar
+     */
+    public boolean updatePatientAvatar(int patientId, String avatarUrl) {
+        String sql = "UPDATE Patients SET avatar = ? WHERE patient_id = ?";
+        
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement statement = conn.prepareStatement(sql)) {
+            
+            statement.setString(1, avatarUrl);
+            statement.setInt(2, patientId);
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error updating patient avatar: " + patientId, e);
+            return false;
+        }
+    }
+
+    /**
      * Map ResultSet to Patient object
      */
     private Patient mapResultSetToPatient(ResultSet rs) throws SQLException {
@@ -175,10 +244,92 @@ public class PatientDAO {
         patient.setPhone(rs.getString("phone"));
         patient.setEmail(rs.getString("email"));
         patient.setAddress(rs.getString("address"));
+        patient.setAvatar(rs.getString("avatar"));
         
         Timestamp createdAt = rs.getTimestamp("created_at");
         patient.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
         
+        // Map queue-related fields if they exist
+        try {
+            int positionInQueue = rs.getInt("position_in_queue");
+            if (!rs.wasNull()) {
+                patient.setPositionInQueue(positionInQueue);
+            }
+        } catch (SQLException e) {
+            // Column doesn't exist, ignore
+        }
+        
+        try {
+            String queueStatus = rs.getString("queue_status");
+            patient.setQueueStatus(queueStatus);
+        } catch (SQLException e) {
+            // Column doesn't exist, ignore
+        }
+        
         return patient;
+    }
+    
+    /**
+     * Mark a patient as examined today by updating WaitingQueue status
+     */
+    public boolean markPatientExaminedToday(int patientId, int dentistId) {
+        // First, get the appointment_id for today's appointment
+        String getAppointmentSql = "SELECT a.appointment_id FROM Appointments a " +
+                                 "WHERE a.patient_id = ? AND CAST(a.appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
+                                 "AND a.status IN ('SCHEDULED', 'CONFIRMED')";
+        
+        try (Connection connection = new DBContext().getConnection()) {
+            int appointmentId = -1;
+            
+            // Get appointment ID
+            try (PreparedStatement getAppointmentStmt = connection.prepareStatement(getAppointmentSql)) {
+                getAppointmentStmt.setInt(1, patientId);
+                try (ResultSet rs = getAppointmentStmt.executeQuery()) {
+                    if (rs.next()) {
+                        appointmentId = rs.getInt("appointment_id");
+                    }
+                }
+            }
+            
+            if (appointmentId == -1) {
+                logger.log(Level.WARNING, "No appointment found for patient " + patientId + " today");
+                return false;
+            }
+            
+            // Check if WaitingQueue record exists
+            String checkQueueSql = "SELECT queue_id FROM WaitingQueue WHERE appointment_id = ?";
+            boolean queueExists = false;
+            
+            try (PreparedStatement checkStmt = connection.prepareStatement(checkQueueSql)) {
+                checkStmt.setInt(1, appointmentId);
+                try (ResultSet rs = checkStmt.executeQuery()) {
+                    queueExists = rs.next();
+                }
+            }
+            
+            if (queueExists) {
+                // Update existing WaitingQueue record
+                String updateSql = "UPDATE WaitingQueue SET status = 'COMPLETED' WHERE appointment_id = ?";
+                try (PreparedStatement updateStmt = connection.prepareStatement(updateSql)) {
+                    updateStmt.setInt(1, appointmentId);
+                    int rowsAffected = updateStmt.executeUpdate();
+                    return rowsAffected > 0;
+                }
+            } else {
+                // Create new WaitingQueue record
+                String insertSql = "INSERT INTO WaitingQueue (appointment_id, position_in_queue, status) VALUES (?, ?, ?)";
+                try (PreparedStatement insertStmt = connection.prepareStatement(insertSql)) {
+                    insertStmt.setInt(1, appointmentId);
+                    insertStmt.setInt(2, 0); // Position doesn't matter for completed
+                    insertStmt.setString(3, "COMPLETED");
+                    int rowsAffected = insertStmt.executeUpdate();
+                    return rowsAffected > 0;
+                }
+            }
+            
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error marking patient as examined today: " + patientId, e);
+            return false;
+        }
     }
 }

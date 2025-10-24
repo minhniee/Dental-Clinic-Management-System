@@ -79,7 +79,7 @@ public class CreateTreatmentSessionServlet extends HttpServlet {
             // Create new treatment session
             TreatmentSession treatmentSession = new TreatmentSession();
             treatmentSession.setPlanId(planId);
-            treatmentSession.setSessionDate(sessionDateTime);
+            treatmentSession.setSessionDate(sessionDateTime.toLocalDate());
             treatmentSession.setProcedureDone(procedureDone.trim());
             
             // Parse session cost if provided

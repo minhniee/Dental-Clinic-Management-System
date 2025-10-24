@@ -7,10 +7,9 @@ public class PrescriptionItem {
     private String dosage;
     private String duration;
     private String instructions;
-    private Prescription prescription;
 
-    public PrescriptionItem() {
-    }
+    // Constructors
+    public PrescriptionItem() {}
 
     public PrescriptionItem(int itemId, int prescriptionId, String medicationName, String dosage, String duration, String instructions) {
         this.itemId = itemId;
@@ -21,6 +20,7 @@ public class PrescriptionItem {
         this.instructions = instructions;
     }
 
+    // Getters and Setters
     public int getItemId() {
         return itemId;
     }
@@ -67,14 +67,6 @@ public class PrescriptionItem {
 
     public void setInstructions(String instructions) {
         this.instructions = instructions;
-    }
-
-    public Prescription getPrescription() {
-        return prescription;
-    }
-
-    public void setPrescription(Prescription prescription) {
-        this.prescription = prescription;
     }
 
     @Override

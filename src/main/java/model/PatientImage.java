@@ -1,8 +1,6 @@
 package model;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 public class PatientImage {
     private int imageId;
@@ -12,17 +10,12 @@ public class PatientImage {
     private String imageType;
     private LocalDateTime uploadedAt;
     private Integer uploadedBy;
-    
-    // Related objects
-    private Patient patient;
-    private MedicalRecord medicalRecord;
-    private User uploadedByUser;
+    private User uploader;
 
-    public PatientImage() {
-    }
+    // Constructors
+    public PatientImage() {}
 
-    public PatientImage(int imageId, int patientId, Integer recordId, String filePath, 
-                      String imageType, LocalDateTime uploadedAt, Integer uploadedBy) {
+    public PatientImage(int imageId, int patientId, Integer recordId, String filePath, String imageType, LocalDateTime uploadedAt, Integer uploadedBy) {
         this.imageId = imageId;
         this.patientId = patientId;
         this.recordId = recordId;
@@ -32,6 +25,7 @@ public class PatientImage {
         this.uploadedBy = uploadedBy;
     }
 
+    // Getters and Setters
     public int getImageId() {
         return imageId;
     }
@@ -88,48 +82,12 @@ public class PatientImage {
         this.uploadedBy = uploadedBy;
     }
 
-    public Patient getPatient() {
-        return patient;
+    public User getUploader() {
+        return uploader;
     }
 
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public MedicalRecord getMedicalRecord() {
-        return medicalRecord;
-    }
-
-    public void setMedicalRecord(MedicalRecord medicalRecord) {
-        this.medicalRecord = medicalRecord;
-    }
-
-    public User getUploadedByUser() {
-        return uploadedByUser;
-    }
-
-    public void setUploadedByUser(User uploadedByUser) {
-        this.uploadedByUser = uploadedByUser;
-    }
-
-    /**
-     * Helper method to get uploadedAt as java.util.Date for JSP formatting
-     */
-    public Date getUploadedAtAsDate() {
-        if (uploadedAt != null) {
-            return Date.from(uploadedAt.atZone(ZoneId.systemDefault()).toInstant());
-        }
-        return null;
-    }
-
-    /**
-     * Helper method to get file name from file path
-     */
-    public String getFileName() {
-        if (filePath != null && filePath.contains("/")) {
-            return filePath.substring(filePath.lastIndexOf("/") + 1);
-        }
-        return filePath;
+    public void setUploader(User uploader) {
+        this.uploader = uploader;
     }
 
     @Override

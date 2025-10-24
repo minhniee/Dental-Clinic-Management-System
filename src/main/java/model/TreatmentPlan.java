@@ -8,13 +8,14 @@ public class TreatmentPlan {
     private int planId;
     private int recordId;
     private String planSummary;
+    private String description;
+    private String notes;
     private BigDecimal estimatedCost;
     private LocalDateTime createdAt;
-    private MedicalRecord medicalRecord;
     private List<TreatmentSession> treatmentSessions;
 
-    public TreatmentPlan() {
-    }
+    // Constructors
+    public TreatmentPlan() {}
 
     public TreatmentPlan(int planId, int recordId, String planSummary, BigDecimal estimatedCost, LocalDateTime createdAt) {
         this.planId = planId;
@@ -24,6 +25,7 @@ public class TreatmentPlan {
         this.createdAt = createdAt;
     }
 
+    // Getters and Setters
     public int getPlanId() {
         return planId;
     }
@@ -48,6 +50,22 @@ public class TreatmentPlan {
         this.planSummary = planSummary;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
     public BigDecimal getEstimatedCost() {
         return estimatedCost;
     }
@@ -62,14 +80,6 @@ public class TreatmentPlan {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
-    }
-
-    public MedicalRecord getMedicalRecord() {
-        return medicalRecord;
-    }
-
-    public void setMedicalRecord(MedicalRecord medicalRecord) {
-        this.medicalRecord = medicalRecord;
     }
 
     public List<TreatmentSession> getTreatmentSessions() {
@@ -88,6 +98,7 @@ public class TreatmentPlan {
                 ", planSummary='" + planSummary + '\'' +
                 ", estimatedCost=" + estimatedCost +
                 ", createdAt=" + createdAt +
+                ", treatmentSessions=" + (treatmentSessions != null ? treatmentSessions.size() : 0) + " sessions" +
                 '}';
     }
 }

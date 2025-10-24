@@ -10,14 +10,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PrescriptionItemDAO {
-
+    
     private static final Logger logger = Logger.getLogger(PrescriptionItemDAO.class.getName());
-
+    
     /**
      * Get prescription items by prescription ID
      */
     public List<PrescriptionItem> getItemsByPrescriptionId(int prescriptionId) {
-        String sql = "SELECT * FROM PrescriptionItems WHERE prescription_id = ? ORDER BY item_id";
+        String sql = "SELECT * FROM PrescriptionItems WHERE prescription_id = ? ORDER BY item_id ASC";
         List<PrescriptionItem> items = new ArrayList<>();
         
         try (Connection connection = new DBContext().getConnection();
@@ -34,7 +34,7 @@ public class PrescriptionItemDAO {
         }
         return items;
     }
-
+    
     /**
      * Get prescription item by ID
      */
@@ -55,28 +55,28 @@ public class PrescriptionItemDAO {
         }
         return null;
     }
-
+    
     /**
      * Create new prescription item
      */
-    public boolean createPrescriptionItem(PrescriptionItem prescriptionItem) {
+    public boolean createPrescriptionItem(PrescriptionItem item) {
         String sql = "INSERT INTO PrescriptionItems (prescription_id, medication_name, dosage, duration, instructions) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
-            statement.setInt(1, prescriptionItem.getPrescriptionId());
-            statement.setString(2, prescriptionItem.getMedicationName());
-            statement.setString(3, prescriptionItem.getDosage());
-            statement.setString(4, prescriptionItem.getDuration());
-            statement.setString(5, prescriptionItem.getInstructions());
+            statement.setInt(1, item.getPrescriptionId());
+            statement.setString(2, item.getMedicationName());
+            statement.setString(3, item.getDosage());
+            statement.setString(4, item.getDuration());
+            statement.setString(5, item.getInstructions());
             
             int rowsAffected = statement.executeUpdate();
             
             if (rowsAffected > 0) {
                 ResultSet generatedKeys = statement.getGeneratedKeys();
                 if (generatedKeys.next()) {
-                    prescriptionItem.setItemId(generatedKeys.getInt(1));
+                    item.setItemId(generatedKeys.getInt(1));
                 }
                 return true;
             }
@@ -85,56 +85,30 @@ public class PrescriptionItemDAO {
         }
         return false;
     }
-
-    /**
-     * Create multiple prescription items for a prescription
-     */
-    public boolean addItemsToPrescription(int prescriptionId, List<PrescriptionItem> items) {
-        String sql = "INSERT INTO PrescriptionItems (prescription_id, medication_name, dosage, duration, instructions) VALUES (?, ?, ?, ?, ?)";
-        
-        try (Connection connection = new DBContext().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql)) {
-            
-            for (PrescriptionItem item : items) {
-                statement.setInt(1, prescriptionId);
-                statement.setString(2, item.getMedicationName());
-                statement.setString(3, item.getDosage());
-                statement.setString(4, item.getDuration());
-                statement.setString(5, item.getInstructions());
-                statement.addBatch();
-            }
-            
-            int[] results = statement.executeBatch();
-            return results.length == items.size();
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error adding items to prescription: " + prescriptionId, e);
-            return false;
-        }
-    }
-
+    
     /**
      * Update prescription item
      */
-    public boolean updatePrescriptionItem(PrescriptionItem prescriptionItem) {
+    public boolean updatePrescriptionItem(PrescriptionItem item) {
         String sql = "UPDATE PrescriptionItems SET medication_name = ?, dosage = ?, duration = ?, instructions = ? WHERE item_id = ?";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             
-            statement.setString(1, prescriptionItem.getMedicationName());
-            statement.setString(2, prescriptionItem.getDosage());
-            statement.setString(3, prescriptionItem.getDuration());
-            statement.setString(4, prescriptionItem.getInstructions());
-            statement.setInt(5, prescriptionItem.getItemId());
+            statement.setString(1, item.getMedicationName());
+            statement.setString(2, item.getDosage());
+            statement.setString(3, item.getDuration());
+            statement.setString(4, item.getInstructions());
+            statement.setInt(5, item.getItemId());
             
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error updating prescription item: " + prescriptionItem.getItemId(), e);
+            logger.log(Level.SEVERE, "Error updating prescription item: " + item.getItemId(), e);
             return false;
         }
     }
-
+    
     /**
      * Delete prescription item
      */
@@ -152,21 +126,44 @@ public class PrescriptionItemDAO {
             return false;
         }
     }
-
+    
     /**
-     * Delete all items for a prescription
+     * Add multiple items to prescription
      */
-    public boolean deleteItemsByPrescriptionId(int prescriptionId) {
-        String sql = "DELETE FROM PrescriptionItems WHERE prescription_id = ?";
+    public boolean addItemsToPrescription(int prescriptionId, List<PrescriptionItem> items) {
+        if (items == null || items.isEmpty()) {
+            return true; // No items to add
+        }
+        
+        String sql = "INSERT INTO PrescriptionItems (prescription_id, medication_name, dosage, duration, instructions) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
             
-            statement.setInt(1, prescriptionId);
-            int rowsAffected = statement.executeUpdate();
-            return rowsAffected >= 0; // 0 is also valid if no items exist
+            connection.setAutoCommit(false); // Start transaction
+            
+            for (PrescriptionItem item : items) {
+                statement.setInt(1, prescriptionId);
+                statement.setString(2, item.getMedicationName());
+                statement.setString(3, item.getDosage());
+                statement.setString(4, item.getDuration());
+                statement.setString(5, item.getInstructions());
+                statement.addBatch();
+            }
+            
+            int[] results = statement.executeBatch();
+            connection.commit(); // Commit transaction
+            
+            // Check if all items were inserted successfully
+            for (int result : results) {
+                if (result <= 0) {
+                    return false;
+                }
+            }
+            return true;
+            
         } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error deleting items by prescription ID: " + prescriptionId, e);
+            logger.log(Level.SEVERE, "Error adding items to prescription: " + prescriptionId, e);
             return false;
         }
     }

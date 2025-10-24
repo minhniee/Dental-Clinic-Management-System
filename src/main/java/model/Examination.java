@@ -1,17 +1,19 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Examination {
     private int examId;
     private int recordId;
     private String findings;
     private String diagnosis;
+    private String notes;
+    private LocalDate examinationDate;
     private LocalDateTime createdAt;
-    private MedicalRecord medicalRecord;
 
-    public Examination() {
-    }
+    // Constructors
+    public Examination() {}
 
     public Examination(int examId, int recordId, String findings, String diagnosis, LocalDateTime createdAt) {
         this.examId = examId;
@@ -21,6 +23,7 @@ public class Examination {
         this.createdAt = createdAt;
     }
 
+    // Getters and Setters
     public int getExamId() {
         return examId;
     }
@@ -61,12 +64,20 @@ public class Examination {
         this.createdAt = createdAt;
     }
 
-    public MedicalRecord getMedicalRecord() {
-        return medicalRecord;
+    public String getNotes() {
+        return notes;
     }
 
-    public void setMedicalRecord(MedicalRecord medicalRecord) {
-        this.medicalRecord = medicalRecord;
+    public void setNotes(String notes) {
+        this.notes = notes;
+    }
+
+    public LocalDate getExaminationDate() {
+        return examinationDate;
+    }
+
+    public void setExaminationDate(LocalDate examinationDate) {
+        this.examinationDate = examinationDate;
     }
 
     @Override

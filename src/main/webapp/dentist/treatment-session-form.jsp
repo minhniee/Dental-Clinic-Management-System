@@ -1,30 +1,73 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thêm Buổi Điều Trị - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
+    <title>Ghi Phiên Điều Trị - ${patient.fullName} - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
     <style>
-        .form-container {
-            background: white;
-            border-radius: 1rem;
-            padding: 2rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
+        .page-header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: white;
+            padding: 2rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 1rem 1rem;
         }
         
-        .section-title {
-            color: #0f172a;
-            font-size: 1.5rem;
+        .page-header h1 {
+            color: white;
             font-weight: 700;
+        }
+        
+        .page-header .text-muted {
+            color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        .session-card {
+            border: none;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .session-header {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-bottom: 3px solid #3b82f6;
+            border-radius: 1rem 1rem 0 0 !important;
+            padding: 1.5rem;
+        }
+        
+        .session-header h2 {
+            color: #1e40af;
+            font-weight: 700;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .session-body {
+            padding: 2rem;
+            background: #fefefe;
+        }
+        
+        .form-section {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
             margin-bottom: 1.5rem;
-            border-bottom: 2px solid #06b6d4;
-            padding-bottom: 0.5rem;
+        }
+        
+        .form-section h4 {
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
         }
         
         .form-group {
@@ -33,207 +76,411 @@
         
         .form-label {
             display: block;
-            margin-bottom: 0.5rem;
-            color: #0f172a;
             font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
         }
         
         .form-control {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid #d1d5db;
+            padding: 0.875rem;
+            border: 2px solid #e5e7eb;
             border-radius: 0.5rem;
-            font-size: 1rem;
-            transition: border-color 0.2s;
+            font-size: 0.95rem;
+            transition: all 0.2s ease-in-out;
+            background: white;
         }
         
         .form-control:focus {
-            outline: none;
-            border-color: #06b6d4;
-            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+            border-color: #3b82f6;
+            outline: 0;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .form-control:focus {
+            transform: translateY(-1px);
         }
         
         .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
+            padding: 0.875rem 2rem;
             border-radius: 0.5rem;
-            font-size: 1rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
             text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            margin-right: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease-in-out;
+            border: none;
+            cursor: pointer;
+            font-size: 0.95rem;
         }
         
         .btn-primary {
-            background-color: #06b6d4;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
             color: white;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3);
         }
         
         .btn-primary:hover {
-            background-color: #0891b2;
+            background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(59, 130, 246, 0.4);
         }
         
         .btn-secondary {
-            background-color: #6b7280;
+            background: #6b7280;
             color: white;
         }
         
         .btn-secondary:hover {
-            background-color: #4b5563;
+            background: #4b5563;
+            color: white;
+            transform: translateY(-1px);
         }
         
-        .alert {
-            padding: 1rem;
+        .patient-info {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 1px solid #93c5fd;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .patient-info h3 {
+            color: #1e40af;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .patient-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+        
+        .patient-detail {
+            display: flex;
+            align-items: center;
+            color: #374151;
+        }
+        
+        .patient-detail i {
+            color: #3b82f6;
+            margin-right: 0.5rem;
+            width: 20px;
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: #ef4444;
+            font-weight: bold;
+        }
+        
+        .form-note {
+            background: #dbeafe;
+            border: 1px solid #3b82f6;
             border-radius: 0.5rem;
+            padding: 1rem;
             margin-bottom: 1.5rem;
+            color: #1e40af;
         }
         
-        .alert-error {
-            background-color: #fef2f2;
-            color: #dc2626;
-            border: 1px solid #fecaca;
-        }
-        
-        .form-help {
-            font-size: 0.875rem;
-            color: #6b7280;
-            margin-top: 0.25rem;
+        .form-note i {
+            color: #3b82f6;
+            margin-right: 0.5rem;
         }
         
         .cost-input {
             position: relative;
         }
         
-        .cost-input::after {
-            content: "VNĐ";
-            position: absolute;
-            right: 0.75rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6b7280;
+        .cost-input input {
+            padding-right: 12px;
+        }
+        
+        .procedure-examples {
+            background: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .procedure-examples h5 {
+            color: #0c4a6e;
             font-weight: 600;
+            margin-bottom: 0.5rem;
         }
         
-        .datetime-input {
-            display: flex;
-            gap: 1rem;
+        .procedure-examples ul {
+            margin: 0;
+            padding-left: 1.5rem;
         }
         
-        .datetime-input .form-control {
-            flex: 1;
+        .procedure-examples li {
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+        
+        @media (max-width: 768px) {
+            .page-header {
+                padding: 1rem 0;
+            }
+            
+            .session-body {
+                padding: 1rem;
+            }
+            
+            .patient-details {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
     <c:if test="${empty sessionScope.user}">
-        <c:redirect url="/login.jsp"/>
+        <c:redirect url="/login"/>
     </c:if>
-
-    <div class="header">
-        <h1>🦷 Thêm Buổi Điều Trị</h1>
-        <div class="user-info">
-            <span>Chào mừng, ${sessionScope.user.fullName}</span>
-            <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
-        </div>
-    </div>
-
+    
     <div class="dashboard-layout">
         <jsp:include page="/shared/left-navbar.jsp"/>
         <main class="dashboard-content">
-            <div class="container">
-                
-                <!-- Error Message -->
-                <c:if test="${not empty errorMessage}">
-                    <div class="alert alert-error">
-                        <i class="fas fa-exclamation-triangle me-2"></i>
-                        ${errorMessage}
-                    </div>
-                </c:if>
-                
-                <!-- Form Container -->
-                <div class="form-container">
-                    <h2 class="section-title">
-                        <i class="fas fa-calendar-check me-2"></i>
-                        Thông Tin Buổi Điều Trị
-                    </h2>
-                    
-                    <form action="${pageContext.request.contextPath}/create-treatment-session" method="POST">
-                        <input type="hidden" name="plan_id" value="${param.plan_id}">
-                        
-                        <div class="form-group">
-                            <label for="session_date" class="form-label">
-                                Ngày và Giờ Điều Trị <span class="text-danger">*</span>
-                            </label>
-                            <div class="datetime-input">
-                                <input type="date" id="session_date" name="session_date" class="form-control" 
-                                       required>
-                                <input type="time" id="session_time" name="session_time" class="form-control" 
-                                       required>
+            <div class="container-fluid">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="container">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h1 class="mb-1">👨‍⚕️ Ghi Phiên Điều Trị</h1>
+                                <p class="text-muted mb-0">Bệnh nhân: <strong>${patient.fullName}</strong></p>
                             </div>
-                            <div class="form-help">
-                                Chọn ngày và giờ thực hiện buổi điều trị
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="procedure_done" class="form-label">
-                                Thủ Thuật Đã Thực Hiện <span class="text-danger">*</span>
-                            </label>
-                            <textarea id="procedure_done" name="procedure_done" class="form-control" rows="6" 
-                                      placeholder="Mô tả chi tiết các thủ thuật đã thực hiện trong buổi điều trị này..." 
-                                      required></textarea>
-                            <div class="form-help">
-                                Ví dụ: 
-                                <br>• Làm sạch cao răng toàn bộ hàm trên và dưới
-                                <br>• Đánh bóng răng bằng máy chuyên dụng
-                                <br>• Hướng dẫn bệnh nhân cách chăm sóc răng miệng
-                                <br>• Kê đơn thuốc kháng viêm
-                            </div>
-                        </div>
-                        
-                        <div class="form-group">
-                            <label for="session_cost" class="form-label">
-                                Chi Phí Buổi Điều Trị
-                            </label>
-                            <div class="cost-input">
-                                <input type="number" id="session_cost" name="session_cost" class="form-control" 
-                                       placeholder="Nhập chi phí buổi điều trị" min="0" step="1000">
-                            </div>
-                            <div class="form-help">
-                                Nhập chi phí cho buổi điều trị này (không bắt buộc)
-                            </div>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save me-2"></i>
-                                Lưu Buổi Điều Trị
-                            </button>
-                            <a href="${pageContext.request.contextPath}/record-detail?record_id=${param.record_id}" 
+                            <a href="${pageContext.request.contextPath}/medical-record?action=form&patientId=${patient.patientId}" 
                                class="btn btn-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>
-                                Quay Lại
+                                <i class="fas fa-arrow-left me-2"></i>Quay Lại
                             </a>
                         </div>
-                    </form>
+                    </div>
                 </div>
                 
+                <!-- Success/Error Messages -->
+                <c:if test="${not empty successMessage}">
+                    <div class="container">
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            <i class="fas fa-check-circle me-2"></i>${successMessage}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </div>
+                </c:if>
+                <c:if test="${not empty errorMessage}">
+                    <div class="container">
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle me-2"></i>${errorMessage}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    </div>
+                </c:if>
+
+                <!-- Main Content -->
+                <div class="container">
+                    <!-- Patient Information -->
+                    <div class="patient-info">
+                        <h3><i class="fas fa-user me-2"></i>Thông Tin Bệnh Nhân</h3>
+                        <div class="patient-details">
+                            <div class="patient-detail">
+                                <i class="fas fa-id-card"></i>
+                                <span><strong>Mã BN:</strong> ${patient.patientId}</span>
+                            </div>
+                            <div class="patient-detail">
+                                <i class="fas fa-user"></i>
+                                <span><strong>Họ Tên:</strong> ${patient.fullName}</span>
+                            </div>
+                            <div class="patient-detail">
+                                <i class="fas fa-calendar"></i>
+                                <span><strong>Ngày Sinh:</strong> 
+                                    <c:choose>
+                                        <c:when test="${not empty patient.birthDate}">
+                                            <fmt:formatDate value="${patient.birthDateAsDate}" pattern="dd/MM/yyyy"/>
+                                        </c:when>
+                                        <c:otherwise>
+                                            Chưa cập nhật
+                                        </c:otherwise>
+                                    </c:choose>
+                                </span>
+                            </div>
+                            <div class="patient-detail">
+                                <i class="fas fa-phone"></i>
+                                <span><strong>SĐT:</strong> ${patient.phone}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Treatment Session Form -->
+                    <div class="session-card">
+                        <div class="session-header">
+                            <h2><i class="fas fa-user-md me-2"></i>Ghi Phiên Điều Trị Chi Tiết</h2>
+                        </div>
+                        <div class="session-body">
+                            <form action="${pageContext.request.contextPath}/medical-record" method="post">
+                                <input type="hidden" name="action" value="addTreatmentSession">
+                                <input type="hidden" name="recordId" value="${recordId}">
+                                <input type="hidden" name="patientId" value="${patient.patientId}">
+                                
+                                <div class="form-note">
+                                    <i class="fas fa-info-circle"></i>
+                                    <strong>Lưu ý:</strong> Ghi lại chi tiết phiên điều trị đã thực hiện, bao gồm thủ thuật, chi phí và ghi chú.
+                                </div>
+                                
+                                <!-- Session Date -->
+                                <div class="form-section">
+                                    <h4><i class="fas fa-calendar-alt me-2"></i>Thông Tin Phiên Điều Trị</h4>
+                                    <div class="form-group">
+                                        <label class="form-label required-field" for="sessionDate">Ngày Điều Trị</label>
+                                        <input type="date" class="form-control" id="sessionDate" name="sessionDate" 
+                                               value="${param.sessionDate}" required>
+                                    </div>
+                                </div>
+                                
+                                <!-- Procedure Details -->
+                                <div class="form-section">
+                                    <h4><i class="fas fa-procedures me-2"></i>Thủ Thuật Thực Hiện</h4>
+                                    <div class="form-group">
+                                        <label class="form-label required-field" for="procedure">Mô Tả Thủ Thuật</label>
+                                        <textarea class="form-control" id="procedure" name="procedure" rows="5" 
+                                                  placeholder="Mô tả chi tiết thủ thuật đã thực hiện...&#10;&#10;Ví dụ:&#10;- Điều trị tủy răng số 6&#10;- Làm sạch ống tủy, đặt thuốc sát khuẩn&#10;- Trám bít ống tủy bằng gutta-percha&#10;- Chụp X-quang kiểm tra" required></textarea>
+                                    </div>
+                                    
+                                    <div class="procedure-examples">
+                                        <h5><i class="fas fa-lightbulb me-2"></i>Gợi Ý Các Thủ Thuật Thường Gặp:</h5>
+                                        <ul>
+                                            <li>Điều trị tủy răng (Root canal treatment)</li>
+                                            <li>Trám răng sâu (Dental filling)</li>
+                                            <li>Cạo vôi răng (Teeth cleaning)</li>
+                                            <li>Nhổ răng (Tooth extraction)</li>
+                                            <li>Làm cầu răng (Dental bridge)</li>
+                                            <li>Làm răng giả (Dentures)</li>
+                                            <li>Chỉnh nha (Orthodontics)</li>
+                                            <li>Phẫu thuật nha chu (Periodontal surgery)</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                
+                                <!-- Cost Information -->
+                                <div class="form-section">
+                                    <h4><i class="fas fa-calculator me-2"></i>Chi Phí Phiên Điều Trị</h4>
+                                    <div class="form-group">
+                                        <label class="form-label required-field" for="sessionCost">Chi Phí Phiên (VNĐ)</label>
+                                        <div class="cost-input">
+                                            <input type="text" class="form-control" id="sessionCost" name="sessionCost" 
+                                                   placeholder="Nhập chi phí phiên điều trị (không giới hạn)..." required>
+                                        </div>
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            Nhập chi phí thực tế của phiên điều trị này. 
+                                            <strong>Không giới hạn số tiền</strong> - có thể nhập bất kỳ số tiền nào.
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <!-- Additional Notes -->
+                                <div class="form-section">
+                                    <h4><i class="fas fa-sticky-note me-2"></i>Ghi Chú Bổ Sung</h4>
+                                    <div class="form-group">
+                                        <label class="form-label" for="notes">Ghi Chú Thêm</label>
+                                        <textarea class="form-control" id="notes" name="notes" rows="4" 
+                                                  placeholder="Ghi chú thêm về phiên điều trị, tình trạng bệnh nhân, phản ứng thuốc, hoặc các lưu ý đặc biệt...&#10;&#10;Ví dụ:&#10;- Bệnh nhân phản ứng tốt với thuốc tê&#10;- Cần theo dõi tình trạng sưng nướu&#10;- Hẹn tái khám sau 1 tuần&#10;- Hướng dẫn vệ sinh răng miệng"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Action Buttons -->
+                                <div class="d-flex justify-content-between align-items-center mt-4">
+                                    <a href="${pageContext.request.contextPath}/medical-record?action=form&patientId=${patient.patientId}" 
+                                       class="btn btn-secondary">
+                                        <i class="fas fa-times me-2"></i>Hủy Bỏ
+                                    </a>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-2"></i>Lưu Phiên Điều Trị
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
     </div>
-    
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Set default date to today
-        document.getElementById('session_date').value = new Date().toISOString().split('T')[0];
+        // Auto-resize textareas
+        document.querySelectorAll('textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = this.scrollHeight + 'px';
+            });
+        });
         
-        // Set default time to current time
-        const now = new Date();
-        const timeString = now.getHours().toString().padStart(2, '0') + ':' + 
-                          now.getMinutes().toString().padStart(2, '0');
-        document.getElementById('session_time').value = timeString;
+        // Set today's date as default
+        document.getElementById('sessionDate').value = new Date().toISOString().split('T')[0];
+        
+        // Format cost input with unlimited amount
+        document.getElementById('sessionCost').addEventListener('input', function() {
+            let value = this.value.replace(/\D/g, '');
+            if (value) {
+                // Remove leading zeros
+                value = value.replace(/^0+/, '') || '0';
+                // Format with Vietnamese locale
+                this.value = parseInt(value).toLocaleString('vi-VN');
+            }
+        });
+        
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.style.borderColor = '#ef4444';
+                    isValid = false;
+                } else {
+                    field.style.borderColor = '#e5e7eb';
+                }
+            });
+            
+            // Validate cost input
+            const costInput = document.getElementById('sessionCost');
+            if (costInput.value.trim()) {
+                const numericValue = costInput.value.replace(/\D/g, '');
+                if (numericValue === '' || numericValue === '0') {
+                    costInput.style.borderColor = '#ef4444';
+                    isValid = false;
+                    alert('Chi phí phiên điều trị phải lớn hơn 0!');
+                } else {
+                    costInput.style.borderColor = '#e5e7eb';
+                }
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                if (!costInput.style.borderColor.includes('ef4444')) {
+                    alert('Vui lòng điền đầy đủ các trường bắt buộc!');
+                }
+            }
+        });
+        
+        // Add cost formatting on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            const costInput = document.getElementById('sessionCost');
+            if (costInput.value) {
+                const numericValue = costInput.value.replace(/\D/g, '');
+                if (numericValue) {
+                    costInput.value = parseInt(numericValue).toLocaleString('vi-VN');
+                }
+            }
+        });
     </script>
 </body>
 </html>
+

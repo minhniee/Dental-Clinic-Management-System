@@ -2,30 +2,26 @@ package DAO;
 
 import context.DBContext;
 import model.Prescription;
-import model.Patient;
-import model.User;
+import model.PrescriptionItem;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class PrescriptionDAO {
-
+    
     private static final Logger logger = Logger.getLogger(PrescriptionDAO.class.getName());
-
+    
     /**
      * Get prescriptions by patient ID
      */
     public List<Prescription> getPrescriptionsByPatientId(int patientId) {
-        String sql = "SELECT p.*, pt.full_name as patient_name, u.full_name as dentist_name " +
+        String sql = "SELECT p.*, u.full_name as dentist_name " +
                     "FROM Prescriptions p " +
-                    "LEFT JOIN Patients pt ON p.patient_id = pt.patient_id " +
                     "LEFT JOIN Users u ON p.dentist_id = u.user_id " +
-                    "WHERE p.patient_id = ? " +
-                    "ORDER BY p.created_at DESC";
+                    "WHERE p.patient_id = ? ORDER BY p.created_at DESC";
         List<Prescription> prescriptions = new ArrayList<>();
         
         try (Connection connection = new DBContext().getConnection();
@@ -42,14 +38,13 @@ public class PrescriptionDAO {
         }
         return prescriptions;
     }
-
+    
     /**
      * Get prescription by ID
      */
     public Prescription getPrescriptionById(int prescriptionId) {
-        String sql = "SELECT p.*, pt.full_name as patient_name, u.full_name as dentist_name " +
+        String sql = "SELECT p.*, u.full_name as dentist_name " +
                     "FROM Prescriptions p " +
-                    "LEFT JOIN Patients pt ON p.patient_id = pt.patient_id " +
                     "LEFT JOIN Users u ON p.dentist_id = u.user_id " +
                     "WHERE p.prescription_id = ?";
         
@@ -67,31 +62,7 @@ public class PrescriptionDAO {
         }
         return null;
     }
-
-    /**
-     * Get all prescriptions
-     */
-    public List<Prescription> getAllPrescriptions() {
-        String sql = "SELECT p.*, pt.full_name as patient_name, u.full_name as dentist_name " +
-                    "FROM Prescriptions p " +
-                    "LEFT JOIN Patients pt ON p.patient_id = pt.patient_id " +
-                    "LEFT JOIN Users u ON p.dentist_id = u.user_id " +
-                    "ORDER BY p.created_at DESC";
-        List<Prescription> prescriptions = new ArrayList<>();
-        
-        try (Connection connection = new DBContext().getConnection();
-             PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet rs = statement.executeQuery()) {
-            
-            while (rs.next()) {
-                prescriptions.add(mapResultSetToPrescription(rs));
-            }
-        } catch (SQLException e) {
-            logger.log(Level.SEVERE, "Error getting all prescriptions", e);
-        }
-        return prescriptions;
-    }
-
+    
     /**
      * Create new prescription
      */
@@ -119,7 +90,7 @@ public class PrescriptionDAO {
         }
         return false;
     }
-
+    
     /**
      * Update prescription
      */
@@ -140,7 +111,7 @@ public class PrescriptionDAO {
             return false;
         }
     }
-
+    
     /**
      * Delete prescription
      */
@@ -158,7 +129,7 @@ public class PrescriptionDAO {
             return false;
         }
     }
-
+    
     /**
      * Map ResultSet to Prescription object
      */
@@ -175,24 +146,81 @@ public class PrescriptionDAO {
         Timestamp createdAt = rs.getTimestamp("created_at");
         prescription.setCreatedAt(createdAt != null ? createdAt.toLocalDateTime() : null);
         
-        // Set patient information if available
-        String patientName = rs.getString("patient_name");
-        if (patientName != null) {
-            Patient patient = new Patient();
-            patient.setPatientId(prescription.getPatientId());
-            patient.setFullName(patientName);
-            prescription.setPatient(patient);
-        }
-        
         // Set dentist information if available
         String dentistName = rs.getString("dentist_name");
         if (dentistName != null && prescription.getDentistId() != null) {
-            User dentist = new User();
+            model.User dentist = new model.User();
             dentist.setUserId(prescription.getDentistId());
             dentist.setFullName(dentistName);
             prescription.setDentist(dentist);
         }
         
         return prescription;
+    }
+    
+    /**
+     * Create prescription item
+     */
+    public boolean createPrescriptionItem(PrescriptionItem item) {
+        String sql = "INSERT INTO PrescriptionItems (prescription_id, medication_name, dosage, duration, instructions) VALUES (?, ?, ?, ?, ?)";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, item.getPrescriptionId());
+            statement.setString(2, item.getMedicationName());
+            statement.setString(3, item.getDosage());
+            statement.setString(4, item.getDuration());
+            statement.setString(5, item.getInstructions());
+            
+            int rowsAffected = statement.executeUpdate();
+            return rowsAffected > 0;
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error creating prescription item", e);
+            return false;
+        }
+    }
+    
+    /**
+     * Get prescriptions by record ID (through patient_id)
+     */
+    public List<Prescription> getPrescriptionsByRecordId(int recordId) {
+        // First get patient_id from the record
+        String patientSql = "SELECT patient_id FROM MedicalRecords WHERE record_id = ?";
+        int patientId = 0;
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement patientStmt = connection.prepareStatement(patientSql)) {
+            
+            patientStmt.setInt(1, recordId);
+            ResultSet patientRs = patientStmt.executeQuery();
+            
+            if (patientRs.next()) {
+                patientId = patientRs.getInt("patient_id");
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting patient_id for record: " + recordId, e);
+            return new ArrayList<>();
+        }
+        
+        // Then get prescriptions by patient_id with dentist info
+        String sql = "SELECT p.*, u.full_name as dentist_name FROM Prescriptions p " +
+                    "LEFT JOIN Users u ON p.dentist_id = u.user_id " +
+                    "WHERE p.patient_id = ? ORDER BY p.created_at ASC";
+        List<Prescription> prescriptions = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, patientId);
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                prescriptions.add(mapResultSetToPrescription(rs));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting prescriptions by patient ID: " + patientId, e);
+        }
+        return prescriptions;
     }
 }

@@ -175,6 +175,22 @@
         .filter-tab.active:hover {
             color: white;
         }
+        
+        .gap-2 {
+            gap: 0.5rem;
+        }
+        
+        .badge {
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.375rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        
+        .bg-primary {
+            background-color: #3b82f6;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -203,15 +219,16 @@
                     </div>
                 </c:if>
                 
+                
                 <!-- Filter Tabs -->
                 <div class="filter-tabs">
                     <a href="#" class="filter-tab active" onclick="showNotExamined()">
                         <i class="fas fa-user-clock me-2"></i>
-                        Chưa Khám Hôm Nay
+                        Chưa Khám
                     </a>
                     <a href="#" class="filter-tab" onclick="showAll()">
                         <i class="fas fa-users me-2"></i>
-                        Tất Cả Bệnh Nhân
+                        Tất Cả Có Lịch Hẹn
                     </a>
                 </div>
                 
@@ -219,16 +236,21 @@
                 <div id="not-examined-section" class="section-card">
                     <h2 class="section-title">
                         <i class="fas fa-user-clock me-2"></i>
-                        Bệnh Nhân Chưa Khám Hôm Nay
+                        Bệnh Nhân Có Lịch Hẹn Chưa Khám
                     </h2>
                     
                     <c:choose>
                         <c:when test="${not empty patientsNotExamined}">
                             <c:forEach var="patient" items="${patientsNotExamined}">
-                                <div class="patient-card not-examined" onclick="openMedicalRecord(${patient.patientId})">
+                                <div class="patient-card not-examined" onclick="openMedicalRecord('${patient.patientId}')">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h5 class="mb-0">${patient.fullName}</h5>
-                                        <span class="status-badge status-not-examined">Chưa Khám</span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <c:if test="${not empty patient.positionInQueue}">
+                                                <span class="badge bg-primary">Số ${patient.positionInQueue}</span>
+                                            </c:if>
+                                            <span class="status-badge status-not-examined">Chưa Khám</span>
+                                        </div>
                                     </div>
                                     
                                     <div class="patient-info">
@@ -268,12 +290,16 @@
                                         </c:if>
                                     </div>
                                     
-                                    <div class="d-flex justify-content-end">
-                                        <a href="${pageContext.request.contextPath}/open-medical-record?patient_id=${patient.patientId}" 
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <a href="/dental_clinic_management_system/medical-record?action=form&patientId=${patient.patientId}" 
                                            class="btn btn-primary" onclick="event.stopPropagation()">
                                             <i class="fas fa-file-medical me-1"></i>
                                             Mở Hồ Sơ Khám
                                         </a>
+                                        <button class="btn btn-success" onclick="markAsExamined('${patient.patientId}', this)" title="Đánh dấu đã khám">
+                                            <i class="fas fa-check me-1"></i>
+                                            Đã Khám
+                                        </button>
                                     </div>
                                 </div>
                             </c:forEach>
@@ -281,8 +307,8 @@
                         <c:otherwise>
                             <div class="empty-state">
                                 <i class="fas fa-user-check"></i>
-                                <h4>Tất cả bệnh nhân đã được khám hôm nay!</h4>
-                                <p>Không có bệnh nhân nào chưa được khám trong ngày hôm nay.</p>
+                                <h4>Tất cả bệnh nhân có lịch hẹn đã được khám!</h4>
+                                <p>Không có bệnh nhân nào có lịch hẹn hôm nay chưa được khám.</p>
                             </div>
                         </c:otherwise>
                     </c:choose>
@@ -292,16 +318,37 @@
                 <div id="all-patients-section" class="section-card" style="display: none;">
                     <h2 class="section-title">
                         <i class="fas fa-users me-2"></i>
-                        Tất Cả Bệnh Nhân
+                        Tất Cả Bệnh Nhân Có Lịch Hẹn Hôm Nay
                     </h2>
                     
                     <c:choose>
                         <c:when test="${not empty allPatients}">
                             <c:forEach var="patient" items="${allPatients}">
-                                <div class="patient-card examined">
+                                <div class="patient-card examined" onclick="openMedicalRecord('${patient.patientId}')">
                                     <div class="d-flex justify-content-between align-items-start mb-2">
                                         <h5 class="mb-0">${patient.fullName}</h5>
-                                        <span class="status-badge status-examined">Đã Khám</span>
+                                        <div class="d-flex align-items-center gap-2">
+                                            <c:if test="${not empty patient.positionInQueue}">
+                                                <span class="badge bg-primary">Số ${patient.positionInQueue}</span>
+                                            </c:if>
+                                            <c:choose>
+                                                <c:when test="${patient.queueStatus == 'COMPLETED'}">
+                                                    <span class="status-badge status-examined">Đã Khám</span>
+                                                </c:when>
+                                                <c:when test="${patient.queueStatus == 'IN_TREATMENT'}">
+                                                    <span class="status-badge" style="background-color: #f59e0b; color: white;">Đang Khám</span>
+                                                </c:when>
+                                                <c:when test="${patient.queueStatus == 'CALLED'}">
+                                                    <span class="status-badge" style="background-color: #3b82f6; color: white;">Đã Gọi</span>
+                                                </c:when>
+                                                <c:when test="${patient.queueStatus == 'CHECKED_IN'}">
+                                                    <span class="status-badge" style="background-color: #10b981; color: white;">Đã Check-in</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="status-badge status-examined">Đã Khám</span>
+                                                </c:otherwise>
+                                            </c:choose>
+                                        </div>
                                     </div>
                                     
                                     <div class="patient-info">
@@ -342,7 +389,7 @@
                                     </div>
                                     
                                     <div class="d-flex justify-content-end">
-                                        <a href="${pageContext.request.contextPath}/open-medical-record?patient_id=${patient.patientId}" 
+                                        <a href="/dental_clinic_management_system/medical-record?action=form&patientId=${patient.patientId}" 
                                            class="btn btn-secondary" onclick="event.stopPropagation()">
                                             <i class="fas fa-eye me-1"></i>
                                             Xem Hồ Sơ
@@ -353,9 +400,9 @@
                         </c:when>
                         <c:otherwise>
                             <div class="empty-state">
-                                <i class="fas fa-users"></i>
-                                <h4>Chưa có bệnh nhân nào</h4>
-                                <p>Hệ thống chưa có thông tin bệnh nhân nào.</p>
+                                <i class="fas fa-calendar-times"></i>
+                                <h4>Không có lịch hẹn hôm nay</h4>
+                                <p>Không có bệnh nhân nào có lịch hẹn trong ngày hôm nay.</p>
                             </div>
                         </c:otherwise>
                     </c:choose>
@@ -385,7 +432,101 @@
         }
         
         function openMedicalRecord(patientId) {
-            window.location.href = '${pageContext.request.contextPath}/open-medical-record?patient_id=' + patientId;
+            window.location.href = '/dental_clinic_management_system/medical-record?action=form&patientId=' + patientId;
+        }
+        
+        function markAsExamined(patientId, buttonElement) {
+            if (confirm('Bạn có chắc chắn muốn đánh dấu bệnh nhân này đã khám?')) {
+                // Show loading state
+                const originalText = buttonElement.innerHTML;
+                buttonElement.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Đang xử lý...';
+                buttonElement.disabled = true;
+                
+                // Send request to mark as examined
+                fetch('/dental_clinic_management_system/patient/mark-examined', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: 'patientId=' + patientId
+                })
+                .then(response => {
+                    if (response.ok) {
+                        // Get the patient card
+                        const patientCard = buttonElement.closest('.patient-card');
+                        
+                        // Update UI
+                        patientCard.classList.remove('not-examined');
+                        patientCard.classList.add('examined');
+                        
+                        // Update status badge
+                        const statusBadge = patientCard.querySelector('.status-badge');
+                        statusBadge.textContent = 'Đã Khám';
+                        statusBadge.className = 'status-badge status-examined';
+                        
+                        // Update button
+                        buttonElement.innerHTML = '<i class="fas fa-check me-1"></i>Đã Khám';
+                        buttonElement.className = 'btn btn-secondary';
+                        buttonElement.disabled = true;
+                        buttonElement.title = 'Đã được đánh dấu khám';
+                        
+                        // Move patient card to "All Patients" section
+                        const notExaminedSection = document.getElementById('not-examined-section');
+                        const allPatientsSection = document.getElementById('all-patients-section');
+                        
+                        // Find the patients container in all patients section
+                        const allPatientsContainer = allPatientsSection.querySelector('.c:choose');
+                        if (allPatientsContainer) {
+                            // Clone the patient card
+                            const clonedCard = patientCard.cloneNode(true);
+                            
+                            // Update the cloned card's button to "Xem Hồ Sơ"
+                            const clonedButton = clonedCard.querySelector('.btn-success');
+                            if (clonedButton) {
+                                clonedButton.innerHTML = '<i class="fas fa-eye me-1"></i>Xem Hồ Sơ';
+                                clonedButton.className = 'btn btn-secondary';
+                                clonedButton.onclick = function() {
+                                    window.location.href = '/dental_clinic_management_system/medical-record?action=form&patientId=' + patientId;
+                                };
+                            }
+                            
+                            // Add to all patients section
+                            allPatientsContainer.appendChild(clonedCard);
+                        }
+                        
+                        // Remove from not examined section
+                        patientCard.remove();
+                        
+                        // Check if there are any more not examined patients
+                        const remainingNotExamined = notExaminedSection.querySelectorAll('.patient-card.not-examined');
+                        if (remainingNotExamined.length === 0) {
+                            // Show empty state for not examined section
+                            const notExaminedContent = notExaminedSection.querySelector('.c:choose');
+                            if (notExaminedContent) {
+                                notExaminedContent.innerHTML = `
+                                    <div class="empty-state">
+                                        <i class="fas fa-user-check"></i>
+                                        <h4>Tất cả bệnh nhân đã được khám hôm nay!</h4>
+                                        <p>Không có bệnh nhân nào chưa được khám trong ngày hôm nay.</p>
+                                    </div>
+                                `;
+                            }
+                        }
+                        
+                        // Show success message
+                        alert('Đã đánh dấu bệnh nhân đã khám thành công!');
+                        
+                    } else {
+                        throw new Error('Failed to mark patient as examined');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error marking patient as examined:', error);
+                    alert('Có lỗi xảy ra khi đánh dấu bệnh nhân đã khám. Vui lòng thử lại.');
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.disabled = false;
+                });
+            }
         }
     </script>
 </body>

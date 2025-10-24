@@ -11,9 +11,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class ExaminationDAO {
-
+    
     private static final Logger logger = Logger.getLogger(ExaminationDAO.class.getName());
-
+    
     /**
      * Get examinations by record ID
      */
@@ -35,7 +35,7 @@ public class ExaminationDAO {
         }
         return examinations;
     }
-
+    
     /**
      * Get examination by ID
      */
@@ -56,7 +56,7 @@ public class ExaminationDAO {
         }
         return null;
     }
-
+    
     /**
      * Create new examination
      */
@@ -84,7 +84,7 @@ public class ExaminationDAO {
         }
         return false;
     }
-
+    
     /**
      * Update examination
      */
@@ -105,7 +105,7 @@ public class ExaminationDAO {
             return false;
         }
     }
-
+    
     /**
      * Delete examination
      */
@@ -123,7 +123,7 @@ public class ExaminationDAO {
             return false;
         }
     }
-
+    
     /**
      * Map ResultSet to Examination object
      */

@@ -1,6 +1,8 @@
 package model;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 
 public class MedicalRecord {
@@ -11,7 +13,10 @@ public class MedicalRecord {
     private LocalDateTime createdAt;
     private Patient patient;
     private User dentist;
+    private List<Examination> examinations;
     private List<TreatmentPlan> treatmentPlans;
+    private List<TreatmentSession> treatmentSessions;
+    private List<Prescription> prescriptions;
 
     public MedicalRecord() {
     }
@@ -86,6 +91,40 @@ public class MedicalRecord {
 
     public void setTreatmentPlans(List<TreatmentPlan> treatmentPlans) {
         this.treatmentPlans = treatmentPlans;
+    }
+
+    public List<Examination> getExaminations() {
+        return examinations;
+    }
+
+    public void setExaminations(List<Examination> examinations) {
+        this.examinations = examinations;
+    }
+
+    public List<TreatmentSession> getTreatmentSessions() {
+        return treatmentSessions;
+    }
+
+    public void setTreatmentSessions(List<TreatmentSession> treatmentSessions) {
+        this.treatmentSessions = treatmentSessions;
+    }
+
+    public List<Prescription> getPrescriptions() {
+        return prescriptions;
+    }
+
+    public void setPrescriptions(List<Prescription> prescriptions) {
+        this.prescriptions = prescriptions;
+    }
+
+    /**
+     * Helper method to get createdAt as java.util.Date for JSP formatting
+     */
+    public Date getCreatedAtAsDate() {
+        if (createdAt != null) {
+            return Date.from(createdAt.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
     }
 
     @Override

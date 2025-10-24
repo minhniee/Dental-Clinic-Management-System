@@ -68,6 +68,7 @@ CREATE TABLE Patients (
     phone       VARCHAR(50) NULL,
     email       VARCHAR(150) NULL,
     address     VARCHAR(300) NULL,
+    avatar      NVARCHAR(500) NULL,
     created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
 );
 GO
@@ -190,6 +191,7 @@ CREATE TABLE TreatmentPlans (
     plan_id         INT IDENTITY(1,1) PRIMARY KEY,
     record_id       INT NOT NULL,
     plan_summary    NVARCHAR(MAX) NULL,
+    notes           NVARCHAR(MAX) NULL,
     estimated_cost  DECIMAL(18,2) NULL CHECK (estimated_cost >= 0),
     created_at      DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     CONSTRAINT FK_TreatmentPlans_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id)
@@ -201,6 +203,7 @@ CREATE TABLE TreatmentSessions (
     plan_id         INT NOT NULL,
     session_date    DATETIME2 NOT NULL,
     procedure_done  NVARCHAR(500) NULL,
+    notes           NVARCHAR(MAX) NULL,
     session_cost    DECIMAL(18,2) NULL CHECK (session_cost >= 0),
     CONSTRAINT FK_TreatmentSessions_Plan FOREIGN KEY (plan_id) REFERENCES TreatmentPlans(plan_id)
 );
@@ -369,15 +372,6 @@ VALUES
 ('reception1','recp@clinic.com','1','Reception Staff','0922222222',4);
 GO
 
-DECLARE @docId INT = (SELECT user_id FROM Users WHERE username='dr.john');
-IF NOT EXISTS (SELECT 1 FROM DoctorSchedules WHERE doctor_id=@docId AND work_date=CAST(SYSUTCDATETIME() AS DATE))
-BEGIN
-    INSERT INTO DoctorSchedules(doctor_id, work_date, shift, start_time, end_time, room_no, status)
-    VALUES
-    (@docId, CAST(SYSUTCDATETIME() AS DATE), 'Morning', '08:00', '12:00', 'R1', 'ACTIVE'),
-    (@docId, CAST(SYSUTCDATETIME() AS DATE), 'Afternoon', '13:00', '17:00', 'R1', 'ACTIVE');
-END
-GO
 
 INSERT INTO InventoryItems(name, unit, quantity, min_stock)
 VALUES
