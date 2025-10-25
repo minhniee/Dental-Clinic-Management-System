@@ -68,7 +68,6 @@ CREATE TABLE Patients (
     phone       VARCHAR(50) NULL,
     email       VARCHAR(150) NULL,
     address     VARCHAR(300) NULL,
-    avatar      NVARCHAR(500) NULL,
     created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
 );
 GO
@@ -191,7 +190,6 @@ CREATE TABLE TreatmentPlans (
     plan_id         INT IDENTITY(1,1) PRIMARY KEY,
     record_id       INT NOT NULL,
     plan_summary    NVARCHAR(MAX) NULL,
-    notes           NVARCHAR(MAX) NULL,
     estimated_cost  DECIMAL(18,2) NULL CHECK (estimated_cost >= 0),
     created_at      DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     CONSTRAINT FK_TreatmentPlans_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id)
@@ -203,7 +201,6 @@ CREATE TABLE TreatmentSessions (
     plan_id         INT NOT NULL,
     session_date    DATETIME2 NOT NULL,
     procedure_done  NVARCHAR(500) NULL,
-    notes           NVARCHAR(MAX) NULL,
     session_cost    DECIMAL(18,2) NULL CHECK (session_cost >= 0),
     CONSTRAINT FK_TreatmentSessions_Plan FOREIGN KEY (plan_id) REFERENCES TreatmentPlans(plan_id)
 );
@@ -326,6 +323,19 @@ CREATE TABLE ScheduleRequests (
 );
 GO
 
+CREATE TABLE DoctorSchedules (
+    schedule_id INT IDENTITY(1,1) PRIMARY KEY,
+    doctor_id   INT NOT NULL,
+    work_date   DATE NOT NULL,
+    shift       VARCHAR(50) NOT NULL,
+    start_time  TIME(7) NULL,
+    end_time    TIME(7) NULL,
+    room_no     VARCHAR(50) NULL,
+    status      VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_DoctorSchedules_Doctor FOREIGN KEY (doctor_id) REFERENCES Users(user_id)
+);
+
 -- SystemConfigs
 IF OBJECT_ID('dbo.SystemConfigs','U') IS NOT NULL DROP TABLE dbo.SystemConfigs;
 GO
@@ -359,7 +369,6 @@ GO
 -- ======================================================
 -- 8️⃣ SEED DATA
 -- ======================================================
-
 
 INSERT INTO Roles (role_name)
 VALUES ('Administrator'), ('ClinicManager'), ('Dentist'), ('Receptionist'), ('Patient');
@@ -398,16 +407,10 @@ GO
 
 -- Sample AppointmentRequests data
 INSERT INTO AppointmentRequests (full_name, phone, email, service_id, preferred_doctor_id, preferred_date, preferred_shift, notes, status)
-VALUES 
+VALUES
 ('Nguyễn Văn A', '0901234567', 'nguyenvana@email.com', 1, 2, '2025-10-22', 'Morning', 'Cần khám răng sâu', 'PENDING'),
 ('Trần Thị B', '0901234568', 'tranthib@email.com', 2, 2, '2025-10-23', 'Afternoon', 'Làm sạch răng', 'PENDING'),
 ('Lê Văn C', '0901234569', 'levanc@email.com', 3, 2, '2025-10-24', 'Morning', 'Trám răng', 'CONFIRMED');
 GO
 
 PRINT '✅ DentalClinicDB_MVP full schema (no trigger) created successfully.';
-
-
-ALTER TABLE Roles ADD description NVARCHAR(500) NULL;
-ALTER TABLE Roles ADD is_active BIT NOT NULL DEFAULT 1;
-ALTER TABLE Roles ADD created_at DATETIME2 NOT NULL DEFAULT GETDATE();
-ALTER TABLE Roles ADD updated_at DATETIME2 NOT NULL DEFAULT GETDATE();
