@@ -510,7 +510,7 @@
                                     </h4>
                                 </div>
                                 <div class="card-body">
-                                    <form id="imageUploadForm" action="/dental_clinic_management_system/medical-record" method="post" enctype="multipart/form-data">
+                                    <form id="imageUploadForm" action="${pageContext.request.contextPath}/medical-record" method="post" enctype="multipart/form-data">
                                         <input type="hidden" name="action" value="uploadImage">
                                         <input type="hidden" name="patientId" value="${patient.patientId}">
                                         
@@ -518,11 +518,10 @@
                                             <label class="form-label" for="imageType">Loại Ảnh</label>
                                             <select class="form-control" id="imageType" name="imageType" required>
                                                 <option value="">-- Chọn loại ảnh --</option>
-                                                <option value="X-Ray">X-Quang</option>
-                                                <option value="Clinical">Ảnh Lâm Sàng</option>
-                                                <option value="Before">Ảnh Trước Điều Trị</option>
-                                                <option value="After">Ảnh Sau Điều Trị</option>
-                                                <option value="Other">Khác</option>
+                                                <option value="X-RAY">X-Quang</option>
+                                                <option value="BEFORE">Ảnh Trước Điều Trị</option>
+                                                <option value="AFTER">Ảnh Sau Điều Trị</option>
+                                                <option value="OTHER">Khác</option>
                                             </select>
                                         </div>
                                         
@@ -934,8 +933,21 @@
                 console.log(key, value);
             }
             
-            // Submit via fetch
-            fetch('/dental_clinic_management_system/medical-record', {
+                         // Get context path from current URL
+             // Example: /dental_clinic_management_system_war_exploded/dentist/medical-record-form.jsp
+             // We need: /dental_clinic_management_system_war_exploded
+             const fullPath = window.location.pathname;
+             const pathParts = fullPath.split('/').filter(p => p);
+             
+             // If we're in a subdirectory (like /dentist/), remove subdirectories to get context
+             // Keep only the first part which is the context root
+             const contextPath = pathParts.length > 0 ? '/' + pathParts[0] : '';
+             
+             console.log('Full path:', fullPath);
+             console.log('Context path:', contextPath);
+             
+             // Submit via fetch
+             fetch(contextPath + '/medical-record', {
                 method: 'POST',
                 body: formData
             })
@@ -1012,10 +1024,19 @@
         
         function deleteImage(imageId) {
             if (confirm('Bạn có chắc chắn muốn xóa ảnh này?')) {
+                // Get context path from current URL
+                const fullPath = window.location.pathname;
+                const pathParts = fullPath.split('/').filter(p => p);
+                
+                // Keep only the first part which is the context root
+                const contextPath = pathParts.length > 0 ? '/' + pathParts[0] : '';
+                
+                console.log('Delete context path:', contextPath);
+                
                 // Create form to submit delete request
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '/dental_clinic_management_system/medical-record';
+                form.action = contextPath + '/medical-record';
                 
                 const actionInput = document.createElement('input');
                 actionInput.type = 'hidden';

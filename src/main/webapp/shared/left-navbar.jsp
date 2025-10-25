@@ -54,7 +54,6 @@
                 <li><a href="${ctx}/receptionist/patients?action=new">Đăng Ký Bệnh Nhân</a></li>
                 <li><a href="${ctx}/receptionist/patients">Danh Sách Bệnh Nhân</a></li>
                 <li><a class="${fn:endsWith(currentPath, '/receptionist/appointments') ? 'active' : ''}" href="${ctx}/receptionist/appointments">Lịch Hẹn</a></li>
-                <li><a class="${fn:endsWith(currentPath, '/receptionist/queue') ? 'active' : ''}" href="${ctx}/receptionist/queue">Hàng Chờ</a></li>
                 <li><a href="${ctx}/receptionist/invoices">Hóa Đơn & Thanh Toán</a></li>
                 <li><a class="${fn:endsWith(currentPath, '/receptionist/online-appointments') ? 'active' : ''}" href="${ctx}/receptionist/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
                 
