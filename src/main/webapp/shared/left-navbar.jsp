@@ -19,42 +19,31 @@
         <!-- Administrator menu -->
         <c:if test="${role eq 'administrator'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/admin/dashboard.jsp') ? 'active' : ''}" href="${ctx}/admin/dashboard.jsp">Tổng Quan</a></li>
-                <li><a href="${ctx}/admin/users">Người Dùng</a></li>
-                <li><a href="${ctx}/admin/roles">Vai Trò & Quyền Hạn</a></li>
-                <li><a href="${ctx}/admin/employees">Nhân Viên</a></li>
-                <li><a href="${ctx}/admin/schedules">Phân Công Lịch</a></li>
-                <li><a href="${ctx}/admin/weekly-schedule">Lịch Tuần</a></li>
-                <li><a href="${ctx}/admin/notifications">Thông Báo</a></li>
-                <li><a href="${ctx}/admin/services">Dịch Vụ</a></li>
-                <li><a href="${ctx}/admin/pricing">Giá Cả</a></li>
-                <li><a href="${ctx}/admin/promotions">Khuyến Mãi</a></li>
-                <li><a href="${ctx}/admin/inventory">📦 Quản Lý Kho</a></li>
-                <li><a href="${ctx}/admin/stock-transactions">📊 Giao Dịch Kho</a></li>
-                <li><a href="${ctx}/admin/analytics">Phân Tích</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/admin/dashboard') ? 'active' : ''}" href="${ctx}/admin/dashboard">📊 Báo Cáo Tổng Hợp</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/admin/reports/financial">Báo Cáo Tài Chính</a></li>
-                <li><a href="${ctx}/admin/reports/usage">Sử Dụng Website</a></li>
-                <li><a href="${ctx}/admin/reports/treatment">Điều Trị & Bệnh Nhân</a></li>
+                <li><a href="${ctx}/admin/users">👥 Quản Lý Người Dùng</a></li>
+                <li><a href="${ctx}/admin/roles">🔐 Vai Trò & Quyền Hạn</a></li>
+                <li class="divider"></li>
+                <li><a href="${ctx}/admin/financial-reports?type=overview">💰 Báo Cáo Tài Chính Tổng Quan</a></li>
             </ul>
         </c:if>
 
         <!-- Clinic Manager menu -->
         <c:if test="${role eq 'clinicmanager'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/manager/dashboard.jsp') ? 'active' : ''}" href="${ctx}/manager/dashboard.jsp">Tổng Quan</a></li>
-                <li><a href="${ctx}/manager/employees">Nhân Viên</a></li>
-                <li><a href="${ctx}/manager/schedules">Lịch Trình</a></li>
-                <li><a href="${ctx}/manager/patients">Bệnh Nhân</a></li>
-                <li><a href="${ctx}/manager/queue">Hàng Chờ</a></li>
-                <li><a href="${ctx}/manager/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
-                <li><a href="${ctx}/manager/invoices">Hóa Đơn</a></li>
-                <li><a href="${ctx}/admin/inventory">📦 Quản Lý Kho</a></li>
-                <li><a href="${ctx}/admin/stock-transactions">📊 Giao Dịch Kho</a></li>
-                <li><a href="${ctx}/manager/feedback">Phản Hồi</a></li>
-                <li><a href="${ctx}/manager/analytics">Phân Tích</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/manager/dashboard') ? 'active' : ''}" href="${ctx}/manager/dashboard">📊 Báo Cáo Vận Hành</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/manager/reports">Báo Cáo</a></li>
+                <li><a href="${ctx}/manager/employees">👥 Quản Lý Nhân Viên</a></li>
+                <li><a href="${ctx}/manager/schedule-requests">📋 Phê Duyệt Yêu Cầu Nghỉ</a></li>
+                <li class="divider"></li>
+                <li><a href="${ctx}/manager/inventory">📦 Quản Lý Vật Tư & Thiết Bị</a></li>
+                <li><a href="${ctx}/manager/stock-transactions">📊 Giao Dịch Kho</a></li>
+                <li class="divider"></li>
+                <li><a href="${ctx}/manager/schedules">📅 Quản Lý Lịch Làm Việc</a></li>
+                <li><a href="${ctx}/manager/weekly-schedule">📆 Lịch Tuần</a></li>
+                <li class="divider"></li>
+                <li><a href="${ctx}/manager/reports?type=appointments">📅 Báo Cáo Lịch Hẹn</a></li>
+                <li><a href="${ctx}/manager/reports?type=revenue">💰 Báo Cáo Doanh Thu</a></li>
             </ul>
         </c:if>
 

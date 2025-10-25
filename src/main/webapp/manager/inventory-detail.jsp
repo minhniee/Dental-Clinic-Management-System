@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi Tiết Vật Tư - Hệ Thống Nha Khoa</title>
+    <title>Chi Tiết Vật Tư - Manager - Hệ Thống Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
     <style>
         .detail-container {
@@ -279,7 +279,7 @@
     </c:if>
 
     <c:set var="_role" value="${empty sessionScope.user or empty sessionScope.user.role or empty sessionScope.user.role.roleName ? '' : fn:toLowerCase(fn:replace(sessionScope.user.role.roleName, ' ', ''))}"/>
-    <c:if test="${_role ne 'administrator'}">
+    <c:if test="${_role ne 'clinicmanager'}">
         <c:redirect url="${pageContext.request.contextPath}/login"/>
     </c:if>
 
@@ -299,7 +299,7 @@
             <div class="page-header">
                 <h1 class="page-title">📦 Chi Tiết Vật Tư</h1>
                 <div>
-                    <a href="${pageContext.request.contextPath}/admin/inventory" class="btn btn-primary">
+                    <a href="${pageContext.request.contextPath}/manager/inventory" class="btn btn-primary">
                         ← Quay Lại
                     </a>
                 </div>

@@ -22,10 +22,10 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet("/admin/schedules")
-public class ScheduleManagementServlet extends HttpServlet {
+@WebServlet("/manager/schedules")
+public class ManagerScheduleManagementServlet extends HttpServlet {
 
-    private static final Logger logger = Logger.getLogger(ScheduleManagementServlet.class.getName());
+    private static final Logger logger = Logger.getLogger(ManagerScheduleManagementServlet.class.getName());
     private final DoctorScheduleDAO doctorScheduleDAO = new DoctorScheduleDAO();
     private final UserDAO userDAO = new UserDAO();
 
@@ -36,9 +36,9 @@ public class ScheduleManagementServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("user");
         
-        // Check if user is logged in and is administrator
-        if (currentUser == null || !"Administrator".equalsIgnoreCase(currentUser.getRole().getRoleName())) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        // Check if user is logged in and is clinic manager
+        if (currentUser == null || !"ClinicManager".equalsIgnoreCase(currentUser.getRole().getRoleName())) {
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
 
@@ -56,12 +56,12 @@ public class ScheduleManagementServlet extends HttpServlet {
             }
             
             request.setAttribute("employees", employeeUsers);
-            request.getRequestDispatcher("/admin/schedule-management.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/schedule-management.jsp").forward(request, response);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error loading schedule management page", e);
             request.setAttribute("error", "Có lỗi xảy ra khi tải trang quản lý lịch làm việc.");
-            request.getRequestDispatcher("/admin/schedule-management.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/schedule-management.jsp").forward(request, response);
         }
     }
 
@@ -72,9 +72,9 @@ public class ScheduleManagementServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("user");
         
-        // Check if user is logged in and is administrator
-        if (currentUser == null || !"Administrator".equalsIgnoreCase(currentUser.getRole().getRoleName())) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        // Check if user is logged in and is clinic manager
+        if (currentUser == null || !"ClinicManager".equalsIgnoreCase(currentUser.getRole().getRoleName())) {
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
 
@@ -95,7 +95,7 @@ public class ScheduleManagementServlet extends HttpServlet {
                     handleAssignMultipleWeeklySchedule(request, response);
                     break;
                 default:
-                    response.sendRedirect(request.getContextPath() + "/admin/schedules");
+                    doGet(request, response);
                     break;
             }
         } catch (Exception e) {
@@ -134,7 +134,7 @@ public class ScheduleManagementServlet extends HttpServlet {
             );
             
             request.setAttribute("previewData", previewData);
-            request.getRequestDispatcher("/admin/schedule-preview.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/schedule-preview.jsp").forward(request, response);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error generating preview", e);
@@ -165,7 +165,7 @@ public class ScheduleManagementServlet extends HttpServlet {
             );
             
             request.setAttribute("result", result);
-            request.getRequestDispatcher("/admin/schedule-result.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/schedule-result.jsp").forward(request, response);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error committing schedule", e);
@@ -197,7 +197,7 @@ public class ScheduleManagementServlet extends HttpServlet {
             );
             
             request.setAttribute("result", result);
-            request.getRequestDispatcher("/admin/schedule-result.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/schedule-result.jsp").forward(request, response);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error assigning weekly schedule", e);
@@ -226,7 +226,7 @@ public class ScheduleManagementServlet extends HttpServlet {
             );
             
             request.setAttribute("result", result);
-            request.getRequestDispatcher("/admin/schedule-result.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/schedule-result.jsp").forward(request, response);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error assigning multiple weekly schedule", e);
