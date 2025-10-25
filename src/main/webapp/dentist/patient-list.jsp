@@ -199,7 +199,7 @@
     </c:if>
 
     <div class="header">
-        <h1>🦷 Danh Sách Bệnh Nhân</h1>
+        <h1>Danh Sách Bệnh Nhân</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>

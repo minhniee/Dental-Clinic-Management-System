@@ -29,7 +29,4 @@ public class DBContext {
         }
         return connection;
     }
-    public static void main(String[] args) {
-        System.out.println(new DBContext().getConnection());
-    }
 }

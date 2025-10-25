@@ -5,7 +5,6 @@
                 <!-- About Clinic -->
                 <div class="col-lg-4 col-md-6 mb-4">
                     <h5 class="text-white mb-3">
-                        <i class="fas fa-tooth text-primary me-2"></i>
                         Phòng Khám Nha Khoa DentalCare
                     </h5>
                     <p class="text-light opacity-75 mb-3">
@@ -14,16 +13,16 @@
                     </p>
                     <div class="d-flex">
                         <a href="#" class="text-light me-3" aria-label="Facebook">
-                            <i class="fab fa-facebook-f fs-5"></i>
+                            Facebook
                         </a>
                         <a href="#" class="text-light me-3" aria-label="Twitter">
-                            <i class="fab fa-twitter fs-5"></i>
+                            Twitter
                         </a>
                         <a href="#" class="text-light me-3" aria-label="Instagram">
-                            <i class="fab fa-instagram fs-5"></i>
+                            Instagram
                         </a>
                         <a href="#" class="text-light" aria-label="LinkedIn">
-                            <i class="fab fa-linkedin-in fs-5"></i>
+                            LinkedIn
                         </a>
                     </div>
                 </div>
@@ -63,32 +62,24 @@
                 <!-- Contact Info -->
                 <div class="col-lg-3 col-md-6 mb-4">
                     <h6 class="text-white mb-3">Thông Tin Liên Hệ</h6>
-                    <div class="d-flex align-items-start mb-3">
-                        <i class="fas fa-map-marker-alt text-primary me-3 mt-1"></i>
-                        <div>
-                            <p class="text-light opacity-75 mb-0">
-                                123 Đường Sức Khỏe<br>
-                                Quận Y Tế, Thành Phố 12345
-                            </p>
-                        </div>
+                    <div class="mb-3">
+                        <p class="text-light opacity-75 mb-0">
+                            123 Đường Sức Khỏe<br>
+                            Quận Y Tế, Thành Phố 12345
+                        </p>
                     </div>
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-phone text-primary me-3"></i>
+                    <div class="mb-3">
                         <p class="text-light opacity-75 mb-0">(555) 123-4567</p>
                     </div>
-                    <div class="d-flex align-items-center mb-3">
-                        <i class="fas fa-envelope text-primary me-3"></i>
+                    <div class="mb-3">
                         <p class="text-light opacity-75 mb-0">info@dentalcare.com</p>
                     </div>
-                    <div class="d-flex align-items-start">
-                        <i class="fas fa-clock text-primary me-3 mt-1"></i>
-                        <div>
-                            <p class="text-light opacity-75 mb-0">
-                                Mon-Fri: 8:00 AM - 6:00 PM<br>
-                                Sat: 9:00 AM - 3:00 PM<br>
-                                Sun: Closed
-                            </p>
-                        </div>
+                    <div>
+                        <p class="text-light opacity-75 mb-0">
+                            Mon-Fri: 8:00 AM - 6:00 PM<br>
+                            Sat: 9:00 AM - 3:00 PM<br>
+                            Sun: Closed
+                        </p>
                     </div>
                 </div>
                 
@@ -97,14 +88,12 @@
                     <h6 class="text-white mb-3">Cấp Cứu</h6>
                     <div class="bg-danger bg-opacity-10 p-3 rounded">
                         <h6 class="text-danger mb-2">
-                            <i class="fas fa-exclamation-triangle me-2"></i>
                             Cấp Cứu Nha Khoa?
                         </h6>
                         <p class="text-light opacity-75 mb-2">
                             Gọi đường dây cấp cứu 24/7 của chúng tôi để được chăm sóc nha khoa khẩn cấp.
                         </p>
                         <a href="tel:+15551234567" class="btn btn-danger btn-sm">
-                            <i class="fas fa-phone me-1"></i>
                             (555) 123-HELP
                         </a>
                     </div>

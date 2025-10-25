@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Báo Cáo Tổng Hợp - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/unified-styles.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         .reports-container { max-width: 100%; margin: 0; padding: 0; background: transparent; }
@@ -93,7 +94,7 @@
 </c:if>
 
 <div class="header">
-    <h1>🦷 Bảng Điều Khiển Quản Trị</h1>
+    <h1>Bảng Điều Khiển Quản Trị</h1>
     <div class="user-info">
         <span>Chào mừng, ${sessionScope.user.fullName}</span>
         <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
@@ -105,7 +106,7 @@
     <main class="dashboard-content">
         <div class="container">
             <div class="welcome-section">
-                <h2>📊 Báo Cáo Tổng Hợp</h2>
+                <h2>Báo Cáo Tổng Hợp</h2>
                 <p>Dashboard hiện đại với biểu đồ tương tác và thống kê chi tiết về hoạt động phòng khám</p>
             </div>
 
@@ -113,7 +114,7 @@
 
                 <c:if test="${not empty error}">
                     <div class="alert alert-error">
-                        ❌ ${error}
+                        ${error}
                     </div>
                 </c:if>
 
@@ -136,9 +137,8 @@
                                 <div class="stat-label">TỔNG LỊCH HẸN</div>
                                 <div class="stat-value">${totalAppointments}</div>
                             </div>
-                            <div class="stat-icon">📅</div>
                         </div>
-                        <div class="stat-change positive"><span>↗</span> +12%</div>
+                        <div class="stat-change positive">+12%</div>
                     </div>
 
                     <div class="stat-card revenue">
@@ -147,9 +147,8 @@
                                 <div class="stat-label">TỔNG DOANH THU</div>
                                 <div class="stat-value">₫<fmt:formatNumber value="${totalRevenue}" pattern="#,##0"/></div>
                             </div>
-                            <div class="stat-icon">💰</div>
                         </div>
-                        <div class="stat-change positive"><span>↗</span> +8%</div>
+                        <div class="stat-change positive">+8%</div>
                     </div>
 
                     <div class="stat-card patients">
@@ -158,9 +157,8 @@
                                 <div class="stat-label">TỔNG BỆNH NHÂN</div>
                                 <div class="stat-value">${totalUsers}</div>
                             </div>
-                            <div class="stat-icon">👥</div>
                         </div>
-                        <div class="stat-change positive"><span>↗</span> +5%</div>
+                        <div class="stat-change positive">+5%</div>
                     </div>
 
                     <div class="stat-card employees">
@@ -169,22 +167,21 @@
                                 <div class="stat-label">TỔNG NHÂN VIÊN</div>
                                 <div class="stat-value">${totalEmployees}</div>
                             </div>
-                            <div class="stat-icon">👨‍💼</div>
                         </div>
-                        <div class="stat-change neutral"><span>→</span> 0%</div>
+                        <div class="stat-change neutral">0%</div>
                     </div>
                 </div>
 
                 <!-- Charts Section -->
                 <div class="chart-container">
-                    <h3 class="chart-title">📈 Xu Hướng Lịch Hẹn </h3>
+                    <h3 class="chart-title">Xu Hướng Lịch Hẹn</h3>
                     <div class="chart-wrapper">
                         <canvas id="appointmentsChart"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-container">
-                    <h3 class="chart-title">💰 Xu Hướng Doanh Thu</h3>
+                    <h3 class="chart-title">Xu Hướng Doanh Thu</h3>
                     <div class="chart-wrapper">
                         <canvas id="revenueChart"></canvas>
                     </div>

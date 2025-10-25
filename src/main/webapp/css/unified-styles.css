@@ -1,0 +1,82 @@
+/* Unified Styles for Dental Clinic Management System */
+/* This file ensures consistent colors and removes AI-generated appearance */
+
+/* ========================================
+   UNIFIED BUTTON COLORS
+   ======================================== */
+.btn-primary {
+    background-color: #667eea !important;
+    border-color: #667eea !important;
+    color: white !important;
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: #5568d3 !important;
+    border-color: #5568d3 !important;
+    color: white !important;
+}
+
+.btn-success {
+    background-color: #48bb78 !important;
+    border-color: #48bb78 !important;
+    color: white !important;
+}
+
+.btn-success:hover, .btn-success:focus {
+    background-color: #38a169 !important;
+    border-color: #38a169 !important;
+    color: white !important;
+}
+
+.btn-danger {
+    background-color: #f56565 !important;
+    border-color: #f56565 !important;
+    color: white !important;
+}
+
+.btn-danger:hover, .btn-danger:focus {
+    background-color: #e53e3e !important;
+    border-color: #e53e3e !important;
+    color: white !important;
+}
+
+.btn-warning {
+    background-color: #ed8936 !important;
+    border-color: #ed8936 !important;
+    color: white !important;
+}
+
+.btn-warning:hover, .btn-warning:focus {
+    background-color: #dd6b20 !important;
+    border-color: #dd6b20 !important;
+    color: white !important;
+}
+
+.btn-secondary {
+    background-color: #718096 !important;
+    border-color: #718096 !important;
+    color: white !important;
+}
+
+.btn-secondary:hover, .btn-secondary:focus {
+    background-color: #4a5568 !important;
+    border-color: #4a5568 !important;
+    color: white !important;
+}
+
+/* ========================================
+   HIDE FONT AWESOME ICONS
+   ======================================== */
+i.fas, i.far, i.fab, i.fal, i.fad {
+    display: none !important;
+}
+
+/* Remove icon spacing when text remains */
+[class*="fa-"] {
+    display: none !important;
+}
+
+/* Remove icon space in buttons and links */
+.btn i, a i, span i {
+    display: none !important;
+}

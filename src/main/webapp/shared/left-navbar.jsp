@@ -19,31 +19,31 @@
         <!-- Administrator menu -->
         <c:if test="${role eq 'administrator'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/admin/dashboard') ? 'active' : ''}" href="${ctx}/admin/dashboard">📊 Báo Cáo Tổng Hợp</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/admin/dashboard') ? 'active' : ''}" href="${ctx}/admin/dashboard">Báo Cáo Tổng Hợp</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/admin/users">👥 Quản Lý Người Dùng</a></li>
-                <li><a href="${ctx}/admin/roles">🔐 Vai Trò & Quyền Hạn</a></li>
+                <li><a href="${ctx}/admin/users">Quản Lý Người Dùng</a></li>
+                <li><a href="${ctx}/admin/roles">Vai Trò & Quyền Hạn</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/admin/financial-reports?type=overview">💰 Báo Cáo Tài Chính Tổng Quan</a></li>
+                <li><a href="${ctx}/admin/financial-reports?type=overview">Báo Cáo Tài Chính Tổng Quan</a></li>
             </ul>
         </c:if>
 
         <!-- Clinic Manager menu -->
         <c:if test="${role eq 'clinicmanager'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/manager/dashboard') ? 'active' : ''}" href="${ctx}/manager/dashboard">📊 Báo Cáo Vận Hành</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/manager/dashboard') ? 'active' : ''}" href="${ctx}/manager/dashboard">Báo Cáo Vận Hành</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/manager/employees">👥 Quản Lý Nhân Viên</a></li>
-                <li><a href="${ctx}/manager/schedule-requests">📋 Phê Duyệt Yêu Cầu Nghỉ</a></li>
+                <li><a href="${ctx}/manager/employees">Quản Lý Nhân Viên</a></li>
+                <li><a href="${ctx}/manager/schedule-requests">Phê Duyệt Yêu Cầu Nghỉ</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/manager/inventory">📦 Quản Lý Vật Tư & Thiết Bị</a></li>
-                <li><a href="${ctx}/manager/stock-transactions">📊 Giao Dịch Kho</a></li>
+                <li><a href="${ctx}/manager/inventory">Quản Lý Vật Tư & Thiết Bị</a></li>
+                <li><a href="${ctx}/manager/stock-transactions">Giao Dịch Kho</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/manager/schedules">📅 Quản Lý Lịch Làm Việc</a></li>
-                <li><a href="${ctx}/manager/weekly-schedule">📆 Lịch Tuần</a></li>
+                <li><a href="${ctx}/manager/schedules">Quản Lý Lịch Làm Việc</a></li>
+                <li><a href="${ctx}/manager/weekly-schedule">Lịch Tuần</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/manager/reports?type=appointments">📅 Báo Cáo Lịch Hẹn</a></li>
-                <li><a href="${ctx}/manager/reports?type=revenue">💰 Báo Cáo Doanh Thu</a></li>
+                <li><a href="${ctx}/manager/reports?type=appointments">Báo Cáo Lịch Hẹn</a></li>
+                <li><a href="${ctx}/manager/reports?type=revenue">Báo Cáo Doanh Thu</a></li>
             </ul>
         </c:if>
 
@@ -65,10 +65,10 @@
         <c:if test="${role eq 'dentist'}">
             <ul>
                 <li><a class="${fn:endsWith(currentPath, '/dentist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/dentist/dashboard.jsp">Tổng Quan</a></li>
-                <li><a class="${fn:contains(currentPath, '/dentist/schedule') ? 'active' : ''}" href="${ctx}/dentist/schedule?action=daily">📅 Lịch Trình Hàng Ngày</a></li>
-                <li><a class="${fn:contains(currentPath, '/dentist/schedule') ? 'active' : ''}" href="${ctx}/dentist/schedule?action=weekly">📅 Lịch Trình Hàng Tuần</a></li>
-                <li><a class="${fn:contains(currentPath, '/dentist/patients') ? 'active' : ''}" href="${ctx}/dentist/patients">👥 Danh Sách Bệnh Nhân</a></li>
-                <li><a class="${fn:contains(currentPath, '/dentist/medical-history') ? 'active' : ''}" href="${ctx}/dentist/medical-history">📋 Lịch Sử Khám Bệnh</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/schedule') ? 'active' : ''}" href="${ctx}/dentist/schedule?action=daily">Lịch Trình Hàng Ngày</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/schedule') ? 'active' : ''}" href="${ctx}/dentist/schedule?action=weekly">Lịch Trình Hàng Tuần</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/patients') ? 'active' : ''}" href="${ctx}/dentist/patients">Danh Sách Bệnh Nhân</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/medical-history') ? 'active' : ''}" href="${ctx}/dentist/medical-history">Lịch Sử Khám Bệnh</a></li>
             </ul>
         </c:if>
 

@@ -194,7 +194,7 @@
     </c:if>
     
     <div class="header">
-        <h1>🦷 Check-in Bệnh Nhân</h1>
+        <h1>Check-in Bệnh Nhân</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
@@ -277,19 +277,29 @@
                                     </thead>
                                     <tbody id="appointmentsTableBody">
                                         <c:forEach var="appointment" items="${todayAppointments}">
-                                            <tr data-patient-name="${fn:toLowerCase(appointment.patient.fullName)}" 
-                                                data-patient-phone="${appointment.patient.phone}">
+                                            <c:choose>
+                                                <c:when test="${not empty appointment.patient}">
+                                                    <c:set var="patientName" value="${not empty appointment.patient.fullName ? appointment.patient.fullName : 'N/A'}"/>
+                                                    <c:set var="patientPhone" value="${not empty appointment.patient.phone ? appointment.patient.phone : ''}"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="patientName" value="N/A"/>
+                                                    <c:set var="patientPhone" value=""/>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <tr data-patient-name="${fn:toLowerCase(patientName)}" 
+                                                data-patient-phone="${patientPhone}">
                                                 <td>
                                                     <strong style="color: #0f172a;">
                                                         <fmt:formatDate value="${appointment.appointmentDate}" pattern="HH:mm"/>
                                                     </strong>
                                                 </td>
                                                 <td>
-                                                    <strong style="color: #0f172a;">${appointment.patient.fullName}</strong>
-                                                    <c:if test="${not empty appointment.patient.phone}">
+                                                    <strong style="color: #0f172a;">${patientName}</strong>
+                                                    <c:if test="${not empty patientPhone}">
                                                         <br>
                                                         <small style="color: #64748b;">
-                                                            <i class="fas fa-phone"></i> ${appointment.patient.phone}
+                                                            <i class="fas fa-phone"></i> ${patientPhone}
                                                         </small>
                                                     </c:if>
                                                 </td>

@@ -252,7 +252,7 @@
     </c:if>
     
     <div class="header">
-        <h1>🦷 Lịch Trình Hàng Ngày</h1>
+        <h1>Lịch Trình Hàng Ngày</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>

@@ -15,6 +15,7 @@
     
     <!-- Custom CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/home.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/unified-styles.css">
     
     <style>
         :root {
@@ -74,7 +75,6 @@
     <nav class="navbar navbar-expand-lg navbar-light sticky-top">
         <div class="container">
             <a class="navbar-brand" href="${pageContext.request.contextPath}/home">
-                <i class="fas fa-tooth text-primary me-2"></i>
                 Phòng Khám Nha Khoa DentalCare
             </a>
             
@@ -105,7 +105,6 @@
                             <div class="dropdown">
                                 <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" 
                                    data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="fas fa-user me-1"></i>
                                     ${sessionScope.user.fullName}
                                 </a>
                                 <ul class="dropdown-menu">
@@ -121,7 +120,6 @@
                         </c:when>
                         <c:otherwise>
                             <a href="${pageContext.request.contextPath}/login.jsp" class="btn-login">
-                                <i class="fas fa-sign-in-alt me-1"></i>
                                 Đăng Nhập
                             </a>
                         </c:otherwise>

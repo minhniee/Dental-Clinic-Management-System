@@ -44,8 +44,6 @@ public class DashboardServlet extends HttpServlet {
         }
 
         try {
-            System.out.println("=== DashboardServlet: Bắt đầu lấy dữ liệu ===");
-
             // period param (mặc định 30 ngày)
             String periodStr = request.getParameter("period");
             int period = 30;
@@ -53,10 +51,9 @@ public class DashboardServlet extends HttpServlet {
                 try {
                     period = Integer.parseInt(periodStr);
                 } catch (NumberFormatException e) {
-                    System.out.println("Invalid period parameter: " + periodStr + ", using default 30");
+                    // Use default period
                 }
             }
-            System.out.println("Using period: " + period + " days");
 
             // Test DB connection
             try (Connection testConn = new DBContext().getConnection()) {

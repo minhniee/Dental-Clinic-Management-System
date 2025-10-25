@@ -65,7 +65,6 @@ public class LoginServlet extends HttpServlet {
                 session.setAttribute("user", user);
                 session.setMaxInactiveInterval(30 * 60); // 30 minutes
 
-                System.out.println(user.getRole());
                 // Redirect based on role
                 String redirectUrl = getRedirectUrl(user.getRole().getRoleName());
                 response.sendRedirect(request.getContextPath() + redirectUrl);
@@ -86,7 +85,6 @@ public class LoginServlet extends HttpServlet {
         String normalized = roleName == null ? "" : roleName.toLowerCase().replaceAll("\\s+", "");
         switch (normalized) {
             case "administrator":
-                System.out.println("done admin");
                 return "/admin/dashboard";
             case "clinicmanager":
                 return "/manager/dashboard";

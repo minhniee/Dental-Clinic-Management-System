@@ -390,29 +390,47 @@ public class AppointmentDAO {
         }
         
         // Set related objects
-        Patient patient = new Patient();
-        patient.setPatientId(appointment.getPatientId());
-        patient.setFullName(rs.getString("patient_name"));
-        patient.setPhone(rs.getString("patient_phone"));
-        appointment.setPatient(patient);
-        
-        User dentist = new User();
-        dentist.setUserId(appointment.getDentistId());
-        dentist.setFullName(rs.getString("dentist_name"));
-        appointment.setDentist(dentist);
-        
-        Service service = new Service();
-        service.setServiceId(appointment.getServiceId());
-        service.setName(rs.getString("service_name"));
-        service.setPrice(rs.getBigDecimal("service_price"));
-        
-        int durationMinutes = rs.getInt("service_duration");
-        if (rs.wasNull()) {
-            service.setDurationMinutes(null);
+        // Only set patient if patient_id is not null
+        int patientId = rs.getInt("patient_id");
+        if (!rs.wasNull()) {
+            Patient patient = new Patient();
+            patient.setPatientId(patientId);
+            patient.setFullName(rs.getString("patient_name"));
+            patient.setPhone(rs.getString("patient_phone"));
+            appointment.setPatient(patient);
         } else {
-            service.setDurationMinutes(durationMinutes);
+            appointment.setPatient(null);
         }
-        appointment.setService(service);
+        
+        // Only set dentist if dentist_id is not null
+        int dentistId = rs.getInt("dentist_id");
+        if (!rs.wasNull()) {
+            User dentist = new User();
+            dentist.setUserId(dentistId);
+            dentist.setFullName(rs.getString("dentist_name"));
+            appointment.setDentist(dentist);
+        } else {
+            appointment.setDentist(null);
+        }
+        
+        // Only set service if service_id is not null
+        int serviceId = rs.getInt("service_id");
+        if (!rs.wasNull()) {
+            Service service = new Service();
+            service.setServiceId(serviceId);
+            service.setName(rs.getString("service_name"));
+            service.setPrice(rs.getBigDecimal("service_price"));
+            
+            int durationMinutes = rs.getInt("service_duration");
+            if (rs.wasNull()) {
+                service.setDurationMinutes(null);
+            } else {
+                service.setDurationMinutes(durationMinutes);
+            }
+            appointment.setService(service);
+        } else {
+            appointment.setService(null);
+        }
         
         return appointment;
     }

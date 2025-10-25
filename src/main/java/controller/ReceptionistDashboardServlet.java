@@ -50,9 +50,7 @@ public class ReceptionistDashboardServlet extends HttpServlet {
             // Test database connection first
             try {
                 appointmentDAO.getAppointmentsByDate(Date.valueOf(LocalDate.now()));
-                System.out.println("Database connection successful");
             } catch (Exception e) {
-                System.err.println("Database connection failed: " + e.getMessage());
                 e.printStackTrace();
             }
             

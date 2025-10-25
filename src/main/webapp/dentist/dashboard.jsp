@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bảng Điều Khiển Bác Sĩ Nha Khoa - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/unified-styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -22,7 +23,7 @@
     </c:if>
     
     <div class="header">
-        <h1>🦷 Bảng Điều Khiển Bác Sĩ Nha Khoa</h1>
+        <h1>Bảng Điều Khiển Bác Sĩ Nha Khoa</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
@@ -41,59 +42,43 @@
         
         <div class="dashboard-grid">
             <div class="card" onclick="window.location.href='${pageContext.request.contextPath}/dentist/schedule?action=daily'">
-                <h3>📅 Lịch Trình Hàng Ngày</h3>
+                <h3>Lịch Trình Hàng Ngày</h3>
                 <p>Xem lịch hẹn hàng ngày, bệnh nhân sắp tới và tình trạng lịch trình. Quản lý lịch của bạn một cách hiệu quả.</p>
-                <div class="card-action">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
             </div>
             
             <div class="card" onclick="window.location.href='${pageContext.request.contextPath}/dentist/schedule?action=weekly'">
-                <h3>📅 Lịch Trình Hàng Tuần</h3>
+                <h3>Lịch Trình Hàng Tuần</h3>
                 <p>Xem tổng quan lịch hẹn trong tuần, lập kế hoạch và điều chỉnh lịch trình làm việc.</p>
-                <div class="card-action">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
             </div>
             
             <div class="card" onclick="window.location.href='${pageContext.request.contextPath}/dentist/patients'">
-                <h3>👥 Danh Sách Bệnh Nhân</h3>
+                <h3>Danh Sách Bệnh Nhân</h3>
                 <p>Quản lý danh sách bệnh nhân, theo dõi trạng thái khám bệnh và đánh dấu đã khám.</p>
-                <div class="card-action">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
             </div>
             
             <div class="card" onclick="window.location.href='${pageContext.request.contextPath}/dentist/medical-history'">
-                <h3>📋 Lịch Sử Khám Bệnh</h3>
+                <h3>Lịch Sử Khám Bệnh</h3>
                 <p>Truy cập lịch sử khám bệnh của từng bệnh nhân, xem hồ sơ y tế và theo dõi tiến độ điều trị.</p>
-                <div class="card-action">
-                    <i class="fas fa-arrow-right"></i>
-                </div>
             </div>
         </div>
         
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon">👥</div>
                 <div class="stat-number">${patientsNotExaminedToday}</div>
                 <div class="stat-label">Bệnh Nhân Chưa Khám</div>
                 <div class="stat-description">Cần khám hôm nay</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">✅</div>
                 <div class="stat-number">${patientsExaminedToday}</div>
                 <div class="stat-label">Đã Khám</div>
                 <div class="stat-description">Hoàn thành hôm nay</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">📅</div>
                 <div class="stat-number">${totalAppointmentsToday}</div>
                 <div class="stat-label">Lịch Hẹn Hôm Nay</div>
                 <div class="stat-description">Tổng số cuộc hẹn</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">⏰</div>
                 <div class="stat-number">${patientsWaitingInQueue}</div>
                 <div class="stat-label">Đang Chờ</div>
                 <div class="stat-description">Trong hàng đợi</div>
@@ -101,18 +86,15 @@
         </div>
         
         <div class="quick-actions">
-            <h3>🚀 Thao Tác Nhanh</h3>
+            <h3>Thao Tác Nhanh</h3>
             <div class="action-buttons">
                 <a href="${pageContext.request.contextPath}/dentist/patients" class="action-btn primary">
-                    <i class="fas fa-users"></i>
                     <span>Xem Danh Sách Bệnh Nhân</span>
                 </a>
                 <a href="${pageContext.request.contextPath}/dentist/schedule?action=daily" class="action-btn secondary">
-                    <i class="fas fa-calendar-day"></i>
                     <span>Lịch Hàng Ngày</span>
                 </a>
                 <a href="${pageContext.request.contextPath}/dentist/medical-history" class="action-btn secondary">
-                    <i class="fas fa-history"></i>
                     <span>Lịch Sử Khám Bệnh</span>
                 </a>
             </div>

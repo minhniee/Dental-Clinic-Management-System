@@ -27,17 +27,12 @@ public class TestReportServlet extends HttpServlet {
         }
 
         try {
-            System.out.println("TestReportServlet: Starting doGet");
-            System.out.println("TestReportServlet: User: " + currentUser.getFullName());
-            System.out.println("TestReportServlet: Role: " + currentUser.getRole().getRoleName());
-            
             request.setAttribute("message", "Test servlet hoạt động bình thường!");
             request.setAttribute("user", currentUser.getFullName());
             
             request.getRequestDispatcher("/admin/test-report.jsp").forward(request, response);
             
         } catch (Exception e) {
-            System.out.println("TestReportServlet: Error occurred: " + e.getMessage());
             e.printStackTrace();
             response.getWriter().println("Error: " + e.getMessage());
         }

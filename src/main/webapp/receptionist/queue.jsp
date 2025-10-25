@@ -250,7 +250,7 @@
     </c:if>
     
     <div class="header">
-        <h1>🦷 Quản Lý Hàng Chờ</h1>
+        <h1>Quản Lý Hàng Chờ</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
@@ -349,16 +349,18 @@
                                     </thead>
                                     <tbody>
                                         <c:forEach var="queueItem" items="${currentQueue}">
+                                            <c:set var="patientName" value="${not empty queueItem.appointment.patient.fullName ? queueItem.appointment.patient.fullName : 'N/A'}"/>
+                                            <c:set var="patientPhone" value="${not empty queueItem.appointment.patient.phone ? queueItem.appointment.patient.phone : ''}"/>
                                             <tr>
                                                 <td>
                                                     <span class="position-badge">#${queueItem.positionInQueue}</span>
                                                 </td>
                                                 <td>
-                                                    <strong style="color: #0f172a;">${queueItem.appointment.patient.fullName}</strong>
-                                                    <c:if test="${not empty queueItem.appointment.patient.phone}">
+                                                    <strong style="color: #0f172a;">${patientName}</strong>
+                                                    <c:if test="${not empty patientPhone}">
                                                         <br>
                                                         <small style="color: #64748b;">
-                                                            <i class="fas fa-phone"></i> ${queueItem.appointment.patient.phone}
+                                                            <i class="fas fa-phone"></i> ${patientPhone}
                                                         </small>
                                                     </c:if>
                                                 </td>
