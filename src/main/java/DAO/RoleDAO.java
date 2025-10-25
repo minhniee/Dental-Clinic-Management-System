@@ -187,19 +187,20 @@ public class RoleDAO {
         
         switch (roleName) {
             case "Administrator":
-                // Quản trị viên có toàn quyền
+                // Quản trị viên - quản lý hệ thống, người dùng, phân quyền, báo cáo tổng hợp
                 permissions.addAll(Arrays.asList(
-                    "user_management", "role_management", "employee_management", 
-                    "schedule_management", "inventory_management", "appointment_management", 
-                    "patient_management", "report_view", "system_config", "financial_management"
+                    "user_management", "role_management", "report_view", 
+                    "financial_reports", "usage_reports", "treatment_reports", 
+                    "performance_reports", "system_admin"
                 ));
                 break;
             case "ClinicManager":
-                // Quản lý phòng khám - quản lý vận hành
+                // Quản lý phòng khám - quản lý vận hành, nhân viên, vật tư, lịch làm việc
                 permissions.addAll(Arrays.asList(
                     "employee_management", "schedule_management", "inventory_management", 
-                    "appointment_management", "patient_management", "report_view",
-                    "financial_reports", "operational_reports"
+                    "schedule_approval", "stock_transactions", "operational_reports",
+                    "appointment_reports", "revenue_reports", "performance_reports", 
+                    "inventory_reports", "weekly_schedule"
                 ));
                 break;
             case "Receptionist":

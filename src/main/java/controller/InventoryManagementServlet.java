@@ -46,11 +46,10 @@ public class InventoryManagementServlet extends HttpServlet {
                 return;
             }
 
-            // Check if user has permission (Admin, ClinicManager, or Receptionist)
+            // Check if user has permission (Only Administrator)
             String roleName = currentUser.getRole().getRoleName().toLowerCase();
-            if (!roleName.equals("administrator") && !roleName.equals("clinicmanager") && 
-                !roleName.equals("receptionist")) {
-                request.setAttribute("error", "Bạn không có quyền truy cập trang này.");
+            if (!roleName.equals("administrator")) {
+                request.setAttribute("error", "Bạn không có quyền truy cập trang này. Chỉ Administrator mới có thể quản lý inventory.");
                 request.getRequestDispatcher("/403.jsp").forward(request, response);
                 return;
             }

@@ -177,14 +177,14 @@
 
                 <!-- Charts Section -->
                 <div class="chart-container">
-                    <h3 class="chart-title">📈 Xu Hướng Lịch Hẹn (7 ngày qua)</h3>
+                    <h3 class="chart-title">📈 Xu Hướng Lịch Hẹn </h3>
                     <div class="chart-wrapper">
                         <canvas id="appointmentsChart"></canvas>
                     </div>
                 </div>
 
                 <div class="chart-container">
-                    <h3 class="chart-title">💰 Xu Hướng Doanh Thu (7 ngày qua)</h3>
+                    <h3 class="chart-title">💰 Xu Hướng Doanh Thu</h3>
                     <div class="chart-wrapper">
                         <canvas id="revenueChart"></canvas>
                     </div>
@@ -264,7 +264,10 @@
         if (appointmentsData.length > 0) {
             appointmentLabels = appointmentsData.map(item => {
                 try {
-                    const d = new Date(item.date);
+                    // Parse date string in format YYYY-MM-DD
+                    const dateStr = item.date;
+                    const [year, month, day] = dateStr.split('-');
+                    const d = new Date(year, month - 1, day); // month is 0-indexed
                     return d.toLocaleDateString('vi-VN');
                 } catch {
                     return item.date;
@@ -314,7 +317,10 @@
         if (revenueData.length > 0) {
             revenueLabels = revenueData.map(item => {
                 try {
-                    const d = new Date(item.date);
+                    // Parse date string in format YYYY-MM-DD
+                    const dateStr = item.date;
+                    const [year, month, day] = dateStr.split('-');
+                    const d = new Date(year, month - 1, day); // month is 0-indexed
                     return d.toLocaleDateString('vi-VN');
                 } catch {
                     return item.date;

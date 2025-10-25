@@ -20,10 +20,10 @@ import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-@WebServlet("/admin/weekly-schedule")
-public class WeeklyScheduleServlet extends HttpServlet {
+@WebServlet("/manager/weekly-schedule")
+public class ManagerWeeklyScheduleServlet extends HttpServlet {
 
-    private static final Logger logger = Logger.getLogger(WeeklyScheduleServlet.class.getName());
+    private static final Logger logger = Logger.getLogger(ManagerWeeklyScheduleServlet.class.getName());
     private final DoctorScheduleDAO doctorScheduleDAO = new DoctorScheduleDAO();
     private final UserDAO userDAO = new UserDAO();
 
@@ -34,9 +34,9 @@ public class WeeklyScheduleServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("user");
         
-        // Check if user is logged in and is administrator
-        if (currentUser == null || !"Administrator".equalsIgnoreCase(currentUser.getRole().getRoleName())) {
-            response.sendRedirect(request.getContextPath() + "/login");
+        // Check if user is logged in and is clinic manager
+        if (currentUser == null || !"ClinicManager".equalsIgnoreCase(currentUser.getRole().getRoleName())) {
+            request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
 
@@ -118,12 +118,12 @@ public class WeeklyScheduleServlet extends HttpServlet {
                 }
             }
             
-            request.getRequestDispatcher("/admin/weekly-schedule.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/weekly-schedule.jsp").forward(request, response);
             
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error loading weekly schedule", e);
             request.setAttribute("error", "Có lỗi xảy ra khi tải lịch làm việc tuần.");
-            request.getRequestDispatcher("/admin/weekly-schedule.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/weekly-schedule.jsp").forward(request, response);
         }
     }
 

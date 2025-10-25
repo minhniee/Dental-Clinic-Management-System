@@ -19,11 +19,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-@WebServlet("/admin/dashboard")
-public class DashboardServlet extends HttpServlet {
+@WebServlet("/manager/dashboard")
+public class ManagerDashboardServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -37,87 +34,70 @@ public class DashboardServlet extends HttpServlet {
         HttpSession session = request.getSession();
         User currentUser = (User) session.getAttribute("user");
 
-        // Chặn truy cập nếu không phải admin
-        if (currentUser == null || !"Administrator".equalsIgnoreCase(currentUser.getRole().getRoleName())) {
+        // Chặn truy cập nếu không phải clinic manager
+        if (currentUser == null || !"ClinicManager".equalsIgnoreCase(currentUser.getRole().getRoleName())) {
             response.sendRedirect(request.getContextPath() + "/login");
             return;
         }
 
         try {
-            System.out.println("=== DashboardServlet: Bắt đầu lấy dữ liệu ===");
-
-            // period param (mặc định 30 ngày)
-            String periodStr = request.getParameter("period");
-            int period = 30;
-            if (periodStr != null && !periodStr.isEmpty()) {
-                try {
-                    period = Integer.parseInt(periodStr);
-                } catch (NumberFormatException e) {
-                    System.out.println("Invalid period parameter: " + periodStr + ", using default 30");
-                }
-            }
-            System.out.println("Using period: " + period + " days");
-
-            // Test DB connection
-            try (Connection testConn = new DBContext().getConnection()) {
-                System.out.println("Database connection successful!");
-                try (PreparedStatement ps = testConn.prepareStatement("SELECT COUNT(*) FROM Users");
-                     ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        System.out.println("Test query result: " + rs.getInt(1));
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println("Database connection failed: " + e.getMessage());
-                e.printStackTrace();
-            }
+            System.out.println("=== ManagerDashboardServlet: Bắt đầu lấy dữ liệu ===");
 
             Map<String, Object> dashboardData = new HashMap<>();
 
-            // Tổng quan
-            System.out.println("Lấy totalUsers...");
-            int totalUsers = getTotalUsers();
-            System.out.println("totalUsers: " + totalUsers);
-            dashboardData.put("totalUsers", totalUsers);
-
+            // Thống kê vận hành
             System.out.println("Lấy totalEmployees...");
             int totalEmployees = getTotalEmployees();
             System.out.println("totalEmployees: " + totalEmployees);
             dashboardData.put("totalEmployees", totalEmployees);
 
             System.out.println("Lấy totalAppointments...");
-            int totalAppointments = getTotalAppointments(period);
+            int totalAppointments = getTotalAppointments();
             System.out.println("totalAppointments: " + totalAppointments);
             dashboardData.put("totalAppointments", totalAppointments);
 
             System.out.println("Lấy totalRevenue...");
-            double totalRevenue = getTotalRevenue(period);
+            double totalRevenue = getTotalRevenue();
             System.out.println("totalRevenue: " + totalRevenue);
             dashboardData.put("totalRevenue", totalRevenue);
 
+            System.out.println("Lấy pendingRequests...");
+            int pendingRequests = getPendingScheduleRequests();
+            System.out.println("pendingRequests: " + pendingRequests);
+            dashboardData.put("pendingRequests", pendingRequests);
+
+            System.out.println("Lấy lowStockItems...");
+            int lowStockItems = getLowStockItems();
+            System.out.println("lowStockItems: " + lowStockItems);
+            dashboardData.put("lowStockItems", lowStockItems);
+
             // Fallback demo nếu rỗng
-            if (totalUsers == 0) {
-                System.out.println("Không có dữ liệu Users, sử dụng giá trị mặc định");
-                dashboardData.put("totalUsers", 5);
-            }
             if (totalEmployees == 0) {
                 System.out.println("Không có dữ liệu Employees, sử dụng giá trị mặc định");
-                dashboardData.put("totalEmployees", 3);
+                dashboardData.put("totalEmployees", 8);
             }
             if (totalAppointments == 0) {
                 System.out.println("Không có dữ liệu Appointments, sử dụng giá trị mặc định");
-                dashboardData.put("totalAppointments", 12);
+                dashboardData.put("totalAppointments", 25);
             }
             if (totalRevenue == 0) {
                 System.out.println("Không có dữ liệu Revenue, sử dụng giá trị mặc định");
-                dashboardData.put("totalRevenue", 15000000.0);
+                dashboardData.put("totalRevenue", 25000000.0);
+            }
+            if (pendingRequests == 0) {
+                System.out.println("Không có dữ liệu PendingRequests, sử dụng giá trị mặc định");
+                dashboardData.put("pendingRequests", 3);
+            }
+            if (lowStockItems == 0) {
+                System.out.println("Không có dữ liệu LowStockItems, sử dụng giá trị mặc định");
+                dashboardData.put("lowStockItems", 2);
             }
 
             // Dữ liệu biểu đồ & bảng
             System.out.println("Lấy appointmentTrends...");
             List<Map<String, Object>> appointmentTrends;
             try {
-                appointmentTrends = getAppointmentTrends(period);
+                appointmentTrends = getAppointmentTrends(7);
             } catch (Exception e) {
                 System.out.println("Lỗi lấy appointmentTrends: " + e.getMessage());
                 appointmentTrends = new ArrayList<>();
@@ -127,7 +107,7 @@ public class DashboardServlet extends HttpServlet {
             System.out.println("Lấy revenueTrends...");
             List<Map<String, Object>> revenueTrends;
             try {
-                revenueTrends = getRevenueTrends(period);
+                revenueTrends = getRevenueTrends(7);
             } catch (Exception e) {
                 System.out.println("Lỗi lấy revenueTrends: " + e.getMessage());
                 revenueTrends = new ArrayList<>();
@@ -144,76 +124,47 @@ public class DashboardServlet extends HttpServlet {
             }
             dashboardData.put("topDentists", topDentists);
 
-            System.out.println("Lấy recentActivities...");
-            List<Map<String, Object>> recentActivities;
+            System.out.println("Lấy recentScheduleRequests...");
+            List<Map<String, Object>> recentScheduleRequests;
             try {
-                recentActivities = getRecentActivities(10);
+                recentScheduleRequests = getRecentScheduleRequests(5);
             } catch (Exception e) {
-                System.out.println("Lỗi lấy recentActivities: " + e.getMessage());
-                recentActivities = new ArrayList<>();
+                System.out.println("Lỗi lấy recentScheduleRequests: " + e.getMessage());
+                recentScheduleRequests = new ArrayList<>();
             }
-            dashboardData.put("recentActivities", recentActivities);
+            dashboardData.put("recentScheduleRequests", recentScheduleRequests);
 
-            System.out.println("=== DashboardServlet: Hoàn thành lấy dữ liệu ===");
+            System.out.println("=== ManagerDashboardServlet: Hoàn thành lấy dữ liệu ===");
             System.out.println("Dashboard data size: " + dashboardData.size());
-
-            // JSON cho JS (chuẩn hoá date -> yyyy-MM-dd để JS parse dễ)
-            Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
-            String appointmentTrendsJson = gson.toJson(dashboardData.get("appointmentTrends"));
-            String revenueTrendsJson = gson.toJson(dashboardData.get("revenueTrends"));
-            String topDentistsJson = gson.toJson(dashboardData.get("topDentists"));
-            String recentActivitiesJson = gson.toJson(dashboardData.get("recentActivities"));
-
-            System.out.println("appointmentTrendsJson: " + appointmentTrendsJson);
-            System.out.println("revenueTrendsJson: " + revenueTrendsJson);
-            System.out.println("topDentistsJson: " + topDentistsJson);
 
             // === Set attribute cho JSP ===
             // Số liệu tổng
-            request.setAttribute("totalUsers",        dashboardData.get("totalUsers"));
-            request.setAttribute("totalEmployees",    dashboardData.get("totalEmployees"));
+            request.setAttribute("totalEmployees", dashboardData.get("totalEmployees"));
             request.setAttribute("totalAppointments", dashboardData.get("totalAppointments"));
-            request.setAttribute("totalRevenue",      dashboardData.get("totalRevenue"));
+            request.setAttribute("totalRevenue", dashboardData.get("totalRevenue"));
+            request.setAttribute("pendingRequests", dashboardData.get("pendingRequests"));
+            request.setAttribute("lowStockItems", dashboardData.get("lowStockItems"));
 
-            // Collection dành cho JSTL (bảng Top Bác Sĩ)
+            // Collection dành cho JSTL
             request.setAttribute("topDentistsList", topDentists);
-
-            // JSON string dành cho JavaScript (vẽ chart)
-            request.setAttribute("appointmentTrendsJson", appointmentTrendsJson);
-            request.setAttribute("revenueTrendsJson",     revenueTrendsJson);
-            request.setAttribute("topDentistsJson",       topDentistsJson);
-            request.setAttribute("recentActivitiesJson",  recentActivitiesJson);
+            request.setAttribute("recentScheduleRequestsList", recentScheduleRequests);
 
             // User hiện tại
             request.setAttribute("currentUser", currentUser);
 
             // Forward
-            request.getRequestDispatcher("/admin/dashboard.jsp").forward(request, response);
+            request.getRequestDispatcher("/manager/dashboard.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Lỗi khi tải dữ liệu dashboard: " + e.getMessage());
-            request.getRequestDispatcher("/admin/dashboard.jsp").forward(request, response);
-        }
-    }
-
-    private int getTotalUsers() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Users WHERE is_active = 1";
-        try (Connection conn = new DBContext().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            int result = rs.next() ? rs.getInt(1) : 0;
-            System.out.println("getTotalUsers result: " + result);
-            return result;
-        } catch (Exception e) {
-            System.out.println("Error in getTotalUsers: " + e.getMessage());
-            e.printStackTrace();
-            return 0;
+            request.getRequestDispatcher("/manager/dashboard.jsp").forward(request, response);
         }
     }
 
     private int getTotalEmployees() throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Employees";
+        String sql = "SELECT COUNT(*) FROM Users u JOIN Roles r ON u.role_id = r.role_id " +
+                    "WHERE r.role_name IN ('Dentist', 'Receptionist', 'Nurse', 'ClinicManager') AND u.is_active = 1";
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
@@ -227,16 +178,14 @@ public class DashboardServlet extends HttpServlet {
         }
     }
 
-    private int getTotalAppointments(int period) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Appointments WHERE appointment_date >= DATEADD(day, -?, GETDATE())";
+    private int getTotalAppointments() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM Appointments WHERE appointment_date >= DATEADD(day, -7, GETDATE())";
         try (Connection conn = new DBContext().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, period);
-            try (ResultSet rs = ps.executeQuery()) {
-                int result = rs.next() ? rs.getInt(1) : 0;
-                System.out.println("getTotalAppointments result for " + period + " days: " + result);
-                return result;
-            }
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            int result = rs.next() ? rs.getInt(1) : 0;
+            System.out.println("getTotalAppointments result: " + result);
+            return result;
         } catch (Exception e) {
             System.out.println("Error in getTotalAppointments: " + e.getMessage());
             e.printStackTrace();
@@ -244,20 +193,46 @@ public class DashboardServlet extends HttpServlet {
         }
     }
 
-    private double getTotalRevenue(int period) throws SQLException {
-        // Doanh thu chính từ Invoices đã thanh toán
-        String sql = "SELECT ISNULL(SUM(net_amount), 0) FROM Invoices " +
-                "WHERE status = 'PAID' AND created_at >= DATEADD(day, -?, GETDATE())";
+    private double getTotalRevenue() throws SQLException {
+        String sql = "SELECT ISNULL(SUM(total_amount), 0) FROM Invoices WHERE status = 'PAID' AND created_at >= DATEADD(day, -7, GETDATE())";
         try (Connection conn = new DBContext().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, period);
-            try (ResultSet rs = ps.executeQuery()) {
-                double result = rs.next() ? rs.getDouble(1) : 0;
-                System.out.println("getTotalRevenue result for " + period + " days: " + result);
-                return result;
-            }
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            double result = rs.next() ? rs.getDouble(1) : 0;
+            System.out.println("getTotalRevenue result: " + result);
+            return result;
         } catch (Exception e) {
             System.out.println("Error in getTotalRevenue: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private int getPendingScheduleRequests() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM ScheduleRequests WHERE status = 'PENDING'";
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            int result = rs.next() ? rs.getInt(1) : 0;
+            System.out.println("getPendingScheduleRequests result: " + result);
+            return result;
+        } catch (Exception e) {
+            System.out.println("Error in getPendingScheduleRequests: " + e.getMessage());
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    private int getLowStockItems() throws SQLException {
+        String sql = "SELECT COUNT(*) FROM InventoryItems WHERE quantity <= min_stock";
+        try (Connection conn = new DBContext().getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            int result = rs.next() ? rs.getInt(1) : 0;
+            System.out.println("getLowStockItems result: " + result);
+            return result;
+        } catch (Exception e) {
+            System.out.println("Error in getLowStockItems: " + e.getMessage());
             e.printStackTrace();
             return 0;
         }
@@ -277,7 +252,7 @@ public class DashboardServlet extends HttpServlet {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
-                    row.put("date", rs.getDate("date").toString()); // Convert to String
+                    row.put("date", rs.getDate("date"));
                     row.put("count", rs.getInt("count"));
                     result.add(row);
                 }
@@ -293,7 +268,7 @@ public class DashboardServlet extends HttpServlet {
             for (int i = 6; i >= 0; i--) {
                 Map<String, Object> row = new HashMap<>();
                 row.put("date", java.sql.Date.valueOf(java.time.LocalDate.now().minusDays(i)));
-                row.put("count", (int) (Math.random() * 10) + 1);
+                row.put("count", (int) (Math.random() * 8) + 2);
                 result.add(row);
             }
         }
@@ -302,8 +277,7 @@ public class DashboardServlet extends HttpServlet {
     }
 
     private List<Map<String, Object>> getRevenueTrends(int days) throws SQLException {
-        // Doanh thu theo ngày từ Invoices đã thanh toán
-        String sql = "SELECT CAST(created_at AS DATE) as date, ISNULL(SUM(net_amount), 0) as revenue " +
+        String sql = "SELECT CAST(created_at AS DATE) as date, ISNULL(SUM(total_amount), 0) as revenue " +
                 "FROM Invoices " +
                 "WHERE status = 'PAID' AND created_at >= DATEADD(day, -?, GETDATE()) " +
                 "GROUP BY CAST(created_at AS DATE) " +
@@ -316,7 +290,7 @@ public class DashboardServlet extends HttpServlet {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
-                    row.put("date", rs.getDate("date").toString()); // Convert to String
+                    row.put("date", rs.getDate("date"));
                     row.put("revenue", rs.getDouble("revenue"));
                     result.add(row);
                 }
@@ -332,7 +306,7 @@ public class DashboardServlet extends HttpServlet {
             for (int i = 6; i >= 0; i--) {
                 Map<String, Object> row = new HashMap<>();
                 row.put("date", java.sql.Date.valueOf(java.time.LocalDate.now().minusDays(i)));
-                row.put("revenue", Math.random() * 5_000_000 + 1_000_000);
+                row.put("revenue", Math.random() * 3_000_000 + 1_000_000);
                 result.add(row);
             }
         }
@@ -345,7 +319,7 @@ public class DashboardServlet extends HttpServlet {
                 "FROM Users u " +
                 "LEFT JOIN Appointments a ON u.user_id = a.dentist_id " +
                 "LEFT JOIN Invoices i ON a.appointment_id = i.appointment_id " +
-                "WHERE u.role_id = 3 " +
+                "WHERE u.role_id = 3 AND a.appointment_date >= DATEADD(day, -7, GETDATE()) " +
                 "GROUP BY u.user_id, u.full_name " +
                 "ORDER BY appointments DESC";
 
@@ -370,12 +344,12 @@ public class DashboardServlet extends HttpServlet {
         System.out.println("getTopDentists result size: " + result.size());
         if (result.isEmpty()) {
             System.out.println("No top dentists data, generating sample data");
-            String[] names = {"Dr. John Doe", "Dr. Jane Smith", "Dr. Mike Johnson", "Dr. Sarah Wilson", "Dr. David Brown"};
+            String[] names = {"Dr. Nguyễn Văn A", "Dr. Trần Thị B", "Dr. Lê Văn C", "Dr. Phạm Thị D", "Dr. Hoàng Văn E"};
             for (int i = 0; i < Math.min(limit, names.length); i++) {
                 Map<String, Object> row = new HashMap<>();
                 row.put("name", names[i]);
-                row.put("appointments", (int) (Math.random() * 20) + 5);
-                row.put("revenue", Math.random() * 10_000_000 + 2_000_000);
+                row.put("appointments", (int) (Math.random() * 15) + 5);
+                row.put("revenue", Math.random() * 8_000_000 + 2_000_000);
                 result.add(row);
             }
         }
@@ -383,18 +357,12 @@ public class DashboardServlet extends HttpServlet {
         return result;
     }
 
-    private List<Map<String, Object>> getRecentActivities(int limit) throws SQLException {
-        String sql =
-                "SELECT TOP (?) 'appointment' as type, CAST(created_at AS DATE) as date, COUNT(*) as count " +
-                        "FROM Appointments " +
-                        "WHERE created_at >= DATEADD(day, -7, GETDATE()) " +
-                        "GROUP BY CAST(created_at AS DATE) " +
-                        "UNION ALL " +
-                        "SELECT 'invoice' as type, CAST(created_at AS DATE) as date, COUNT(*) as count " +
-                        "FROM Invoices " +
-                        "WHERE created_at >= DATEADD(day, -7, GETDATE()) " +
-                        "GROUP BY CAST(created_at AS DATE) " +
-                        "ORDER BY date DESC";
+    private List<Map<String, Object>> getRecentScheduleRequests(int limit) throws SQLException {
+        String sql = "SELECT TOP (?) sr.request_id, u.full_name, sr.date, sr.shift, sr.status, sr.reason " +
+                "FROM ScheduleRequests sr " +
+                "INNER JOIN Employees e ON sr.employee_id = e.employee_id " +
+                "INNER JOIN Users u ON e.user_id = u.user_id " +
+                "ORDER BY sr.created_at DESC";
 
         List<Map<String, Object>> result = new ArrayList<>();
         try (Connection conn = new DBContext().getConnection();
@@ -403,13 +371,20 @@ public class DashboardServlet extends HttpServlet {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> row = new HashMap<>();
-                    row.put("type", rs.getString("type"));
-                    row.put("date", rs.getDate("date"));
-                    row.put("count", rs.getInt("count"));
+                    row.put("requestId", rs.getInt("request_id"));
+                    row.put("employeeName", rs.getString("full_name"));
+                    row.put("requestDate", rs.getDate("date"));
+                    row.put("shift", rs.getString("shift"));
+                    row.put("status", rs.getString("status"));
+                    row.put("reason", rs.getString("reason"));
                     result.add(row);
                 }
             }
+        } catch (Exception e) {
+            System.out.println("Error in getRecentScheduleRequests: " + e.getMessage());
+            e.printStackTrace();
         }
+
         return result;
     }
 }

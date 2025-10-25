@@ -15,6 +15,7 @@ public class ScheduleRequest {
     private Integer reviewedBy;
     private String reviewerName;
     private LocalDateTime reviewedAt;
+    private String managerNotes;
     
     // Constructors
     public ScheduleRequest() {}
@@ -122,6 +123,14 @@ public class ScheduleRequest {
     
     public void setReviewedAt(LocalDateTime reviewedAt) {
         this.reviewedAt = reviewedAt;
+    }
+    
+    public String getManagerNotes() {
+        return managerNotes;
+    }
+    
+    public void setManagerNotes(String managerNotes) {
+        this.managerNotes = managerNotes;
     }
     
     // Helper methods

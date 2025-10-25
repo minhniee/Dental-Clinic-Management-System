@@ -522,16 +522,7 @@
                                     </c:if>
                                 </div>
                             </div>
-                            <div class="role-actions">
-                                <button class="btn-primary" onclick="openPermissionModal(${role.roleId}, '${role.roleName}')">
-                                    🔑 Phân Quyền
-                                </button>
-                                <c:if test="${role.roleName != 'Administrator'}">
-                                    <button class="btn-warning" onclick="openEditRoleModal(${role.roleId}, '${role.roleName}', '${role.description}')">
-                                        ✏️ Chỉnh Sửa
-                                    </button>
-                                </c:if>
-                            </div>
+
                         </div>
                     </c:forEach>
                 </div>

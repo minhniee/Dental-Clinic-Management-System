@@ -15,7 +15,7 @@ public class ScheduleRequestDAO {
     public List<ScheduleRequest> getAllRequests() throws SQLException {
         String sql = "SELECT sr.request_id, sr.employee_id, u.full_name as employee_name, " +
                     "sr.date, sr.shift, sr.reason, sr.status, sr.created_at, " +
-                    "sr.reviewed_by, reviewer.full_name as reviewer_name, sr.reviewed_at " +
+                    "sr.reviewed_by, reviewer.full_name as reviewer_name, sr.reviewed_at, sr.manager_notes " +
                     "FROM ScheduleRequests sr " +
                     "INNER JOIN Employees e ON sr.employee_id = e.employee_id " +
                     "INNER JOIN Users u ON e.user_id = u.user_id " +
@@ -38,7 +38,7 @@ public class ScheduleRequestDAO {
     public ScheduleRequest getRequestById(int requestId) throws SQLException {
         String sql = "SELECT sr.request_id, sr.employee_id, u.full_name as employee_name, " +
                     "sr.date, sr.shift, sr.reason, sr.status, sr.created_at, " +
-                    "sr.reviewed_by, reviewer.full_name as reviewer_name, sr.reviewed_at " +
+                    "sr.reviewed_by, reviewer.full_name as reviewer_name, sr.reviewed_at, sr.manager_notes " +
                     "FROM ScheduleRequests sr " +
                     "INNER JOIN Employees e ON sr.employee_id = e.employee_id " +
                     "INNER JOIN Users u ON e.user_id = u.user_id " +
@@ -61,7 +61,7 @@ public class ScheduleRequestDAO {
     public List<ScheduleRequest> getRequestsByStatus(String status) throws SQLException {
         String sql = "SELECT sr.request_id, sr.employee_id, u.full_name as employee_name, " +
                     "sr.date, sr.shift, sr.reason, sr.status, sr.created_at, " +
-                    "sr.reviewed_by, reviewer.full_name as reviewer_name, sr.reviewed_at " +
+                    "sr.reviewed_by, reviewer.full_name as reviewer_name, sr.reviewed_at, sr.manager_notes " +
                     "FROM ScheduleRequests sr " +
                     "INNER JOIN Employees e ON sr.employee_id = e.employee_id " +
                     "INNER JOIN Users u ON e.user_id = u.user_id " +
@@ -99,31 +99,43 @@ public class ScheduleRequestDAO {
     }
     
     // Phê duyệt yêu cầu
-    public boolean approveRequest(int requestId, int reviewerId) throws SQLException {
-        String sql = "UPDATE ScheduleRequests SET status = 'APPROVED', reviewed_by = ?, reviewed_at = GETDATE() " +
+    public boolean approveRequest(int requestId, int reviewerId, String managerNotes) throws SQLException {
+        String sql = "UPDATE ScheduleRequests SET status = 'APPROVED', reviewed_by = ?, reviewed_at = GETDATE(), manager_notes = ? " +
                     "WHERE request_id = ?";
         
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, reviewerId);
-            ps.setInt(2, requestId);
+            ps.setString(2, managerNotes);
+            ps.setInt(3, requestId);
             
             return ps.executeUpdate() > 0;
         }
     }
     
+    // Phê duyệt yêu cầu (overload method without notes)
+    public boolean approveRequest(int requestId, int reviewerId) throws SQLException {
+        return approveRequest(requestId, reviewerId, null);
+    }
+    
     // Từ chối yêu cầu
-    public boolean rejectRequest(int requestId, int reviewerId) throws SQLException {
-        String sql = "UPDATE ScheduleRequests SET status = 'REJECTED', reviewed_by = ?, reviewed_at = GETDATE() " +
+    public boolean rejectRequest(int requestId, int reviewerId, String managerNotes) throws SQLException {
+        String sql = "UPDATE ScheduleRequests SET status = 'REJECTED', reviewed_by = ?, reviewed_at = GETDATE(), manager_notes = ? " +
                     "WHERE request_id = ?";
         
         try (Connection conn = new DBContext().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, reviewerId);
-            ps.setInt(2, requestId);
+            ps.setString(2, managerNotes);
+            ps.setInt(3, requestId);
             
             return ps.executeUpdate() > 0;
         }
+    }
+    
+    // Từ chối yêu cầu (overload method without notes)
+    public boolean rejectRequest(int requestId, int reviewerId) throws SQLException {
+        return rejectRequest(requestId, reviewerId, null);
     }
     
     // Lấy số lượng yêu cầu theo trạng thái
@@ -160,6 +172,9 @@ public class ScheduleRequestDAO {
         if (rs.getTimestamp("reviewed_at") != null) {
             request.setReviewedAt(rs.getTimestamp("reviewed_at").toLocalDateTime());
         }
+        
+        // Handle manager notes
+        request.setManagerNotes(rs.getString("manager_notes"));
         
         return request;
     }
