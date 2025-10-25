@@ -87,11 +87,11 @@ public class LoginServlet extends HttpServlet {
         switch (normalized) {
             case "administrator":
                 System.out.println("done admin");
-                return "/admin/dashboard.jsp";
+                return "/admin/dashboard";
             case "clinicmanager":
                 return "/manager/dashboard.jsp";
             case "dentist":
-                return "/dentist/dashboard.jsp";
+                return "/dentist/dashboard";
             case "receptionist":
                 return "/receptionist/dashboard";
             case "patient":

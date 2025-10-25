@@ -19,12 +19,13 @@
         <!-- Administrator menu -->
         <c:if test="${role eq 'administrator'}">
             <ul>
-                <li><a class="${fn:endsWith(currentPath, '/admin/dashboard.jsp') ? 'active' : ''}" href="${ctx}/admin/dashboard.jsp">Tổng Quan</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/admin/dashboard') ? 'active' : ''}" href="${ctx}/admin/dashboard">📊 Báo Cáo Tổng Hợp</a></li>
                 <li><a href="${ctx}/admin/users">Người Dùng</a></li>
                 <li><a href="${ctx}/admin/roles">Vai Trò & Quyền Hạn</a></li>
                 <li><a href="${ctx}/admin/employees">Nhân Viên</a></li>
                 <li><a href="${ctx}/admin/schedules">Phân Công Lịch</a></li>
                 <li><a href="${ctx}/admin/weekly-schedule">Lịch Tuần</a></li>
+                <li><a href="${ctx}/admin/schedule-requests">📋 Yêu Cầu Nghỉ</a></li>
                 <li><a href="${ctx}/admin/notifications">Thông Báo</a></li>
                 <li><a href="${ctx}/admin/services">Dịch Vụ</a></li>
                 <li><a href="${ctx}/admin/pricing">Giá Cả</a></li>
@@ -45,6 +46,7 @@
                 <li><a class="${fn:endsWith(currentPath, '/manager/dashboard.jsp') ? 'active' : ''}" href="${ctx}/manager/dashboard.jsp">Tổng Quan</a></li>
                 <li><a href="${ctx}/manager/employees">Nhân Viên</a></li>
                 <li><a href="${ctx}/manager/schedules">Lịch Trình</a></li>
+                <li><a href="${ctx}/admin/schedule-requests">📋 Yêu Cầu Nghỉ</a></li>
                 <li><a href="${ctx}/manager/patients">Bệnh Nhân</a></li>
                 <li><a href="${ctx}/manager/queue">Hàng Chờ</a></li>
                 <li><a href="${ctx}/manager/online-appointments">Lịch Hẹn Trực Tuyến</a></li>

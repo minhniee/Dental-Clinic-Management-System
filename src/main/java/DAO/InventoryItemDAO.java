@@ -49,6 +49,25 @@ public class InventoryItemDAO {
         return null;
     }
 
+    public InventoryItem getItemByName(String name) {
+        String sql = "SELECT * FROM InventoryItems WHERE name = ?";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+
+            statement.setString(1, name);
+            try (ResultSet rs = statement.executeQuery()) {
+                if (rs.next()) {
+                    return mapResultSetToInventoryItem(rs);
+                }
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting inventory item by name: " + name, e);
+        }
+
+        return null;
+    }
+
     public boolean addInventoryItem(InventoryItem item) {
         String sql = "INSERT INTO InventoryItems (name, unit, quantity, min_stock) VALUES (?, ?, ?, ?)";
 
@@ -63,6 +82,10 @@ public class InventoryItemDAO {
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;
         } catch (SQLException e) {
+            if (e.getMessage().contains("UNIQUE KEY constraint") || e.getMessage().contains("duplicate key")) {
+                logger.log(Level.WARNING, "Duplicate inventory item name: " + item.getName());
+                return false; // Return false instead of throwing exception
+            }
             logger.log(Level.SEVERE, "Error adding inventory item", e);
             return false;
         }

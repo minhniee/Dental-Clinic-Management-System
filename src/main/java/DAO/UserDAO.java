@@ -145,6 +145,28 @@ public class UserDAO {
     }
 
     /**
+     * Get user count by role
+     */
+    public int getUserCountByRole(int roleId) {
+        String sql = "SELECT COUNT(*) FROM Users WHERE role_id = ? AND is_active = 1";
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setInt(1, roleId);
+            ResultSet rs = statement.executeQuery();
+            
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting user count by role: " + roleId, e);
+        }
+        
+        return 0;
+    }
+
+    /**
      * Get user by ID
      */
     public User getUserById(int userId) {

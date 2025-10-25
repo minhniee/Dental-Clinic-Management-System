@@ -239,6 +239,50 @@
         .btn-secondary:hover {
             background: #5a6268;
         }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .status-active {
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .status-inactive {
+            color: #dc3545;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -304,23 +348,25 @@
                                     </td>
                                     <td>
                                         <span class="status-badge ${user.active ? 'status-active' : 'status-inactive'}">
-                                            ${user.active ? 'Hoạt Động' : 'Không Hoạt Động'}
+                                            ${user.active ? '✅ Hoạt Động' : '❌ Không Hoạt Động'}
                                         </span>
                                     </td>
                                     <td>
                                         <fmt:formatDate value="${user.createdAtAsDate}" pattern="dd/MM/yyyy HH:mm"/>
                                     </td>
                                     <td>
-                                        <button class="btn-primary" onclick="openEditUserModal(${user.userId}, '${user.username}', '${user.email}', '${user.fullName}', '${user.phone}')">
-                                            Chỉnh Sửa
-                                        </button>
-                                        <button class="btn-warning" onclick="openUpdateRoleModal(${user.userId}, '${user.role.roleName}', ${user.role.roleId})">
-                                            Đổi Vai Trò
-                                        </button>
-                                        <button class="btn-${user.active ? 'danger' : 'success'}" 
-                                                onclick="updateUserStatus(${user.userId}, ${!user.active})">
-                                            ${user.active ? 'Vô Hiệu Hóa' : 'Kích Hoạt'}
-                                        </button>
+                                        <div class="action-buttons">
+                                            <button class="btn-primary" onclick="openEditUserModal(${user.userId}, '${user.username}', '${user.email}', '${user.fullName}', '${user.phone}')">
+                                                ✏️ Chỉnh Sửa
+                                            </button>
+                                            <button class="btn-warning" onclick="openUpdateRoleModal(${user.userId}, '${user.role.roleName}', ${user.role.roleId})">
+                                                🔄 Đổi Vai Trò
+                                            </button>
+                                            <button class="btn-${user.active ? 'danger' : 'success'}" 
+                                                    onclick="updateUserStatus(${user.userId}, ${!user.active})">
+                                                ${user.active ? '🔒 Khóa' : '🔓 Mở'}
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                             </c:forEach>

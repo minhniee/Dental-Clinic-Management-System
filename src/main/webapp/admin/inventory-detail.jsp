@@ -79,7 +79,7 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 2rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
 
         .detail-card {
@@ -150,6 +150,7 @@
             border-radius: 1rem;
             overflow: hidden;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            margin-top: 0;
         }
 
         .table-header {
@@ -374,20 +375,42 @@
                                 <span class="detail-value">${item.quantity - item.minStock}</span>
                             </div>
                             <div class="detail-row">
-                                <span class="detail-label">Tỷ lệ tồn kho:</span>
+                                <span class="detail-label">Số ngày sử dụng ước tính:</span>
                                 <span class="detail-value">
                                     <c:choose>
-                                        <c:when test="${item.minStock > 0}">
-                                            <fmt:formatNumber value="${(item.quantity / item.minStock) * 100}" pattern="#,##0"/>%
+                                        <c:when test="${item.quantity > 0}">
+                                            <c:set var="estimatedDays" value="${item.quantity / 2}"/>
+                                            <c:choose>
+                                                <c:when test="${estimatedDays >= 30}">
+                                                    <span style="color: #059669; font-weight: 700;">
+                                                        <fmt:formatNumber value="${estimatedDays}" pattern="#,##0"/> ngày (Dư thừa)
+                                                    </span>
+                                                </c:when>
+                                                <c:when test="${estimatedDays >= 7}">
+                                                    <span style="color: #059669; font-weight: 700;">
+                                                        <fmt:formatNumber value="${estimatedDays}" pattern="#,##0"/> ngày (Đủ dùng)
+                                                    </span>
+                                                </c:when>
+                                                <c:when test="${estimatedDays >= 3}">
+                                                    <span style="color: #d97706; font-weight: 700;">
+                                                        <fmt:formatNumber value="${estimatedDays}" pattern="#,##0"/> ngày (Sắp hết)
+                                                    </span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span style="color: #dc2626; font-weight: 700;">
+                                                        <fmt:formatNumber value="${estimatedDays}" pattern="#,##0"/> ngày (Nguy hiểm)
+                                                    </span>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </c:when>
                                         <c:otherwise>
-                                            N/A
+                                            <span style="color: #dc2626; font-weight: 700;">0 ngày (Hết hàng)</span>
                                         </c:otherwise>
                                     </c:choose>
                                 </span>
-            </div>
-            </main>
-    </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Transactions History -->
                     <div class="transactions-table">

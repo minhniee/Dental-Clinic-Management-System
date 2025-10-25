@@ -48,26 +48,6 @@
             background: #2980b9;
         }
         
-        .btn-success {
-            background: #27ae60;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .btn-danger {
-            background: #e74c3c;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
         .btn-warning {
             background: #f39c12;
             color: white;
@@ -78,35 +58,45 @@
             font-size: 12px;
         }
         
-        .alert {
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 6px;
-            font-weight: 500;
+        .btn-warning:hover {
+            background: #e67e22;
         }
         
-        .alert-success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
         }
         
-        .alert-error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        .btn-danger:hover {
+            background: #c82333;
         }
         
-        .roles-table {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
+        .btn-success {
+            background: #28a745;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-success:hover {
+            background: #218838;
         }
         
         .table {
             width: 100%;
             border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .table th {
@@ -122,17 +112,160 @@
             border-bottom: 1px solid #ecf0f1;
         }
         
-        .table tr:hover {
+        .table tbody tr:hover {
             background: #f8f9fa;
         }
         
         .role-badge {
             background: #3498db;
             color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .permission-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        
+        .permission-tag {
+            background: #e8f5e8;
+            color: #2d5a2d;
             padding: 4px 8px;
             border-radius: 12px;
             font-size: 11px;
+            border: 1px solid #c3e6c3;
+            font-weight: 500;
+        }
+        
+        .permission-category {
+            margin-bottom: 15px;
+        }
+        
+        .permission-category-title {
             font-weight: 600;
+            color: #34495e;
+            margin-bottom: 8px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .permission-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ecf0f1;
+        }
+        
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .role-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .role-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .role-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .role-name {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin: 0;
+        }
+        
+        .user-count {
+            background: #e8f5e8;
+            color: #2d5a2d;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .role-description {
+            color: #6c757d;
+            margin-bottom: 1rem;
+            font-style: italic;
+        }
+        
+        .permissions-section h4 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 0.5rem;
+        }
+        
+        .role-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #f0f0f0;
         }
         
         .form-group {
@@ -157,47 +290,25 @@
         .form-control:focus {
             outline: none;
             border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
         }
         
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
         }
         
-        .modal-content {
-            background-color: white;
-            margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
-            width: 80%;
-            max-width: 500px;
-        }
-        
-        .modal-header {
+        .checkbox-item {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #ecf0f1;
+            gap: 8px;
         }
         
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        
-        .close:hover {
-            color: #000;
+        .checkbox-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
         }
         
         .modal-footer {
@@ -222,21 +333,29 @@
             background: #5a6268;
         }
         
-        .role-info {
-            background: #f8f9fa;
+        .action-buttons {
+            display: flex;
+            gap: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .alert {
             padding: 15px;
-            border-radius: 6px;
             margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: 600;
         }
         
-        .role-info h4 {
-            margin: 0 0 10px 0;
-            color: #2c3e50;
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
         }
         
-        .role-info p {
-            margin: 5px 0;
-            color: #6c757d;
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
@@ -249,9 +368,9 @@
     <c:if test="${_role ne 'administrator'}">
         <c:redirect url="${pageContext.request.contextPath}/login"/>
     </c:if>
-    
+
     <div class="header">
-        <h1>🦷 Quản Lý Vai Trò</h1>
+        <h1>🔐 Quản Lý Vai Trò</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
@@ -263,80 +382,158 @@
         <main class="dashboard-content">
             <div class="role-management">
                 <div class="page-header">
-                    <h2 class="page-title">🔐 Quản Lý Vai Trò</h2>
-                    <button class="btn-primary" onclick="openCreateRoleModal()">+ Tạo Vai Trò Mới</button>
+                    <h2 class="page-title">🔐 Quản Lý Vai Trò & Phân Quyền</h2>
+                    <div class="config-info">
+                        📝 Hệ thống có 5 vai trò cố định: Administrator, ClinicManager, Receptionist, Dentist, Patient
+                    </div>
                 </div>
 
+                <!-- Alert Messages -->
                 <c:if test="${not empty success}">
-                    <div class="alert alert-success">${success}</div>
+                    <div class="alert alert-success">
+                        ✅ ${success}
+                    </div>
                 </c:if>
-                
                 <c:if test="${not empty error}">
-                    <div class="alert alert-error">${error}</div>
+                    <div class="alert alert-error">
+                        ❌ ${error}
+                    </div>
                 </c:if>
 
-                <div class="role-info">
-                    <h4>Thông Tin Vai Trò Hệ Thống</h4>
-                    <p><strong>Administrator:</strong> Quyền quản trị toàn hệ thống, có thể quản lý tất cả người dùng và cài đặt.</p>
-                    <p><strong>ClinicManager:</strong> Quyền quản lý phòng khám, xem báo cáo và quản lý nhân viên.</p>
-                    <p><strong>Dentist:</strong> Quyền bác sĩ, có thể xem lịch hẹn, khám bệnh và tạo hồ sơ bệnh nhân.</p>
-                    <p><strong>Receptionist:</strong> Quyền lễ tân, có thể đặt lịch hẹn và quản lý thông tin bệnh nhân.</p>
-                    <p><strong>Patient:</strong> Quyền bệnh nhân, có thể xem lịch hẹn và thông tin cá nhân.</p>
-                </div>
-
-                <div class="roles-table">
-                    <table class="table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Tên Vai Trò</th>
-                                <th>Mô Tả</th>
-                                <th>Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="role" items="${roles}">
-                                <tr>
-                                    <td>${role.roleId}</td>
-                                    <td>
-                                        <span class="role-badge">${role.roleName}</span>
-                                    </td>
-                                    <td>
-                                        <c:choose>
-                                            <c:when test="${role.roleName == 'Administrator'}">
-                                                Quyền quản trị toàn hệ thống
-                                            </c:when>
-                                            <c:when test="${role.roleName == 'ClinicManager'}">
-                                                Quyền quản lý phòng khám
-                                            </c:when>
-                                            <c:when test="${role.roleName == 'Dentist'}">
-                                                Quyền bác sĩ nha khoa
-                                            </c:when>
-                                            <c:when test="${role.roleName == 'Receptionist'}">
-                                                Quyền lễ tân
-                                            </c:when>
-                                            <c:when test="${role.roleName == 'Patient'}">
-                                                Quyền bệnh nhân
-                                            </c:when>
-                                            <c:otherwise>
-                                                Vai trò tùy chỉnh
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </td>
-                                    <td>
-                                        <button class="btn-warning" onclick="openUpdateRoleModal(${role.roleId}, '${role.roleName}')">
-                                            Chỉnh Sửa
-                                        </button>
-                                        <c:if test="${role.roleName != 'Administrator' && role.roleName != 'Dentist' && role.roleName != 'Receptionist' && role.roleName != 'Patient'}">
-                                            <button class="btn-danger" onclick="deleteRole(${role.roleId}, '${role.roleName}')">
-                                                Xóa
-                                            </button>
-                                        </c:if>
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </tbody>
-                    </table>
+                <!-- Fixed Roles Table -->
+                <div class="roles-grid">
+                    <c:forEach var="role" items="${roles}">
+                        <div class="role-card">
+                            <div class="role-header">
+                                <h3 class="role-name">${role.roleName}</h3>
+                                <span class="user-count">👥 ${role.userCount} người dùng</span>
+                            </div>
+                            <div class="role-description">
+                                ${role.description}
+                            </div>
+                            <div class="permissions-section">
+                                <h4>Quyền Hạn:</h4>
+                                <div class="permission-list">
+                                    <!-- Quản lý hệ thống -->
+                                    <c:if test="${fn:contains(role.permissions, 'user_management') || fn:contains(role.permissions, 'role_management') || fn:contains(role.permissions, 'system_config')}">
+                                        <div class="permission-category">
+                                            <div class="permission-category-title">🔧 Quản Lý Hệ Thống</div>
+                                            <div class="permission-group">
+                                                <c:if test="${fn:contains(role.permissions, 'user_management')}">
+                                                    <span class="permission-tag">👥 Quản lý người dùng</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'role_management')}">
+                                                    <span class="permission-tag">🔑 Quản lý vai trò</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'system_config')}">
+                                                    <span class="permission-tag">⚙️ Cấu hình hệ thống</span>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </c:if>
+                                    
+                                    <!-- Quản lý nhân sự -->
+                                    <c:if test="${fn:contains(role.permissions, 'employee_management') || fn:contains(role.permissions, 'schedule_management')}">
+                                        <div class="permission-category">
+                                            <div class="permission-category-title">👨‍💼 Quản Lý Nhân Sự</div>
+                                            <div class="permission-group">
+                                                <c:if test="${fn:contains(role.permissions, 'employee_management')}">
+                                                    <span class="permission-tag">👥 Quản lý nhân viên</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'schedule_management')}">
+                                                    <span class="permission-tag">📅 Quản lý lịch làm việc</span>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </c:if>
+                                    
+                                    <!-- Quản lý kho -->
+                                    <c:if test="${fn:contains(role.permissions, 'inventory_management')}">
+                                        <div class="permission-category">
+                                            <div class="permission-category-title">📦 Quản Lý Kho</div>
+                                            <div class="permission-group">
+                                                <span class="permission-tag">📦 Quản lý vật tư</span>
+                                            </div>
+                                        </div>
+                                    </c:if>
+                                    
+                                    <!-- Quản lý bệnh nhân -->
+                                    <c:if test="${fn:contains(role.permissions, 'appointment_management') || fn:contains(role.permissions, 'patient_management') || fn:contains(role.permissions, 'appointment_view') || fn:contains(role.permissions, 'appointment_booking')}">
+                                        <div class="permission-category">
+                                            <div class="permission-category-title">🏥 Quản Lý Bệnh Nhân</div>
+                                            <div class="permission-group">
+                                                <c:if test="${fn:contains(role.permissions, 'appointment_management')}">
+                                                    <span class="permission-tag">📅 Quản lý lịch hẹn</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'appointment_view')}">
+                                                    <span class="permission-tag">👁️ Xem lịch hẹn</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'appointment_booking')}">
+                                                    <span class="permission-tag">📝 Đặt lịch hẹn</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'patient_management')}">
+                                                    <span class="permission-tag">👤 Quản lý bệnh nhân</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'patient_registration')}">
+                                                    <span class="permission-tag">📋 Đăng ký bệnh nhân</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'patient_treatment')}">
+                                                    <span class="permission-tag">🩺 Điều trị bệnh nhân</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'medical_records')}">
+                                                    <span class="permission-tag">📋 Hồ sơ bệnh án</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'patient_profile')}">
+                                                    <span class="permission-tag">👤 Hồ sơ cá nhân</span>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </c:if>
+                                    
+                                    <!-- Báo cáo & Tài chính -->
+                                    <c:if test="${fn:contains(role.permissions, 'report_view') || fn:contains(role.permissions, 'financial_management') || fn:contains(role.permissions, 'financial_reports') || fn:contains(role.permissions, 'operational_reports')}">
+                                        <div class="permission-category">
+                                            <div class="permission-category-title">📊 Báo Cáo & Tài Chính</div>
+                                            <div class="permission-group">
+                                                <c:if test="${fn:contains(role.permissions, 'report_view')}">
+                                                    <span class="permission-tag">📊 Xem báo cáo</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'financial_management')}">
+                                                    <span class="permission-tag">💰 Quản lý tài chính</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'financial_reports')}">
+                                                    <span class="permission-tag">💳 Báo cáo tài chính</span>
+                                                </c:if>
+                                                <c:if test="${fn:contains(role.permissions, 'operational_reports')}">
+                                                    <span class="permission-tag">📈 Báo cáo vận hành</span>
+                                                </c:if>
+                                            </div>
+                                        </div>
+                                    </c:if>
+                                    
+                                    <!-- Xem lịch -->
+                                    <c:if test="${fn:contains(role.permissions, 'schedule_view')}">
+                                        <div class="permission-category">
+                                            <div class="permission-category-title">📅 Xem Lịch</div>
+                                            <div class="permission-group">
+                                                <span class="permission-tag">👁️ Xem lịch làm việc</span>
+                                            </div>
+                                        </div>
+                                    </c:if>
+                                </div>
+                            </div>
+                            <div class="role-actions">
+                                <button class="btn-primary" onclick="openPermissionModal(${role.roleId}, '${role.roleName}')">
+                                    🔑 Phân Quyền
+                                </button>
+                                <c:if test="${role.roleName != 'Administrator'}">
+                                    <button class="btn-warning" onclick="openEditRoleModal(${role.roleId}, '${role.roleName}', '${role.description}')">
+                                        ✏️ Chỉnh Sửa
+                                    </button>
+                                </c:if>
+                            </div>
+                        </div>
+                    </c:forEach>
                 </div>
             </div>
         </main>
@@ -346,7 +543,7 @@
     <div id="createRoleModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Tạo Vai Trò Mới</h3>
+                <h3>➕ Tạo Vai Trò Mới</h3>
                 <span class="close" onclick="closeCreateRoleModal()">&times;</span>
             </div>
             <form action="${pageContext.request.contextPath}/admin/roles" method="post">
@@ -357,6 +554,122 @@
                     <input type="text" id="roleName" name="roleName" class="form-control" required>
                 </div>
                 
+                <div class="form-group">
+                    <label for="description">Mô Tả</label>
+                    <textarea id="description" name="description" class="form-control" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Quyền Hạn</label>
+                    <div class="checkbox-group">
+                        <!-- Quản lý hệ thống -->
+                        <div class="permission-category">
+                            <div class="permission-category-title">🔧 Quản Lý Hệ Thống</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="user_management" id="perm_user_management">
+                                <label for="perm_user_management">👥 Quản lý người dùng</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="role_management" id="perm_role_management">
+                                <label for="perm_role_management">🔑 Quản lý vai trò</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="system_config" id="perm_system_config">
+                                <label for="perm_system_config">⚙️ Cấu hình hệ thống</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Quản lý nhân sự -->
+                        <div class="permission-category">
+                            <div class="permission-category-title">👨‍💼 Quản Lý Nhân Sự</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="employee_management" id="perm_employee_management">
+                                <label for="perm_employee_management">👥 Quản lý nhân viên</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="schedule_management" id="perm_schedule_management">
+                                <label for="perm_schedule_management">📅 Quản lý lịch làm việc</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Quản lý kho -->
+                        <div class="permission-category">
+                            <div class="permission-category-title">📦 Quản Lý Kho</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="inventory_management" id="perm_inventory_management">
+                                <label for="perm_inventory_management">📦 Quản lý vật tư</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Quản lý bệnh nhân -->
+                        <div class="permission-category">
+                            <div class="permission-category-title">🏥 Quản Lý Bệnh Nhân</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="appointment_management" id="perm_appointment_management">
+                                <label for="perm_appointment_management">📅 Quản lý lịch hẹn</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="appointment_view" id="perm_appointment_view">
+                                <label for="perm_appointment_view">👁️ Xem lịch hẹn</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="appointment_booking" id="perm_appointment_booking">
+                                <label for="perm_appointment_booking">📝 Đặt lịch hẹn</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="patient_management" id="perm_patient_management">
+                                <label for="perm_patient_management">👤 Quản lý bệnh nhân</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="patient_registration" id="perm_patient_registration">
+                                <label for="perm_patient_registration">📋 Đăng ký bệnh nhân</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="patient_treatment" id="perm_patient_treatment">
+                                <label for="perm_patient_treatment">🩺 Điều trị bệnh nhân</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="medical_records" id="perm_medical_records">
+                                <label for="perm_medical_records">📋 Hồ sơ bệnh án</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="patient_profile" id="perm_patient_profile">
+                                <label for="perm_patient_profile">👤 Hồ sơ cá nhân</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Báo cáo & Tài chính -->
+                        <div class="permission-category">
+                            <div class="permission-category-title">📊 Báo Cáo & Tài Chính</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="report_view" id="perm_report_view">
+                                <label for="perm_report_view">📊 Xem báo cáo</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="financial_management" id="perm_financial_management">
+                                <label for="perm_financial_management">💰 Quản lý tài chính</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="financial_reports" id="perm_financial_reports">
+                                <label for="perm_financial_reports">💳 Báo cáo tài chính</label>
+                            </div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="operational_reports" id="perm_operational_reports">
+                                <label for="perm_operational_reports">📈 Báo cáo vận hành</label>
+                            </div>
+                        </div>
+                        
+                        <!-- Xem lịch -->
+                        <div class="permission-category">
+                            <div class="permission-category-title">📅 Xem Lịch</div>
+                            <div class="checkbox-item">
+                                <input type="checkbox" name="permissions" value="schedule_view" id="perm_schedule_view">
+                                <label for="perm_schedule_view">👁️ Xem lịch làm việc</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
                 <div class="modal-footer">
                     <button type="button" class="btn-secondary" onclick="closeCreateRoleModal()">Hủy</button>
                     <button type="submit" class="btn-primary">Tạo Vai Trò</button>
@@ -365,31 +678,63 @@
         </div>
     </div>
 
-    <!-- Update Role Modal -->
-    <div id="updateRoleModal" class="modal">
+    <!-- Edit Role Modal -->
+    <div id="editRoleModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Chỉnh Sửa Vai Trò</h3>
-                <span class="close" onclick="closeUpdateRoleModal()">&times;</span>
+                <h3>✏️ Chỉnh Sửa Vai Trò</h3>
+                <span class="close" onclick="closeEditRoleModal()">&times;</span>
             </div>
             <form action="${pageContext.request.contextPath}/admin/roles" method="post">
                 <input type="hidden" name="action" value="updateRole">
-                <input type="hidden" id="updateRoleId" name="roleId">
+                <input type="hidden" id="editRoleId" name="roleId">
                 
                 <div class="form-group">
-                    <label for="updateRoleName">Tên Vai Trò *</label>
-                    <input type="text" id="updateRoleName" name="roleName" class="form-control" required>
+                    <label for="editRoleName">Tên Vai Trò *</label>
+                    <input type="text" id="editRoleName" name="roleName" class="form-control" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editDescription">Mô Tả</label>
+                    <textarea id="editDescription" name="description" class="form-control" rows="3"></textarea>
                 </div>
                 
                 <div class="modal-footer">
-                    <button type="button" class="btn-secondary" onclick="closeUpdateRoleModal()">Hủy</button>
-                    <button type="submit" class="btn-primary">Cập Nhật Vai Trò</button>
+                    <button type="button" class="btn-secondary" onclick="closeEditRoleModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">Cập Nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Permission Modal -->
+    <div id="permissionModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🔑 Phân Quyền: <span id="permissionRoleName"></span></h3>
+                <span class="close" onclick="closePermissionModal()">&times;</span>
+            </div>
+            <form action="${pageContext.request.contextPath}/admin/roles" method="post">
+                <input type="hidden" name="action" value="updatePermissions">
+                <input type="hidden" id="permissionRoleId" name="roleId">
+                
+                <div class="form-group">
+                    <label>Quyền Hạn</label>
+                    <div class="checkbox-group" id="permissionCheckboxes">
+                        <!-- Permissions will be loaded dynamically -->
+                    </div>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" onclick="closePermissionModal()">Hủy</button>
+                    <button type="submit" class="btn-primary">Cập Nhật Quyền</button>
                 </div>
             </form>
         </div>
     </div>
 
     <script>
+        // Modal functions
         function openCreateRoleModal() {
             document.getElementById('createRoleModal').style.display = 'block';
         }
@@ -398,18 +743,146 @@
             document.getElementById('createRoleModal').style.display = 'none';
         }
         
-        function openUpdateRoleModal(roleId, roleName) {
-            document.getElementById('updateRoleId').value = roleId;
-            document.getElementById('updateRoleName').value = roleName;
-            document.getElementById('updateRoleModal').style.display = 'block';
+        function openEditRoleModal(roleId, roleName, description) {
+            document.getElementById('editRoleId').value = roleId;
+            document.getElementById('editRoleName').value = roleName;
+            document.getElementById('editDescription').value = description || '';
+            document.getElementById('editRoleModal').style.display = 'block';
         }
         
-        function closeUpdateRoleModal() {
-            document.getElementById('updateRoleModal').style.display = 'none';
+        function closeEditRoleModal() {
+            document.getElementById('editRoleModal').style.display = 'none';
+        }
+        
+        function openPermissionModal(roleId, roleName) {
+            document.getElementById('permissionRoleId').value = roleId;
+            document.getElementById('permissionRoleName').textContent = roleName;
+            
+            // Load permissions for this role
+            loadRolePermissions(roleId);
+            
+            document.getElementById('permissionModal').style.display = 'block';
+        }
+        
+        function loadRolePermissions(roleId) {
+            // This would typically make an AJAX call to get current permissions
+            // For now, we'll show all available permissions
+            const permissionContainer = document.getElementById('permissionCheckboxes');
+            permissionContainer.innerHTML = `
+                <!-- Quản lý hệ thống -->
+                <div class="permission-category">
+                    <div class="permission-category-title">🔧 Quản Lý Hệ Thống</div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="user_management" id="perm_user_management">
+                        <label for="perm_user_management">👥 Quản lý người dùng</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="role_management" id="perm_role_management">
+                        <label for="perm_role_management">🔑 Quản lý vai trò</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="system_config" id="perm_system_config">
+                        <label for="perm_system_config">⚙️ Cấu hình hệ thống</label>
+                    </div>
+                </div>
+                
+                <!-- Quản lý nhân sự -->
+                <div class="permission-category">
+                    <div class="permission-category-title">👨‍💼 Quản Lý Nhân Sự</div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="employee_management" id="perm_employee_management">
+                        <label for="perm_employee_management">👥 Quản lý nhân viên</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="schedule_management" id="perm_schedule_management">
+                        <label for="perm_schedule_management">📅 Quản lý lịch làm việc</label>
+                    </div>
+                </div>
+                
+                <!-- Quản lý kho -->
+                <div class="permission-category">
+                    <div class="permission-category-title">📦 Quản Lý Kho</div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="inventory_management" id="perm_inventory_management">
+                        <label for="perm_inventory_management">📦 Quản lý vật tư</label>
+                    </div>
+                </div>
+                
+                <!-- Quản lý bệnh nhân -->
+                <div class="permission-category">
+                    <div class="permission-category-title">🏥 Quản Lý Bệnh Nhân</div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="appointment_management" id="perm_appointment_management">
+                        <label for="perm_appointment_management">📅 Quản lý lịch hẹn</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="appointment_view" id="perm_appointment_view">
+                        <label for="perm_appointment_view">👁️ Xem lịch hẹn</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="appointment_booking" id="perm_appointment_booking">
+                        <label for="perm_appointment_booking">📝 Đặt lịch hẹn</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="patient_management" id="perm_patient_management">
+                        <label for="perm_patient_management">👤 Quản lý bệnh nhân</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="patient_registration" id="perm_patient_registration">
+                        <label for="perm_patient_registration">📋 Đăng ký bệnh nhân</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="patient_treatment" id="perm_patient_treatment">
+                        <label for="perm_patient_treatment">🩺 Điều trị bệnh nhân</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="medical_records" id="perm_medical_records">
+                        <label for="perm_medical_records">📋 Hồ sơ bệnh án</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="patient_profile" id="perm_patient_profile">
+                        <label for="perm_patient_profile">👤 Hồ sơ cá nhân</label>
+                    </div>
+                </div>
+                
+                <!-- Báo cáo & Tài chính -->
+                <div class="permission-category">
+                    <div class="permission-category-title">📊 Báo Cáo & Tài Chính</div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="report_view" id="perm_report_view">
+                        <label for="perm_report_view">📊 Xem báo cáo</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="financial_management" id="perm_financial_management">
+                        <label for="perm_financial_management">💰 Quản lý tài chính</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="financial_reports" id="perm_financial_reports">
+                        <label for="perm_financial_reports">💳 Báo cáo tài chính</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="operational_reports" id="perm_operational_reports">
+                        <label for="perm_operational_reports">📈 Báo cáo vận hành</label>
+                    </div>
+                </div>
+                
+                <!-- Xem lịch -->
+                <div class="permission-category">
+                    <div class="permission-category-title">📅 Xem Lịch</div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" name="permissions" value="schedule_view" id="perm_schedule_view">
+                        <label for="perm_schedule_view">👁️ Xem lịch làm việc</label>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function closePermissionModal() {
+            document.getElementById('permissionModal').style.display = 'none';
         }
         
         function deleteRole(roleId, roleName) {
-            if (confirm('Bạn có chắc muốn xóa vai trò "' + roleName + '"?')) {
+            if (confirm('Bạn có chắc muốn xóa vai trò "' + roleName + '"?\n\nLưu ý: Vai trò này sẽ bị xóa vĩnh viễn và không thể khôi phục.')) {
                 const form = document.createElement('form');
                 form.method = 'post';
                 form.action = '${pageContext.request.contextPath}/admin/roles';
@@ -431,17 +904,14 @@
             }
         }
         
-        // Close modal when clicking outside
+        // Close modals when clicking outside
         window.onclick = function(event) {
-            const createModal = document.getElementById('createRoleModal');
-            const updateModal = document.getElementById('updateRoleModal');
-            
-            if (event.target === createModal) {
-                closeCreateRoleModal();
-            }
-            if (event.target === updateModal) {
-                closeUpdateRoleModal();
-            }
+            const modals = document.querySelectorAll('.modal');
+            modals.forEach(modal => {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
         }
     </script>
 </body>

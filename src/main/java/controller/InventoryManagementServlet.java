@@ -147,7 +147,7 @@ public class InventoryManagementServlet extends HttpServlet {
             request.getRequestDispatcher("/admin/inventory-management.jsp").forward(request, response);
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error listing inventory items", e);
-            request.setAttribute("error", "Không thể tải danh sách vật tư.");
+            request.setAttribute("error", "❌ Không thể tải danh sách vật tư.");
             request.getRequestDispatcher("/admin/inventory-management.jsp").forward(request, response);
         }
     }
@@ -210,121 +210,305 @@ public class InventoryManagementServlet extends HttpServlet {
     private void addInventoryItem(HttpServletRequest request, HttpServletResponse response, User currentUser)
             throws ServletException, IOException {
         try {
+            // Validate input parameters
             String name = request.getParameter("name");
             String unit = request.getParameter("unit");
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
-            int minStock = Integer.parseInt(request.getParameter("minStock"));
+            String quantityStr = request.getParameter("quantity");
+            String minStockStr = request.getParameter("minStock");
 
+            // Input validation
             if (name == null || name.trim().isEmpty()) {
                 request.setAttribute("error", "Tên vật tư không được để trống.");
-                doGet(request, response);
+                listInventoryItems(request, response);
                 return;
             }
 
+            if (unit == null || unit.trim().isEmpty()) {
+                request.setAttribute("error", "Đơn vị không được để trống.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            if (quantityStr == null || quantityStr.trim().isEmpty()) {
+                request.setAttribute("error", "Số lượng không được để trống.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            if (minStockStr == null || minStockStr.trim().isEmpty()) {
+                request.setAttribute("error", "Tồn kho tối thiểu không được để trống.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Parse numeric values
+            int quantity, minStock;
+            try {
+                quantity = Integer.parseInt(quantityStr.trim());
+                minStock = Integer.parseInt(minStockStr.trim());
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "Số lượng và tồn kho tối thiểu phải là số nguyên dương.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Validate numeric values
+            if (quantity < 0) {
+                request.setAttribute("error", "Số lượng không được âm.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            if (minStock < 0) {
+                request.setAttribute("error", "Tồn kho tối thiểu không được âm.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Create inventory item
             InventoryItem item = new InventoryItem();
             item.setName(name.trim());
-            item.setUnit(unit);
+            item.setUnit(unit.trim());
             item.setQuantity(quantity);
             item.setMinStock(minStock);
 
-            boolean success = inventoryItemDAO.addInventoryItem(item);
-            if (success) {
-                request.setAttribute("success", "Thêm vật tư thành công.");
-            } else {
-                request.setAttribute("error", "Không thể thêm vật tư. Có thể tên đã tồn tại.");
+            // Check if item name already exists
+            if (inventoryItemDAO.getItemByName(name.trim()) != null) {
+                request.setAttribute("error", "Tên vật tư '" + name.trim() + "' đã tồn tại. Vui lòng chọn tên khác.");
+                listInventoryItems(request, response);
+                return;
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Số lượng và tồn kho tối thiểu phải là số.");
+
+            // Add inventory item
+            logger.info("Attempting to add inventory item: " + item.getName());
+            boolean success = inventoryItemDAO.addInventoryItem(item);
+            
+            if (success) {
+                logger.info("Successfully added inventory item: " + item.getName());
+                request.setAttribute("success", "✅ Thêm vật tư '" + item.getName() + "' thành công!");
+            } else {
+                logger.warning("Failed to add inventory item: " + item.getName());
+                request.setAttribute("error", "❌ Không thể thêm vật tư. Có thể tên đã tồn tại hoặc có lỗi xảy ra.");
+            }
+
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error adding inventory item", e);
-            request.setAttribute("error", "Có lỗi xảy ra khi thêm vật tư.");
+            logger.log(Level.SEVERE, "Unexpected error adding inventory item", e);
+            request.setAttribute("error", "❌ Có lỗi không mong muốn xảy ra khi thêm vật tư.");
         }
 
-        doGet(request, response);
+        // Always reload the inventory list
+        listInventoryItems(request, response);
     }
 
     private void updateInventoryItem(HttpServletRequest request, HttpServletResponse response, User currentUser)
             throws ServletException, IOException {
         try {
-            int itemId = Integer.parseInt(request.getParameter("itemId"));
+            String itemIdStr = request.getParameter("itemId");
             String name = request.getParameter("name");
             String unit = request.getParameter("unit");
-            int minStock = Integer.parseInt(request.getParameter("minStock"));
+            String minStockStr = request.getParameter("minStock");
+
+            // Validate input parameters
+            if (itemIdStr == null || itemIdStr.trim().isEmpty()) {
+                request.setAttribute("error", "❌ ID vật tư không hợp lệ.");
+                listInventoryItems(request, response);
+                return;
+            }
 
             if (name == null || name.trim().isEmpty()) {
-                request.setAttribute("error", "Tên vật tư không được để trống.");
-                doGet(request, response);
+                request.setAttribute("error", "❌ Tên vật tư không được để trống.");
+                listInventoryItems(request, response);
                 return;
             }
 
-            InventoryItem item = inventoryItemDAO.getInventoryItemById(itemId);
-            if (item == null) {
-                request.setAttribute("error", "Không tìm thấy vật tư.");
-                doGet(request, response);
+            if (unit == null || unit.trim().isEmpty()) {
+                request.setAttribute("error", "❌ Đơn vị không được để trống.");
+                listInventoryItems(request, response);
                 return;
             }
 
-            item.setName(name.trim());
-            item.setUnit(unit);
-            item.setMinStock(minStock);
+            if (minStockStr == null || minStockStr.trim().isEmpty()) {
+                request.setAttribute("error", "❌ Tồn kho tối thiểu không được để trống.");
+                listInventoryItems(request, response);
+                return;
+            }
 
-            boolean success = inventoryItemDAO.updateInventoryItem(item);
+            // Parse numeric values
+            int itemId, minStock;
+            try {
+                itemId = Integer.parseInt(itemIdStr.trim());
+                minStock = Integer.parseInt(minStockStr.trim());
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "❌ ID và tồn kho tối thiểu phải là số nguyên dương.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Validate numeric values
+            if (itemId <= 0) {
+                request.setAttribute("error", "❌ ID vật tư không hợp lệ.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            if (minStock < 0) {
+                request.setAttribute("error", "❌ Tồn kho tối thiểu không được âm.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Check if item exists
+            InventoryItem existingItem = inventoryItemDAO.getInventoryItemById(itemId);
+            if (existingItem == null) {
+                request.setAttribute("error", "❌ Không tìm thấy vật tư với ID: " + itemId);
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Check if new name conflicts with existing items (excluding current item)
+            InventoryItem nameConflict = inventoryItemDAO.getItemByName(name.trim());
+            if (nameConflict != null && nameConflict.getItemId() != itemId) {
+                request.setAttribute("error", "❌ Tên vật tư '" + name.trim() + "' đã tồn tại. Vui lòng chọn tên khác.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Update item
+            existingItem.setName(name.trim());
+            existingItem.setUnit(unit.trim());
+            existingItem.setMinStock(minStock);
+
+            boolean success = inventoryItemDAO.updateInventoryItem(existingItem);
             if (success) {
-                request.setAttribute("success", "Cập nhật vật tư thành công.");
+                request.setAttribute("success", "✅ Cập nhật vật tư '" + existingItem.getName() + "' thành công!");
             } else {
-                request.setAttribute("error", "Không thể cập nhật vật tư.");
+                request.setAttribute("error", "❌ Không thể cập nhật vật tư.");
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Dữ liệu không hợp lệ.");
+
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error updating inventory item", e);
-            request.setAttribute("error", "Có lỗi xảy ra khi cập nhật vật tư.");
+            logger.log(Level.SEVERE, "Unexpected error updating inventory item", e);
+            request.setAttribute("error", "❌ Có lỗi không mong muốn xảy ra khi cập nhật vật tư.");
         }
 
-        doGet(request, response);
+        // Always reload the inventory list
+        listInventoryItems(request, response);
     }
 
     private void deleteInventoryItem(HttpServletRequest request, HttpServletResponse response, User currentUser)
             throws ServletException, IOException {
         try {
-            int itemId = Integer.parseInt(request.getParameter("itemId"));
+            String itemIdStr = request.getParameter("itemId");
             
+            // Validate input
+            if (itemIdStr == null || itemIdStr.trim().isEmpty()) {
+                request.setAttribute("error", "❌ ID vật tư không hợp lệ.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Parse item ID
+            int itemId;
+            try {
+                itemId = Integer.parseInt(itemIdStr.trim());
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "❌ ID vật tư phải là số nguyên dương.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Validate item ID
+            if (itemId <= 0) {
+                request.setAttribute("error", "❌ ID vật tư không hợp lệ.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Check if item exists
+            InventoryItem existingItem = inventoryItemDAO.getInventoryItemById(itemId);
+            if (existingItem == null) {
+                request.setAttribute("error", "❌ Không tìm thấy vật tư với ID: " + itemId);
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Delete item
             boolean success = inventoryItemDAO.deleteInventoryItem(itemId);
             if (success) {
-                request.setAttribute("success", "Xóa vật tư thành công.");
+                request.setAttribute("success", "✅ Xóa vật tư '" + existingItem.getName() + "' thành công!");
             } else {
-                request.setAttribute("error", "Không thể xóa vật tư. Có thể đang được sử dụng.");
+                request.setAttribute("error", "❌ Không thể xóa vật tư. Có thể đang được sử dụng trong giao dịch.");
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "ID không hợp lệ.");
+
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error deleting inventory item", e);
-            request.setAttribute("error", "Có lỗi xảy ra khi xóa vật tư.");
+            logger.log(Level.SEVERE, "Unexpected error deleting inventory item", e);
+            request.setAttribute("error", "❌ Có lỗi không mong muốn xảy ra khi xóa vật tư.");
         }
 
-        doGet(request, response);
+        // Always reload the inventory list
+        listInventoryItems(request, response);
     }
 
     private void stockIn(HttpServletRequest request, HttpServletResponse response, User currentUser)
             throws ServletException, IOException {
         try {
-            int itemId = Integer.parseInt(request.getParameter("itemId"));
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            String itemIdStr = request.getParameter("itemId");
+            String quantityStr = request.getParameter("quantity");
             String notes = request.getParameter("notes");
 
-            if (quantity <= 0) {
-                request.setAttribute("error", "Số lượng nhập phải lớn hơn 0.");
-                doGet(request, response);
+            // Validate input parameters
+            if (itemIdStr == null || itemIdStr.trim().isEmpty()) {
+                request.setAttribute("error", "❌ ID vật tư không hợp lệ.");
+                listInventoryItems(request, response);
                 return;
             }
 
+            if (quantityStr == null || quantityStr.trim().isEmpty()) {
+                request.setAttribute("error", "❌ Số lượng không được để trống.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Parse numeric values
+            int itemId, quantity;
+            try {
+                itemId = Integer.parseInt(itemIdStr.trim());
+                quantity = Integer.parseInt(quantityStr.trim());
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "❌ ID và số lượng phải là số nguyên dương.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Validate numeric values
+            if (itemId <= 0) {
+                request.setAttribute("error", "❌ ID vật tư không hợp lệ.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            if (quantity <= 0) {
+                request.setAttribute("error", "❌ Số lượng nhập phải lớn hơn 0.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Check if item exists
+            InventoryItem existingItem = inventoryItemDAO.getInventoryItemById(itemId);
+            if (existingItem == null) {
+                request.setAttribute("error", "❌ Không tìm thấy vật tư với ID: " + itemId);
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Create transaction
             StockTransaction transaction = new StockTransaction();
             transaction.setItemId(itemId);
             transaction.setTransactionType("IN");
             transaction.setQuantity(quantity);
             transaction.setPerformedBy(currentUser.getUserId());
-            transaction.setNotes(notes);
+            transaction.setNotes(notes != null ? notes.trim() : "");
 
+            // Add transaction and update inventory
             boolean success = stockTransactionDAO.addTransaction(transaction);
             if (success) {
                 // Update inventory quantity
@@ -333,51 +517,91 @@ public class InventoryManagementServlet extends HttpServlet {
                 // Check if item is now out of low stock
                 InventoryItem updatedItem = inventoryItemDAO.getInventoryItemById(itemId);
                 if (updatedItem.isLowStock()) {
-                    request.setAttribute("success", "Nhập kho thành công. ⚠️ Vật tư vẫn còn tồn kho thấp.");
+                    request.setAttribute("success", "✅ Nhập kho thành công! ⚠️ Vật tư '" + existingItem.getName() + "' vẫn còn tồn kho thấp.");
                 } else {
-                    request.setAttribute("success", "Nhập kho thành công. ✅ Tồn kho đã đủ.");
+                    request.setAttribute("success", "✅ Nhập kho thành công! Tồn kho '" + existingItem.getName() + "' đã đủ.");
                 }
             } else {
-                request.setAttribute("error", "Không thể thực hiện nhập kho.");
+                request.setAttribute("error", "❌ Không thể thực hiện nhập kho.");
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Số lượng phải là số.");
+
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in stock in", e);
-            request.setAttribute("error", "Có lỗi xảy ra khi nhập kho.");
+            logger.log(Level.SEVERE, "Unexpected error in stock in", e);
+            request.setAttribute("error", "❌ Có lỗi không mong muốn xảy ra khi nhập kho.");
         }
 
-        doGet(request, response);
+        // Always reload the inventory list
+        listInventoryItems(request, response);
     }
 
     private void stockOut(HttpServletRequest request, HttpServletResponse response, User currentUser)
             throws ServletException, IOException {
         try {
-            int itemId = Integer.parseInt(request.getParameter("itemId"));
-            int quantity = Integer.parseInt(request.getParameter("quantity"));
+            String itemIdStr = request.getParameter("itemId");
+            String quantityStr = request.getParameter("quantity");
             String notes = request.getParameter("notes");
 
+            // Validate input parameters
+            if (itemIdStr == null || itemIdStr.trim().isEmpty()) {
+                request.setAttribute("error", "❌ ID vật tư không hợp lệ.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            if (quantityStr == null || quantityStr.trim().isEmpty()) {
+                request.setAttribute("error", "❌ Số lượng không được để trống.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Parse numeric values
+            int itemId, quantity;
+            try {
+                itemId = Integer.parseInt(itemIdStr.trim());
+                quantity = Integer.parseInt(quantityStr.trim());
+            } catch (NumberFormatException e) {
+                request.setAttribute("error", "❌ ID và số lượng phải là số nguyên dương.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Validate numeric values
+            if (itemId <= 0) {
+                request.setAttribute("error", "❌ ID vật tư không hợp lệ.");
+                listInventoryItems(request, response);
+                return;
+            }
+
             if (quantity <= 0) {
-                request.setAttribute("error", "Số lượng xuất phải lớn hơn 0.");
-                doGet(request, response);
+                request.setAttribute("error", "❌ Số lượng xuất phải lớn hơn 0.");
+                listInventoryItems(request, response);
+                return;
+            }
+
+            // Check if item exists
+            InventoryItem existingItem = inventoryItemDAO.getInventoryItemById(itemId);
+            if (existingItem == null) {
+                request.setAttribute("error", "❌ Không tìm thấy vật tư với ID: " + itemId);
+                listInventoryItems(request, response);
                 return;
             }
 
             // Check if enough stock
-            InventoryItem item = inventoryItemDAO.getInventoryItemById(itemId);
-            if (item.getQuantity() < quantity) {
-                request.setAttribute("error", "Không đủ hàng trong kho. Tồn kho hiện tại: " + item.getQuantity());
-                doGet(request, response);
+            if (existingItem.getQuantity() < quantity) {
+                request.setAttribute("error", "❌ Không đủ hàng trong kho. Tồn kho hiện tại: " + existingItem.getQuantity() + " " + existingItem.getUnit());
+                listInventoryItems(request, response);
                 return;
             }
 
+            // Create transaction
             StockTransaction transaction = new StockTransaction();
             transaction.setItemId(itemId);
             transaction.setTransactionType("OUT");
             transaction.setQuantity(quantity);
             transaction.setPerformedBy(currentUser.getUserId());
-            transaction.setNotes(notes);
+            transaction.setNotes(notes != null ? notes.trim() : "");
 
+            // Add transaction and update inventory
             boolean success = stockTransactionDAO.addTransaction(transaction);
             if (success) {
                 // Update inventory quantity
@@ -386,20 +610,20 @@ public class InventoryManagementServlet extends HttpServlet {
                 // Check if item is now in low stock
                 InventoryItem updatedItem = inventoryItemDAO.getInventoryItemById(itemId);
                 if (updatedItem.isLowStock()) {
-                    request.setAttribute("success", "Xuất kho thành công. ⚠️ Cảnh báo: Vật tư đã sắp hết hàng!");
+                    request.setAttribute("success", "✅ Xuất kho thành công! ⚠️ Cảnh báo: Vật tư '" + existingItem.getName() + "' đã sắp hết hàng!");
                 } else {
-                    request.setAttribute("success", "Xuất kho thành công.");
+                    request.setAttribute("success", "✅ Xuất kho thành công! Vật tư '" + existingItem.getName() + "' còn đủ hàng.");
                 }
             } else {
-                request.setAttribute("error", "Không thể thực hiện xuất kho.");
+                request.setAttribute("error", "❌ Không thể thực hiện xuất kho.");
             }
-        } catch (NumberFormatException e) {
-            request.setAttribute("error", "Số lượng phải là số.");
+
         } catch (Exception e) {
-            logger.log(Level.SEVERE, "Error in stock out", e);
-            request.setAttribute("error", "Có lỗi xảy ra khi xuất kho.");
+            logger.log(Level.SEVERE, "Unexpected error in stock out", e);
+            request.setAttribute("error", "❌ Có lỗi không mong muốn xảy ra khi xuất kho.");
         }
 
-        doGet(request, response);
+        // Always reload the inventory list
+        listInventoryItems(request, response);
     }
 }
