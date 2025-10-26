@@ -1,1293 +1,401 @@
 USE [master]
 GO
-/****** Object:  Database [DentalClinicDB_MVP]    Script Date: 10/26/2025 19:56:45 ******/
-CREATE DATABASE [DentalClinicDB_MVP]
- CONTAINMENT = NONE
- ON  PRIMARY 
-( NAME = N'DentalClinicDB_MVP', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\DentalClinicDB_MVP.mdf' , SIZE = 8192KB , MAXSIZE = UNLIMITED, FILEGROWTH = 65536KB )
- LOG ON 
-( NAME = N'DentalClinicDB_MVP_log', FILENAME = N'C:\Program Files\Microsoft SQL Server\MSSQL16.SQLEXPRESS\MSSQL\DATA\DentalClinicDB_MVP_log.ldf' , SIZE = 8192KB , MAXSIZE = 2048GB , FILEGROWTH = 65536KB )
- WITH CATALOG_COLLATION = DATABASE_DEFAULT, LEDGER = OFF
+
+-- ============================================
+-- TẠO DATABASE HỖ TRỢ TIẾNG VIỆT
+-- ============================================
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'DentalClinicDB_MVP')
+BEGIN
+    ALTER DATABASE [DentalClinicDB_MVP] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+    DROP DATABASE [DentalClinicDB_MVP]
+END
 GO
+
+CREATE DATABASE [DentalClinicDB_MVP]
+
+GO
+
 ALTER DATABASE [DentalClinicDB_MVP] SET COMPATIBILITY_LEVEL = 160
 GO
-IF (1 = FULLTEXTSERVICEPROPERTY('IsFullTextInstalled'))
-begin
-EXEC [DentalClinicDB_MVP].[dbo].[sp_fulltext_database] @action = 'enable'
-end
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET ANSI_NULL_DEFAULT OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET ANSI_NULLS OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET ANSI_PADDING OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET ANSI_WARNINGS OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET ARITHABORT OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET AUTO_CLOSE ON 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET AUTO_SHRINK OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET AUTO_UPDATE_STATISTICS ON 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET CURSOR_CLOSE_ON_COMMIT OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET CURSOR_DEFAULT  GLOBAL 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET CONCAT_NULL_YIELDS_NULL OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET NUMERIC_ROUNDABORT OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET QUOTED_IDENTIFIER OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET RECURSIVE_TRIGGERS OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET  ENABLE_BROKER 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET AUTO_UPDATE_STATISTICS_ASYNC OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET DATE_CORRELATION_OPTIMIZATION OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET TRUSTWORTHY OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET ALLOW_SNAPSHOT_ISOLATION OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET PARAMETERIZATION SIMPLE 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET READ_COMMITTED_SNAPSHOT OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET HONOR_BROKER_PRIORITY OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET RECOVERY SIMPLE 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET  MULTI_USER 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET PAGE_VERIFY CHECKSUM  
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET DB_CHAINING OFF 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET FILESTREAM( NON_TRANSACTED_ACCESS = OFF ) 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET TARGET_RECOVERY_TIME = 60 SECONDS 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET DELAYED_DURABILITY = DISABLED 
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET ACCELERATED_DATABASE_RECOVERY = OFF  
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET QUERY_STORE = ON
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET QUERY_STORE (OPERATION_MODE = READ_WRITE, CLEANUP_POLICY = (STALE_QUERY_THRESHOLD_DAYS = 30), DATA_FLUSH_INTERVAL_SECONDS = 900, INTERVAL_LENGTH_MINUTES = 60, MAX_STORAGE_SIZE_MB = 1000, QUERY_CAPTURE_MODE = AUTO, SIZE_BASED_CLEANUP_MODE = AUTO, MAX_PLANS_PER_QUERY = 200, WAIT_STATS_CAPTURE_MODE = ON)
-GO
+
 USE [DentalClinicDB_MVP]
 GO
-/****** Object:  Table [dbo].[AppointmentRequests]    Script Date: 10/26/2025 19:56:45 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[AppointmentRequests](
-	[request_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NULL,
-	[full_name] [varchar](200) NOT NULL,
-	[phone] [varchar](50) NOT NULL,
-	[email] [varchar](150) NULL,
-	[service_id] [int] NULL,
-	[preferred_doctor_id] [int] NULL,
-	[preferred_date] [date] NULL,
-	[preferred_shift] [varchar](20) NULL,
-	[notes] [nvarchar](500) NULL,
-	[status] [varchar](20) NOT NULL,
-	[otp_code] [varchar](10) NULL,
-	[otp_expires_at] [datetime2](7) NULL,
-	[created_at] [datetime2](7) NOT NULL,
-	[confirmed_at] [datetime2](7) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[request_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+
+-- ============================================
+-- TẠO BẢNG ROLES
+-- ============================================
+CREATE TABLE [dbo].[Roles](
+	[role_id] [int] IDENTITY(1,1) NOT NULL,
+	[role_name] [nvarchar](50) NOT NULL,
+	PRIMARY KEY CLUSTERED ([role_id] ASC),
+	UNIQUE NONCLUSTERED ([role_name] ASC)
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Appointments]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
+
+-- ============================================
+-- TẠO BẢNG USERS
+-- ============================================
+CREATE TABLE [dbo].[Users](
+	[user_id] [int] IDENTITY(1,1) NOT NULL,
+	[username] [varchar](100) NOT NULL,
+	[email] [varchar](200) NOT NULL,
+	[password_hash] [varchar](500) NULL,
+	[full_name] [nvarchar](200) NULL,
+	[phone] [varchar](50) NULL,
+	[role_id] [int] NOT NULL,
+	[is_active] [bit] NOT NULL DEFAULT 1,
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	PRIMARY KEY CLUSTERED ([user_id] ASC),
+	UNIQUE NONCLUSTERED ([email] ASC),
+	UNIQUE NONCLUSTERED ([username] ASC),
+	CONSTRAINT [FK_Users_Roles] FOREIGN KEY([role_id]) REFERENCES [dbo].[Roles] ([role_id])
+) ON [PRIMARY]
 GO
-SET QUOTED_IDENTIFIER ON
+
+-- ============================================
+-- TẠO BẢNG PATIENTS
+-- ============================================
+CREATE TABLE [dbo].[Patients](
+	[patient_id] [int] IDENTITY(1,1) NOT NULL,
+	[full_name] [nvarchar](200) NOT NULL,
+	[birth_date] [date] NULL,
+	[gender] [char](1) NULL CHECK ([gender] IN ('M', 'F', 'O')),
+	[phone] [varchar](50) NULL,
+	[email] [varchar](150) NULL,
+	[address] [nvarchar](300) NULL,
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	[avatar] [varchar](max) NULL,
+	PRIMARY KEY CLUSTERED ([patient_id] ASC)
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
+
+-- ============================================
+-- TẠO BẢNG SERVICES
+-- ============================================
+CREATE TABLE [dbo].[Services](
+	[service_id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nvarchar](150) NOT NULL,
+	[description] [nvarchar](500) NULL,
+	[price] [decimal](18, 2) NOT NULL CHECK ([price] >= 0),
+	[duration_minutes] [int] NULL CHECK ([duration_minutes] > 0),
+	[is_active] [bit] NOT NULL DEFAULT 1,
+	PRIMARY KEY CLUSTERED ([service_id] ASC),
+	UNIQUE NONCLUSTERED ([name] ASC)
+) ON [PRIMARY]
+GO
+
+-- ============================================
+-- TẠO BẢNG APPOINTMENTS
+-- ============================================
 CREATE TABLE [dbo].[Appointments](
 	[appointment_id] [int] IDENTITY(1,1) NOT NULL,
 	[patient_id] [int] NOT NULL,
 	[dentist_id] [int] NOT NULL,
 	[service_id] [int] NOT NULL,
 	[appointment_date] [datetime2](7) NOT NULL,
-	[status] [varchar](50) NOT NULL,
+	[status] [nvarchar](50) NOT NULL DEFAULT 'SCHEDULED' CHECK ([status] IN ('SCHEDULED', 'CONFIRMED', 'COMPLETED', 'CANCELLED')),
 	[notes] [nvarchar](500) NULL,
-	[created_at] [datetime2](7) NOT NULL,
-	[source] [varchar](20) NOT NULL,
-	[booking_channel] [varchar](20) NULL,
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	[source] [varchar](20) NOT NULL DEFAULT 'INTERNAL' CHECK ([source] IN ('INTERNAL', 'ONLINE')),
+	[booking_channel] [varchar](20) NULL CHECK ([booking_channel] IN ('WEB', 'MOBILE', 'KIOSK')),
 	[created_by_patient_id] [int] NULL,
 	[created_by_user_id] [int] NULL,
 	[confirmation_code] [varchar](10) NULL,
 	[confirmed_at] [datetime2](7) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[appointment_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	PRIMARY KEY CLUSTERED ([appointment_id] ASC),
+	CONSTRAINT [FK_Appointments_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
+	CONSTRAINT [FK_Appointments_Dentist] FOREIGN KEY([dentist_id]) REFERENCES [dbo].[Users] ([user_id]),
+	CONSTRAINT [FK_Appointments_Service] FOREIGN KEY([service_id]) REFERENCES [dbo].[Services] ([service_id]),
+	CONSTRAINT [FK_Appointments_CreatedByPatient] FOREIGN KEY([created_by_patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
+	CONSTRAINT [FK_Appointments_CreatedByUser] FOREIGN KEY([created_by_user_id]) REFERENCES [dbo].[Users] ([user_id])
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[DoctorSchedules]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
+
+-- ============================================
+-- TẠO BẢNG APPOINTMENT REQUESTS
+-- ============================================
+CREATE TABLE [dbo].[AppointmentRequests](
+	[request_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NULL,
+	[full_name] [nvarchar](200) NOT NULL,
+	[phone] [varchar](50) NOT NULL,
+	[email] [varchar](150) NULL,
+	[service_id] [int] NULL,
+	[preferred_doctor_id] [int] NULL,
+	[preferred_date] [date] NULL,
+	[preferred_shift] [nvarchar](20) NULL CHECK ([preferred_shift] IN (N'Sáng', N'Chiều', N'Cả ngày')),
+	[notes] [nvarchar](500) NULL,
+	[status] [nvarchar](20) NOT NULL DEFAULT N'CHỜ XỬ LÝ' CHECK ([status] IN (N'CHỜ XỬ LÝ', N'ĐÃ XÁC NHẬN', N'TỪ CHỐI')),
+	[otp_code] [varchar](10) NULL,
+	[otp_expires_at] [datetime2](7) NULL,
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	[confirmed_at] [datetime2](7) NULL,
+	PRIMARY KEY CLUSTERED ([request_id] ASC),
+	CONSTRAINT [FK_AppointmentRequests_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
+	CONSTRAINT [FK_AppointmentRequests_Doctor] FOREIGN KEY([preferred_doctor_id]) REFERENCES [dbo].[Users] ([user_id]),
+	CONSTRAINT [FK_AppointmentRequests_Service] FOREIGN KEY([service_id]) REFERENCES [dbo].[Services] ([service_id])
+) ON [PRIMARY]
 GO
-SET QUOTED_IDENTIFIER ON
-GO
+
+-- ============================================
+-- TẠO BẢNG DOCTOR SCHEDULES
+-- ============================================
 CREATE TABLE [dbo].[DoctorSchedules](
 	[schedule_id] [int] IDENTITY(1,1) NOT NULL,
 	[doctor_id] [int] NOT NULL,
 	[work_date] [date] NOT NULL,
-	[shift] [varchar](50) NOT NULL,
+	[shift] [nvarchar](50) NOT NULL,
 	[start_time] [time](7) NULL,
 	[end_time] [time](7) NULL,
 	[room_no] [varchar](50) NULL,
-	[status] [varchar](20) NOT NULL,
-	[created_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[schedule_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	[status] [nvarchar](20) NOT NULL DEFAULT N'HOẠT ĐỘNG' CHECK ([status] IN (N'HOẠT ĐỘNG', N'NGHỈ')),
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	PRIMARY KEY CLUSTERED ([schedule_id] ASC),
+	CONSTRAINT [FK_DoctorSchedules_Doctor] FOREIGN KEY([doctor_id]) REFERENCES [dbo].[Users] ([user_id])
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Employees]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
+-- ============================================
+-- TẠO BẢNG EMPLOYEES
+-- ============================================
 CREATE TABLE [dbo].[Employees](
 	[employee_id] [int] IDENTITY(1,1) NOT NULL,
 	[user_id] [int] NOT NULL,
-	[position] [varchar](100) NULL,
+	[position] [nvarchar](100) NULL,
 	[hire_date] [date] NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[employee_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	PRIMARY KEY CLUSTERED ([employee_id] ASC),
+	CONSTRAINT [FK_Employees_Users] FOREIGN KEY([user_id]) REFERENCES [dbo].[Users] ([user_id])
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Examinations]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Examinations](
-	[exam_id] [int] IDENTITY(1,1) NOT NULL,
-	[record_id] [int] NOT NULL,
-	[findings] [nvarchar](max) NULL,
-	[diagnosis] [nvarchar](max) NULL,
-	[created_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[exam_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[InventoryItems]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[InventoryItems](
-	[item_id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [varchar](200) NOT NULL,
-	[unit] [varchar](50) NULL,
-	[quantity] [int] NOT NULL,
-	[min_stock] [int] NOT NULL,
-	[created_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[item_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[InvoiceItems]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[InvoiceItems](
-	[item_id] [int] IDENTITY(1,1) NOT NULL,
-	[invoice_id] [int] NOT NULL,
-	[service_id] [int] NULL,
-	[quantity] [int] NOT NULL,
-	[unit_price] [decimal](18, 2) NOT NULL,
-	[total_price]  AS ([quantity]*[unit_price]),
-PRIMARY KEY CLUSTERED 
-(
-	[item_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Invoices]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Invoices](
-	[invoice_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[appointment_id] [int] NULL,
-	[total_amount] [decimal](18, 2) NOT NULL,
-	[discount_amount] [decimal](18, 2) NOT NULL,
-	[net_amount]  AS ([total_amount]-[discount_amount]),
-	[status] [varchar](50) NOT NULL,
-	[created_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[invoice_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[MedicalRecords]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
+-- ============================================
+-- TẠO BẢNG MEDICAL RECORDS
+-- ============================================
 CREATE TABLE [dbo].[MedicalRecords](
 	[record_id] [int] IDENTITY(1,1) NOT NULL,
 	[patient_id] [int] NOT NULL,
 	[dentist_id] [int] NULL,
 	[summary] [nvarchar](max) NULL,
-	[created_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[record_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	PRIMARY KEY CLUSTERED ([record_id] ASC),
+	CONSTRAINT [FK_MedicalRecords_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
+	CONSTRAINT [FK_MedicalRecords_Dentist] FOREIGN KEY([dentist_id]) REFERENCES [dbo].[Users] ([user_id])
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PatientFiles]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PatientFiles](
-	[file_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[content] [varchar](max) NULL,
-	[uploaded_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[file_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+
+-- ============================================
+-- TẠO BẢNG EXAMINATIONS
+-- ============================================
+CREATE TABLE [dbo].[Examinations](
+	[exam_id] [int] IDENTITY(1,1) NOT NULL,
+	[record_id] [int] NOT NULL,
+	[findings] [nvarchar](max) NULL,
+	[diagnosis] [nvarchar](max) NULL,
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	PRIMARY KEY CLUSTERED ([exam_id] ASC),
+	CONSTRAINT [FK_Examinations_Record] FOREIGN KEY([record_id]) REFERENCES [dbo].[MedicalRecords] ([record_id])
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[PatientImages]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PatientImages](
-	[image_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[record_id] [int] NULL,
-	[file_path] [nvarchar](500) NOT NULL,
-	[image_type] [varchar](50) NOT NULL,
-	[uploaded_at] [datetime2](7) NOT NULL,
-	[uploaded_by] [int] NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[image_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Patients]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Patients](
-	[patient_id] [int] IDENTITY(1,1) NOT NULL,
-	[full_name] [varchar](200) NOT NULL,
-	[birth_date] [date] NULL,
-	[gender] [char](1) NULL,
-	[phone] [varchar](50) NULL,
-	[email] [varchar](150) NULL,
-	[address] [varchar](300) NULL,
-	[created_at] [datetime2](7) NOT NULL,
-	[avatar] [varchar](max) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[patient_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Payments]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Payments](
-	[payment_id] [int] IDENTITY(1,1) NOT NULL,
-	[invoice_id] [int] NOT NULL,
-	[amount] [decimal](18, 2) NOT NULL,
-	[method] [varchar](50) NOT NULL,
-	[paid_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[payment_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[PrescriptionItems]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[PrescriptionItems](
-	[item_id] [int] IDENTITY(1,1) NOT NULL,
-	[prescription_id] [int] NOT NULL,
-	[medication_name] [varchar](200) NOT NULL,
-	[dosage] [varchar](100) NULL,
-	[duration] [varchar](100) NULL,
-	[instructions] [nvarchar](300) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[item_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Prescriptions]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Prescriptions](
-	[prescription_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[dentist_id] [int] NULL,
-	[created_at] [datetime2](7) NOT NULL,
-	[notes] [nvarchar](500) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[prescription_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Roles]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Roles](
-	[role_id] [int] IDENTITY(1,1) NOT NULL,
-	[role_name] [varchar](50) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[role_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[ScheduleRequests]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[ScheduleRequests](
-	[request_id] [int] IDENTITY(1,1) NOT NULL,
-	[employee_id] [int] NOT NULL,
-	[date] [date] NOT NULL,
-	[shift] [varchar](50) NOT NULL,
-	[reason] [nvarchar](500) NULL,
-	[status] [varchar](20) NOT NULL,
-	[created_at] [datetime2](7) NOT NULL,
-	[reviewed_by] [int] NULL,
-	[reviewed_at] [datetime2](7) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[request_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[Services]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Services](
-	[service_id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [varchar](150) NOT NULL,
-	[description] [nvarchar](500) NULL,
-	[price] [decimal](18, 2) NOT NULL,
-	[duration_minutes] [int] NULL,
-	[is_active] [bit] NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[service_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[StockTransactions]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[StockTransactions](
-	[transaction_id] [int] IDENTITY(1,1) NOT NULL,
-	[item_id] [int] NOT NULL,
-	[transaction_type] [varchar](20) NOT NULL,
-	[quantity] [int] NOT NULL,
-	[performed_by] [int] NULL,
-	[performed_at] [datetime2](7) NOT NULL,
-	[notes] [nvarchar](500) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[transaction_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[SystemConfigs]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[SystemConfigs](
-	[config_id] [int] IDENTITY(1,1) NOT NULL,
-	[config_key] [varchar](100) NOT NULL,
-	[config_value] [nvarchar](max) NULL,
-	[updated_at] [datetime2](7) NOT NULL,
-	[updated_by] [int] NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[config_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
-GO
-/****** Object:  Table [dbo].[TreatmentPlans]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
+-- ============================================
+-- TẠO BẢNG TREATMENT PLANS
+-- ============================================
 CREATE TABLE [dbo].[TreatmentPlans](
 	[plan_id] [int] IDENTITY(1,1) NOT NULL,
 	[record_id] [int] NOT NULL,
 	[plan_summary] [nvarchar](max) NULL,
-	[estimated_cost] [decimal](18, 2) NULL,
-	[created_at] [datetime2](7) NOT NULL,
+	[estimated_cost] [decimal](18, 2) NULL CHECK ([estimated_cost] >= 0),
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
 	[notes] [nvarchar](max) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[plan_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	PRIMARY KEY CLUSTERED ([plan_id] ASC),
+	CONSTRAINT [FK_TreatmentPlans_Record] FOREIGN KEY([record_id]) REFERENCES [dbo].[MedicalRecords] ([record_id])
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[TreatmentSessions]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
+
+-- ============================================
+-- TẠO BẢNG TREATMENT SESSIONS
+-- ============================================
 CREATE TABLE [dbo].[TreatmentSessions](
 	[session_id] [int] IDENTITY(1,1) NOT NULL,
 	[plan_id] [int] NOT NULL,
 	[session_date] [datetime2](7) NOT NULL,
 	[procedure_done] [nvarchar](500) NULL,
-	[session_cost] [decimal](18, 2) NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[session_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	[session_cost] [decimal](18, 2) NULL CHECK ([session_cost] >= 0),
+	PRIMARY KEY CLUSTERED ([session_id] ASC),
+	CONSTRAINT [FK_TreatmentSessions_Plan] FOREIGN KEY([plan_id]) REFERENCES [dbo].[TreatmentPlans] ([plan_id])
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[Users]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
-GO
-SET QUOTED_IDENTIFIER ON
-GO
-CREATE TABLE [dbo].[Users](
-	[user_id] [int] IDENTITY(1,1) NOT NULL,
-	[username] [varchar](100) NOT NULL,
-	[email] [varchar](200) NOT NULL,
-	[password_hash] [varchar](500) NULL,
-	[full_name] [varchar](200) NULL,
-	[phone] [varchar](50) NULL,
-	[role_id] [int] NOT NULL,
-	[is_active] [bit] NOT NULL,
-	[created_at] [datetime2](7) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[user_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+
+-- ============================================
+-- TẠO BẢNG PRESCRIPTIONS
+-- ============================================
+CREATE TABLE [dbo].[Prescriptions](
+	[prescription_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[dentist_id] [int] NULL,
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	[notes] [nvarchar](500) NULL,
+	PRIMARY KEY CLUSTERED ([prescription_id] ASC),
+	CONSTRAINT [FK_Prescriptions_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
+	CONSTRAINT [FK_Prescriptions_Dentist] FOREIGN KEY([dentist_id]) REFERENCES [dbo].[Users] ([user_id])
 ) ON [PRIMARY]
 GO
-/****** Object:  Table [dbo].[WaitingQueue]    Script Date: 10/26/2025 19:56:46 ******/
-SET ANSI_NULLS ON
+
+-- ============================================
+-- TẠO BẢNG PRESCRIPTION ITEMS
+-- ============================================
+CREATE TABLE [dbo].[PrescriptionItems](
+	[item_id] [int] IDENTITY(1,1) NOT NULL,
+	[prescription_id] [int] NOT NULL,
+	[medication_name] [nvarchar](200) NOT NULL,
+	[dosage] [nvarchar](100) NULL,
+	[duration] [nvarchar](100) NULL,
+	[instructions] [nvarchar](300) NULL,
+	PRIMARY KEY CLUSTERED ([item_id] ASC),
+	CONSTRAINT [FK_PrescriptionItems_Prescriptions] FOREIGN KEY([prescription_id]) REFERENCES [dbo].[Prescriptions] ([prescription_id])
+) ON [PRIMARY]
 GO
-SET QUOTED_IDENTIFIER ON
+
+-- ============================================
+-- TẠO BẢNG INVOICES
+-- ============================================
+CREATE TABLE [dbo].[Invoices](
+	[invoice_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[appointment_id] [int] NULL,
+	[total_amount] [decimal](18, 2) NOT NULL DEFAULT 0,
+	[discount_amount] [decimal](18, 2) NOT NULL DEFAULT 0,
+	[net_amount] AS ([total_amount]-[discount_amount]),
+	[status] [nvarchar](50) NOT NULL DEFAULT N'CHƯA THANH TOÁN' CHECK ([status] IN (N'CHƯA THANH TOÁN', N'ĐÃ THANH TOÁN')),
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	PRIMARY KEY CLUSTERED ([invoice_id] ASC),
+	CONSTRAINT [FK_Invoices_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
+	CONSTRAINT [FK_Invoices_Appointment] FOREIGN KEY([appointment_id]) REFERENCES [dbo].[Appointments] ([appointment_id])
+) ON [PRIMARY]
 GO
+
+-- ============================================
+-- TẠO BẢNG INVOICE ITEMS
+-- ============================================
+CREATE TABLE [dbo].[InvoiceItems](
+	[item_id] [int] IDENTITY(1,1) NOT NULL,
+	[invoice_id] [int] NOT NULL,
+	[service_id] [int] NULL,
+	[quantity] [int] NOT NULL DEFAULT 1,
+	[unit_price] [decimal](18, 2) NOT NULL,
+	[total_price] AS ([quantity]*[unit_price]),
+	PRIMARY KEY CLUSTERED ([item_id] ASC),
+	CONSTRAINT [FK_InvoiceItems_Invoice] FOREIGN KEY([invoice_id]) REFERENCES [dbo].[Invoices] ([invoice_id]),
+	CONSTRAINT [FK_InvoiceItems_Service] FOREIGN KEY([service_id]) REFERENCES [dbo].[Services] ([service_id])
+) ON [PRIMARY]
+GO
+
+-- ============================================
+-- TẠO BẢNG PAYMENTS
+-- ============================================
+CREATE TABLE [dbo].[Payments](
+	[payment_id] [int] IDENTITY(1,1) NOT NULL,
+	[invoice_id] [int] NOT NULL,
+	[amount] [decimal](18, 2) NOT NULL,
+	[method] [nvarchar](50) NOT NULL DEFAULT N'Tiền mặt',
+	[paid_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	PRIMARY KEY CLUSTERED ([payment_id] ASC),
+	CONSTRAINT [FK_Payments_Invoice] FOREIGN KEY([invoice_id]) REFERENCES [dbo].[Invoices] ([invoice_id])
+) ON [PRIMARY]
+GO
+
+-- ============================================
+-- TẠO BẢNG INVENTORY ITEMS
+-- ============================================
+CREATE TABLE [dbo].[InventoryItems](
+	[item_id] [int] IDENTITY(1,1) NOT NULL,
+	[name] [nvarchar](200) NOT NULL,
+	[unit] [nvarchar](50) NULL,
+	[quantity] [int] NOT NULL DEFAULT 0 CHECK ([quantity] >= 0),
+	[min_stock] [int] NOT NULL DEFAULT 0 CHECK ([min_stock] >= 0),
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	PRIMARY KEY CLUSTERED ([item_id] ASC),
+	UNIQUE NONCLUSTERED ([name] ASC)
+) ON [PRIMARY]
+GO
+
+-- ============================================
+-- TẠO BẢNG STOCK TRANSACTIONS
+-- ============================================
+CREATE TABLE [dbo].[StockTransactions](
+	[transaction_id] [int] IDENTITY(1,1) NOT NULL,
+	[item_id] [int] NOT NULL,
+	[transaction_type] [varchar](20) NOT NULL CHECK ([transaction_type] IN ('IN', 'OUT')),
+	[quantity] [int] NOT NULL CHECK ([quantity] > 0),
+	[performed_by] [int] NULL,
+	[performed_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	[notes] [nvarchar](500) NULL,
+	PRIMARY KEY CLUSTERED ([transaction_id] ASC),
+	CONSTRAINT [FK_StockTransactions_Item] FOREIGN KEY([item_id]) REFERENCES [dbo].[InventoryItems] ([item_id]),
+	CONSTRAINT [FK_StockTransactions_User] FOREIGN KEY([performed_by]) REFERENCES [dbo].[Users] ([user_id])
+) ON [PRIMARY]
+GO
+
+-- ============================================
+-- TẠO BẢNG PATIENT FILES
+-- ============================================
+CREATE TABLE [dbo].[PatientFiles](
+	[file_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[content] [varchar](max) NULL,
+	[uploaded_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	PRIMARY KEY CLUSTERED ([file_id] ASC),
+	CONSTRAINT [FK_PatientFiles_Patients] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id])
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+-- ============================================
+-- TẠO BẢNG PATIENT IMAGES
+-- ============================================
+CREATE TABLE [dbo].[PatientImages](
+	[image_id] [int] IDENTITY(1,1) NOT NULL,
+	[patient_id] [int] NOT NULL,
+	[record_id] [int] NULL,
+	[file_path] [nvarchar](500) NOT NULL,
+	[image_type] [nvarchar](50) NOT NULL DEFAULT N'Khác' CHECK ([image_type] IN (N'X-Ray', N'Trước', N'Sau', N'Khác')),
+	[uploaded_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	[uploaded_by] [int] NULL,
+	PRIMARY KEY CLUSTERED ([image_id] ASC),
+	CONSTRAINT [FK_PatientImages_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
+	CONSTRAINT [FK_PatientImages_Record] FOREIGN KEY([record_id]) REFERENCES [dbo].[MedicalRecords] ([record_id]),
+	CONSTRAINT [FK_PatientImages_Uploader] FOREIGN KEY([uploaded_by]) REFERENCES [dbo].[Users] ([user_id])
+) ON [PRIMARY]
+GO
+
+-- ============================================
+-- TẠO BẢNG SCHEDULE REQUESTS
+-- ============================================
+CREATE TABLE [dbo].[ScheduleRequests](
+	[request_id] [int] IDENTITY(1,1) NOT NULL,
+	[employee_id] [int] NOT NULL,
+	[date] [date] NOT NULL,
+	[shift] [nvarchar](50) NOT NULL CHECK ([shift] IN (N'Sáng', N'Chiều', N'Cả ngày')),
+	[reason] [nvarchar](500) NULL,
+	[status] [nvarchar](20) NOT NULL DEFAULT N'CHỜ XỬ LÝ' CHECK ([status] IN (N'CHỜ XỬ LÝ', N'ĐÃ DUYỆT', N'TỪ CHỐI')),
+	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
+	[reviewed_by] [int] NULL,
+	[reviewed_at] [datetime2](7) NULL,
+	PRIMARY KEY CLUSTERED ([request_id] ASC),
+	CONSTRAINT [FK_ScheduleRequests_Employee] FOREIGN KEY([employee_id]) REFERENCES [dbo].[Employees] ([employee_id]),
+	CONSTRAINT [FK_ScheduleRequests_Reviewer] FOREIGN KEY([reviewed_by]) REFERENCES [dbo].[Users] ([user_id])
+) ON [PRIMARY]
+GO
+
+-- ============================================
+-- TẠO BẢNG WAITING QUEUE
+-- ============================================
 CREATE TABLE [dbo].[WaitingQueue](
 	[queue_id] [int] IDENTITY(1,1) NOT NULL,
 	[appointment_id] [int] NOT NULL,
 	[position_in_queue] [int] NULL,
-	[status] [varchar](50) NOT NULL,
-PRIMARY KEY CLUSTERED 
-(
-	[queue_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+	[status] [nvarchar](50) NOT NULL DEFAULT N'CHỜ ĐỢI' CHECK ([status] IN (N'CHỜ ĐỢI', N'ĐÃ GỌI', N'ĐANG KHÁM', N'HOÀN THÀNH', N'KHÔNG ĐẾN')),
+	PRIMARY KEY CLUSTERED ([queue_id] ASC),
+	UNIQUE NONCLUSTERED ([appointment_id] ASC),
+	CONSTRAINT [FK_WaitingQueue_Appointments] FOREIGN KEY([appointment_id]) REFERENCES [dbo].[Appointments] ([appointment_id])
 ) ON [PRIMARY]
-GO
-SET IDENTITY_INSERT [dbo].[AppointmentRequests] ON 
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (1, NULL, N'Lê Quang Minh', N'0901234567', N'nguyenvana@email.com', 1, 2, CAST(N'2025-10-22' AS Date), N'Morning', N'C?n khám rang sâu', N'PENDING', NULL, NULL, CAST(N'2025-10-25T15:19:54.7600425' AS DateTime2), NULL)
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (2, NULL, N'Tr?n Th? B', N'0901234568', N'tranthib@email.com', 2, 2, CAST(N'2025-10-23' AS Date), N'Afternoon', N'Làm s?ch rang', N'PENDING', NULL, NULL, CAST(N'2025-10-25T15:19:54.7600425' AS DateTime2), NULL)
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (3, NULL, N'Lê Van C', N'0901234569', N'levanc@email.com', 3, 2, CAST(N'2025-10-24' AS Date), N'Morning', N'Trám rang', N'CONFIRMED', NULL, NULL, CAST(N'2025-10-25T15:19:54.7600425' AS DateTime2), NULL)
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (4, NULL, N'sample', N'000000000', N'minhhola@admin.com', 1, 2, CAST(N'2025-10-31' AS Date), N'Morning', N'', N'CONFIRMED', N'322897', CAST(N'2025-10-26T22:26:24.2815435' AS DateTime2), CAST(N'2025-10-25T22:26:24.2866667' AS DateTime2), CAST(N'2025-10-25T22:26:33.1933333' AS DateTime2))
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (5, NULL, N'Le Quang Minh', N'0386568918', N'recp@clinic.com', 3, 2, CAST(N'2025-12-12' AS Date), N'Morning', N'', N'PENDING', N'086073', CAST(N'2025-10-27T14:50:27.0699999' AS DateTime2), CAST(N'2025-10-26T14:50:27.0933333' AS DateTime2), NULL)
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (6, NULL, N'Le Quang Minh', N'00001231234', N'john@clinic.com', 3, 2, CAST(N'2025-10-31' AS Date), N'Morning', N'123', N'PENDING', N'729433', CAST(N'2025-10-27T14:52:34.0835103' AS DateTime2), CAST(N'2025-10-26T14:52:34.1000000' AS DateTime2), NULL)
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (7, NULL, N'Lê Quang Minh', N'0386568918', N'john.doe@email.com', 1, 2, CAST(N'2025-10-28' AS Date), N'Afternoon', N'ád', N'PENDING', N'341464', CAST(N'2025-10-27T15:30:59.8065282' AS DateTime2), CAST(N'2025-10-26T15:30:59.8300000' AS DateTime2), NULL)
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (8, NULL, N'Lê Quang Minh', N'0386568919', N'manage1r@dental.com', 4, 2, CAST(N'2025-10-29' AS Date), N'Morning', N'ád', N'CONFIRMED', N'506961', CAST(N'2025-10-27T15:33:49.0463154' AS DateTime2), CAST(N'2025-10-26T15:33:49.0633333' AS DateTime2), CAST(N'2025-10-26T15:43:02.6100000' AS DateTime2))
-GO
-INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [otp_code], [otp_expires_at], [created_at], [confirmed_at]) VALUES (9, NULL, N'Le Quang Minh', N'0386568918', N'minhlq.fb@gmail.com', 4, 2, CAST(N'2025-10-29' AS Date), N'Morning', N'', N'PENDING', N'202784', CAST(N'2025-10-27T19:11:59.1720182' AS DateTime2), CAST(N'2025-10-26T19:11:59.2500000' AS DateTime2), NULL)
-GO
-SET IDENTITY_INSERT [dbo].[AppointmentRequests] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Appointments] ON 
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (1, 1, 2, 4, CAST(N'2025-10-25T15:30:00.0000000' AS DateTime2), N'COMPLETED', NULL, CAST(N'2025-10-25T22:26:51.4391278' AS DateTime2), N'INTERNAL', NULL, NULL, 3, NULL, NULL)
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (2, 2, 2, 4, CAST(N'2025-10-26T18:48:00.0000000' AS DateTime2), N'COMPLETED', NULL, CAST(N'2025-10-25T22:34:08.0372974' AS DateTime2), N'INTERNAL', NULL, NULL, 3, NULL, NULL)
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (3, 4, 2, 1, CAST(N'2025-10-27T16:30:00.0000000' AS DateTime2), N'COMPLETED', NULL, CAST(N'2025-10-25T23:25:27.8972518' AS DateTime2), N'INTERNAL', NULL, NULL, 3, NULL, NULL)
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (4, 5, 2, 4, CAST(N'2025-10-29T09:00:00.0000000' AS DateTime2), N'SCHEDULED', N'ád', CAST(N'2025-10-26T15:43:02.6689040' AS DateTime2), N'ONLINE', N'WEB', 5, 3, NULL, NULL)
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (5, 4, 2, 4, CAST(N'2025-10-26T08:48:00.0000000' AS DateTime2), N'COMPLETED', NULL, CAST(N'2025-10-26T15:48:03.3816886' AS DateTime2), N'INTERNAL', NULL, NULL, 3, NULL, NULL)
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (6, 5, 2, 2, CAST(N'2025-10-30T09:45:00.0000000' AS DateTime2), N'SCHEDULED', NULL, CAST(N'2025-10-26T16:31:33.2297702' AS DateTime2), N'INTERNAL', NULL, NULL, 3, NULL, NULL)
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (7, 4, 2, 1, CAST(N'2025-10-27T12:05:00.0000000' AS DateTime2), N'SCHEDULED', NULL, CAST(N'2025-10-26T16:43:02.6138222' AS DateTime2), N'INTERNAL', NULL, NULL, 3, NULL, NULL)
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (8, 5, 2, 1, CAST(N'2025-10-27T08:30:00.0000000' AS DateTime2), N'COMPLETED', N'123', CAST(N'2025-10-26T16:52:19.1659430' AS DateTime2), N'INTERNAL', NULL, NULL, 3, NULL, NULL)
-GO
-INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id], [created_by_user_id], [confirmation_code], [confirmed_at]) VALUES (9, 2, 2, 4, CAST(N'2025-10-27T10:00:00.0000000' AS DateTime2), N'SCHEDULED', NULL, CAST(N'2025-10-26T19:13:45.4452693' AS DateTime2), N'INTERNAL', NULL, NULL, 3, NULL, NULL)
-GO
-SET IDENTITY_INSERT [dbo].[Appointments] OFF
-GO
-SET IDENTITY_INSERT [dbo].[DoctorSchedules] ON 
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (1, 2, CAST(N'2025-10-27' AS Date), N'Sáng (7:00-12:00)', CAST(N'07:00:00' AS Time), CAST(N'12:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-25T22:23:54.5800000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (2, 2, CAST(N'2025-10-30' AS Date), N'Sáng (7:00-12:00)', CAST(N'07:00:00' AS Time), CAST(N'12:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-25T22:23:54.6166667' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (3, 2, CAST(N'2025-11-01' AS Date), N'Sáng (7:00-12:00)', CAST(N'07:00:00' AS Time), CAST(N'12:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-25T22:23:54.6533333' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (20, 4, CAST(N'2025-10-26' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.2900000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (21, 4, CAST(N'2025-10-27' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.3233333' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (22, 4, CAST(N'2025-10-28' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.3600000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (23, 4, CAST(N'2025-10-29' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.3900000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (24, 4, CAST(N'2025-10-30' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.4200000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (25, 4, CAST(N'2025-10-31' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.4500000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (26, 4, CAST(N'2025-11-01' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.4766667' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (27, 2, CAST(N'2025-10-26' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.5066667' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (28, 2, CAST(N'2025-10-27' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.5466667' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (29, 2, CAST(N'2025-10-28' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.5833333' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (30, 2, CAST(N'2025-10-29' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.6100000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (31, 2, CAST(N'2025-10-30' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.6366667' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (32, 2, CAST(N'2025-10-31' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.7300000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (33, 2, CAST(N'2025-11-01' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.7966667' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (34, 3, CAST(N'2025-10-26' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.9033333' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (35, 3, CAST(N'2025-10-27' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.9433333' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (36, 3, CAST(N'2025-10-28' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:46.9733333' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (37, 3, CAST(N'2025-10-29' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:47.0133333' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (38, 3, CAST(N'2025-10-30' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:47.0500000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (39, 3, CAST(N'2025-10-31' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:47.0800000' AS DateTime2))
-GO
-INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at]) VALUES (40, 3, CAST(N'2025-11-01' AS Date), N'Chi?u (13:00-18:00)', CAST(N'13:00:00' AS Time), CAST(N'18:00:00' AS Time), N'', N'ACTIVE', CAST(N'2025-10-26T19:23:47.1133333' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[DoctorSchedules] OFF
-GO
-SET IDENTITY_INSERT [dbo].[InventoryItems] ON 
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (1, N'Gloves (box)', N'box', 50, 10, CAST(N'2025-10-25T15:19:54.7455042' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (2, N'Masks (box)', N'box', 40, 10, CAST(N'2025-10-25T15:19:54.7455042' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (3, N'Mouthwash', N'bottle', 20, 5, CAST(N'2025-10-25T15:19:54.7455042' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (4, N'Gang tay y t?', N'h?p', 50, 10, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (5, N'Kh?u trang y t?', N'h?p', 40, 10, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (6, N'Nu?c súc mi?ng', N'chai', 20, 5, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (7, N'Thu?c tê Lidocaine', N'?ng', 30, 8, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (8, N'Composite trám rang', N'h?p', 15, 5, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (9, N'Bông gòn y t?', N'h?p', 25, 8, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (10, N'Kim tiêm', N'h?p', 20, 5, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (11, N'Thu?c kháng sinh', N'h?p', 18, 6, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (12, N'D?ng c? nha khoa', N'b?', 12, 3, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at]) VALUES (13, N'Thu?c gi?m dau', N'h?p', 22, 7, CAST(N'2025-10-26T12:21:53.3632646' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[InventoryItems] OFF
-GO
-SET IDENTITY_INSERT [dbo].[InvoiceItems] ON 
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (1, 1, 1, 1, CAST(100000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (2, 2, 2, 1, CAST(300000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (3, 3, 3, 1, CAST(500000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (4, 4, 4, 1, CAST(1500000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (5, 5, 5, 1, CAST(800000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (6, 6, 1, 1, CAST(100000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (7, 7, 2, 1, CAST(300000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (8, 8, 3, 1, CAST(500000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (9, 1, 1, 1, CAST(100000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (10, 2, 2, 1, CAST(300000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (11, 3, 3, 1, CAST(500000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (12, 4, 4, 1, CAST(1500000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (13, 5, 5, 1, CAST(800000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (14, 6, 1, 1, CAST(100000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (15, 7, 2, 1, CAST(300000.00 AS Decimal(18, 2)))
-GO
-INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price]) VALUES (16, 8, 3, 1, CAST(500000.00 AS Decimal(18, 2)))
-GO
-SET IDENTITY_INSERT [dbo].[InvoiceItems] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Invoices] ON 
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (1, 2, 2, CAST(1500000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'PAID', CAST(N'2025-10-25T22:39:20.6362229' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (2, 4, 3, CAST(100000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'PAID', CAST(N'2025-10-26T19:20:01.8478051' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (3, 1, 1, CAST(100000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'PAID', CAST(N'2024-01-15T09:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (4, 2, 2, CAST(300000.00 AS Decimal(18, 2)), CAST(30000.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-16T14:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (5, 3, 3, CAST(500000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'PAID', CAST(N'2024-01-17T10:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (6, 4, 4, CAST(1500000.00 AS Decimal(18, 2)), CAST(150000.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-18T15:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (7, 5, 5, CAST(800000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'PAID', CAST(N'2024-01-19T11:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (8, 6, 6, CAST(100000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-20T09:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (9, 7, 7, CAST(300000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-21T13:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (10, 8, 8, CAST(500000.00 AS Decimal(18, 2)), CAST(50000.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-22T10:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (11, 1, 1, CAST(100000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'PAID', CAST(N'2024-01-15T09:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (12, 2, 2, CAST(300000.00 AS Decimal(18, 2)), CAST(30000.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-16T14:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (13, 3, 3, CAST(500000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'PAID', CAST(N'2024-01-17T10:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (14, 4, 4, CAST(1500000.00 AS Decimal(18, 2)), CAST(150000.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-18T15:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (15, 5, 5, CAST(800000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'PAID', CAST(N'2024-01-19T11:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (16, 6, 6, CAST(100000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-20T09:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (17, 7, 7, CAST(300000.00 AS Decimal(18, 2)), CAST(0.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-21T13:30:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at]) VALUES (18, 8, 8, CAST(500000.00 AS Decimal(18, 2)), CAST(50000.00 AS Decimal(18, 2)), N'UNPAID', CAST(N'2024-01-22T10:30:00.0000000' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[Invoices] OFF
-GO
-SET IDENTITY_INSERT [dbo].[MedicalRecords] ON 
-GO
-INSERT [dbo].[MedicalRecords] ([record_id], [patient_id], [dentist_id], [summary], [created_at]) VALUES (1, 2, 2, N'ok', CAST(N'2025-10-25T15:37:13.6736413' AS DateTime2))
-GO
-INSERT [dbo].[MedicalRecords] ([record_id], [patient_id], [dentist_id], [summary], [created_at]) VALUES (2, 2, 2, N'ok', CAST(N'2025-10-25T15:37:17.4732844' AS DateTime2))
-GO
-INSERT [dbo].[MedicalRecords] ([record_id], [patient_id], [dentist_id], [summary], [created_at]) VALUES (3, 5, 2, N'ok oko k', CAST(N'2025-10-26T12:15:54.7076565' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[MedicalRecords] OFF
-GO
-SET IDENTITY_INSERT [dbo].[PatientFiles] ON 
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (1, 1, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Có\nTi?n s? b?nh: Không có', CAST(N'2024-01-15T09:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (2, 2, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Có\nTi?n s? b?nh: D? ?ng penicillin', CAST(N'2024-01-16T14:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (3, 3, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Không\nTi?n s? b?nh: Không có', CAST(N'2024-01-17T10:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (4, 4, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Có\nTi?n s? b?nh: Cao huy?t áp', CAST(N'2024-01-18T15:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (5, 5, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Có\nTi?n s? b?nh: Không có', CAST(N'2024-01-19T11:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (6, 1, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Có\nTi?n s? b?nh: Không có', CAST(N'2024-01-15T09:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (7, 2, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Có\nTi?n s? b?nh: D? ?ng penicillin', CAST(N'2024-01-16T14:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (8, 3, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Không\nTi?n s? b?nh: Không có', CAST(N'2024-01-17T10:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (9, 4, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Có\nTi?n s? b?nh: Cao huy?t áp', CAST(N'2024-01-18T15:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at]) VALUES (10, 5, N'Gi?y t? tùy thân: CMND/CCCD\nB?o hi?m y t?: Có\nTi?n s? b?nh: Không có', CAST(N'2024-01-19T11:00:00.0000000' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[PatientFiles] OFF
-GO
-SET IDENTITY_INSERT [dbo].[PatientImages] ON 
-GO
-INSERT [dbo].[PatientImages] ([image_id], [patient_id], [record_id], [file_path], [image_type], [uploaded_at], [uploaded_by]) VALUES (3, 1, NULL, N'uploads/medical-images/1761409027608_1_1.png', N'X-RAY', CAST(N'2025-10-25T16:17:07.6536717' AS DateTime2), 2)
-GO
-INSERT [dbo].[PatientImages] ([image_id], [patient_id], [record_id], [file_path], [image_type], [uploaded_at], [uploaded_by]) VALUES (4, 1, NULL, N'uploads/medical-images/1761409204761_1_1.jpg', N'AFTER', CAST(N'2025-10-25T16:20:04.7986084' AS DateTime2), 2)
-GO
-INSERT [dbo].[PatientImages] ([image_id], [patient_id], [record_id], [file_path], [image_type], [uploaded_at], [uploaded_by]) VALUES (5, 5, NULL, N'uploads/medical-images/1761480930134_5_1.png', N'BEFORE', CAST(N'2025-10-26T12:15:30.1704599' AS DateTime2), 2)
-GO
-INSERT [dbo].[PatientImages] ([image_id], [patient_id], [record_id], [file_path], [image_type], [uploaded_at], [uploaded_by]) VALUES (6, 5, NULL, N'uploads/medical-images/1761480946720_5_1.png', N'X-RAY', CAST(N'2025-10-26T12:15:46.7559191' AS DateTime2), 2)
-GO
-SET IDENTITY_INSERT [dbo].[PatientImages] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Patients] ON 
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (1, N'sample', NULL, NULL, N'000000000', N'minhhola@admin.com', NULL, CAST(N'2025-10-25T15:26:33.2117674' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (2, N'Le Minh', CAST(N'2003-12-12' AS Date), N'M', N'0386568918', N'sample@gmai.ocm', N'ád', CAST(N'2025-10-25T22:33:46.0228247' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (3, N'Le Quang Minh', CAST(N'2000-12-12' AS Date), N'M', N'00001231223', N'minhlq.fb@gmail.com', N'ád', CAST(N'2025-10-25T22:59:05.4472052' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (4, N'Dinh Quoc Sang', CAST(N'2000-12-12' AS Date), N'F', N'00001231234', N'john.doe@email.com', N'1', CAST(N'2025-10-25T23:25:08.8831440' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (5, N'Lê Quang Minh', NULL, NULL, N'0386568919', N'manage1r@dental.com', NULL, CAST(N'2025-10-26T08:43:02.6299072' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (6, N'Nguy?n Van An', CAST(N'1985-03-15' AS Date), N'M', N'0901234567', N'nguyenvanan@email.com', N'123 Ðu?ng ABC, Qu?n 1, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (7, N'Tr?n Th? Bình', CAST(N'1990-07-22' AS Date), N'F', N'0901234568', N'tranthibinh@email.com', N'456 Ðu?ng XYZ, Qu?n 2, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (8, N'Lê Van Cu?ng', CAST(N'1988-11-08' AS Date), N'M', N'0901234569', N'levancuong@email.com', N'789 Ðu?ng DEF, Qu?n 3, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (9, N'Ph?m Th? Dung', CAST(N'1992-05-14' AS Date), N'F', N'0901234570', N'phamthidung@email.com', N'321 Ðu?ng GHI, Qu?n 4, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (10, N'Hoàng Van Em', CAST(N'1987-09-30' AS Date), N'M', N'0901234571', N'hoangvanem@email.com', N'654 Ðu?ng JKL, Qu?n 5, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (11, N'Võ Th? Phuong', CAST(N'1995-01-18' AS Date), N'F', N'0901234572', N'vothiphuong@email.com', N'987 Ðu?ng MNO, Qu?n 6, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (12, N'Ð?ng Van Giang', CAST(N'1983-12-25' AS Date), N'M', N'0901234573', N'dangvangiang@email.com', N'147 Ðu?ng PQR, Qu?n 7, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (13, N'Bùi Th? Hoa', CAST(N'1991-08-12' AS Date), N'F', N'0901234574', N'buithihoa@email.com', N'258 Ðu?ng STU, Qu?n 8, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (14, N'Ngô Van Inh', CAST(N'1989-04-03' AS Date), N'M', N'0901234575', N'ngovaninh@email.com', N'369 Ðu?ng VWX, Qu?n 9, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (15, N'Duong Th? Kim', CAST(N'1993-10-27' AS Date), N'F', N'0901234576', N'duongthikim@email.com', N'741 Ðu?ng YZA, Qu?n 10, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (16, N'Lý Van Long', CAST(N'1986-06-19' AS Date), N'M', N'0901234577', N'lyvanlong@email.com', N'852 Ðu?ng BCD, Qu?n 11, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (17, N'Chu Th? Mai', CAST(N'1994-02-11' AS Date), N'F', N'0901234578', N'chuthimai@email.com', N'963 Ðu?ng EFG, Qu?n 12, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (18, N'Ðinh Van Nam', CAST(N'1984-08-05' AS Date), N'M', N'0901234579', N'dinhvannam@email.com', N'159 Ðu?ng HIJ, Qu?n Bình Th?nh, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (19, N'Luu Th? Oanh', CAST(N'1990-12-16' AS Date), N'F', N'0901234580', N'luuthioanh@email.com', N'357 Ðu?ng KLM, Qu?n Tân Bình, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (20, N'Phan Van Phúc', CAST(N'1987-05-28' AS Date), N'M', N'0901234581', N'phanvanphuc@email.com', N'468 Ðu?ng NOP, Qu?n Phú Nhu?n, TP.HCM', CAST(N'2025-10-26T12:21:53.2635135' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (21, N'Nguy?n Van An', CAST(N'1985-03-15' AS Date), N'M', N'0901234567', N'nguyenvanan@email.com', N'123 Ðu?ng ABC, Qu?n 1, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (22, N'Tr?n Th? Bình', CAST(N'1990-07-22' AS Date), N'F', N'0901234568', N'tranthibinh@email.com', N'456 Ðu?ng XYZ, Qu?n 2, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (23, N'Lê Van Cu?ng', CAST(N'1988-11-08' AS Date), N'M', N'0901234569', N'levancuong@email.com', N'789 Ðu?ng DEF, Qu?n 3, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (24, N'Ph?m Th? Dung', CAST(N'1992-05-14' AS Date), N'F', N'0901234570', N'phamthidung@email.com', N'321 Ðu?ng GHI, Qu?n 4, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (25, N'Hoàng Van Em', CAST(N'1987-09-30' AS Date), N'M', N'0901234571', N'hoangvanem@email.com', N'654 Ðu?ng JKL, Qu?n 5, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (26, N'Võ Th? Phuong', CAST(N'1995-01-18' AS Date), N'F', N'0901234572', N'vothiphuong@email.com', N'987 Ðu?ng MNO, Qu?n 6, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (27, N'Ð?ng Van Giang', CAST(N'1983-12-25' AS Date), N'M', N'0901234573', N'dangvangiang@email.com', N'147 Ðu?ng PQR, Qu?n 7, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (28, N'Bùi Th? Hoa', CAST(N'1991-08-12' AS Date), N'F', N'0901234574', N'buithihoa@email.com', N'258 Ðu?ng STU, Qu?n 8, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (29, N'Ngô Van Inh', CAST(N'1989-04-03' AS Date), N'M', N'0901234575', N'ngovaninh@email.com', N'369 Ðu?ng VWX, Qu?n 9, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (30, N'Duong Th? Kim', CAST(N'1993-10-27' AS Date), N'F', N'0901234576', N'duongthikim@email.com', N'741 Ðu?ng YZA, Qu?n 10, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (31, N'Lý Van Long', CAST(N'1986-06-19' AS Date), N'M', N'0901234577', N'lyvanlong@email.com', N'852 Ðu?ng BCD, Qu?n 11, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (32, N'Chu Th? Mai', CAST(N'1994-02-11' AS Date), N'F', N'0901234578', N'chuthimai@email.com', N'963 Ðu?ng EFG, Qu?n 12, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (33, N'Ðinh Van Nam', CAST(N'1984-08-05' AS Date), N'M', N'0901234579', N'dinhvannam@email.com', N'159 Ðu?ng HIJ, Qu?n Bình Th?nh, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (34, N'Luu Th? Oanh', CAST(N'1990-12-16' AS Date), N'F', N'0901234580', N'luuthioanh@email.com', N'357 Ðu?ng KLM, Qu?n Tân Bình, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at], [avatar]) VALUES (35, N'Phan Van Phúc', CAST(N'1987-05-28' AS Date), N'M', N'0901234581', N'phanvanphuc@email.com', N'468 Ðu?ng NOP, Qu?n Phú Nhu?n, TP.HCM', CAST(N'2025-10-26T12:22:09.4797252' AS DateTime2), NULL)
-GO
-SET IDENTITY_INSERT [dbo].[Patients] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Payments] ON 
-GO
-INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at]) VALUES (1, 1, CAST(1500000.00 AS Decimal(18, 2)), N'CASH', CAST(N'2025-10-25T22:39:30.0503524' AS DateTime2))
-GO
-INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at]) VALUES (2, 2, CAST(100000.00 AS Decimal(18, 2)), N'CASH', CAST(N'2025-10-26T19:20:08.4109602' AS DateTime2))
-GO
-INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at]) VALUES (3, 1, CAST(100000.00 AS Decimal(18, 2)), N'CASH', CAST(N'2024-01-15T09:45:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at]) VALUES (4, 3, CAST(500000.00 AS Decimal(18, 2)), N'CARD', CAST(N'2024-01-17T11:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at]) VALUES (5, 5, CAST(800000.00 AS Decimal(18, 2)), N'TRANSFER', CAST(N'2024-01-19T12:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at]) VALUES (6, 1, CAST(100000.00 AS Decimal(18, 2)), N'CASH', CAST(N'2024-01-15T09:45:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at]) VALUES (7, 3, CAST(500000.00 AS Decimal(18, 2)), N'CARD', CAST(N'2024-01-17T11:00:00.0000000' AS DateTime2))
-GO
-INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at]) VALUES (8, 5, CAST(800000.00 AS Decimal(18, 2)), N'TRANSFER', CAST(N'2024-01-19T12:00:00.0000000' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[Payments] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Prescriptions] ON 
-GO
-INSERT [dbo].[Prescriptions] ([prescription_id], [patient_id], [dentist_id], [created_at], [notes]) VALUES (1, 2, 2, CAST(N'2025-10-25T15:37:26.6172929' AS DateTime2), N'')
-GO
-INSERT [dbo].[Prescriptions] ([prescription_id], [patient_id], [dentist_id], [created_at], [notes]) VALUES (2, 5, 2, CAST(N'2025-10-26T12:16:20.9794366' AS DateTime2), N'ok okko ')
-GO
-SET IDENTITY_INSERT [dbo].[Prescriptions] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Roles] ON 
-GO
-INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (1, N'Administrator')
-GO
-INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (2, N'ClinicManager')
-GO
-INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (3, N'Dentist')
-GO
-INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (5, N'Patient')
-GO
-INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (4, N'Receptionist')
-GO
-SET IDENTITY_INSERT [dbo].[Roles] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Services] ON 
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (1, N'Oral Examination', N'General oral health check', CAST(100000.00 AS Decimal(18, 2)), 20, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (2, N'Teeth Cleaning', N'Scaling and polishing', CAST(300000.00 AS Decimal(18, 2)), 40, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (3, N'Filling', N'Composite filling', CAST(500000.00 AS Decimal(18, 2)), 45, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (4, N'Root Canal', N'Endodontic treatment', CAST(1500000.00 AS Decimal(18, 2)), 90, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (5, N'Khám t?ng quát', N'Kiểm tra sức khỏe răng miệng tổng quát', CAST(100000.00 AS Decimal(18, 2)), 20, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (6, N'C?o vôi rang', N'Làm sạch cao răng và đánh bóng răng', CAST(300000.00 AS Decimal(18, 2)), 40, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (7, N'Trám rang', N'Trám răng sâu bằng composite', CAST(500000.00 AS Decimal(18, 2)), 45, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (8, N'Ði?u tr? t?y', N'Điều trị tủy răng (root canal)', CAST(1500000.00 AS Decimal(18, 2)), 90, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (9, N'Nh? rang', N'Nhổ răng khôn, răng sâu', CAST(800000.00 AS Decimal(18, 2)), 60, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (10, N'Ni?ng rang', N'Điều trị chỉnh nha', CAST(5000000.00 AS Decimal(18, 2)), 120, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (11, N'Làm rang gi?', N'Làm cầu răng, implant', CAST(3000000.00 AS Decimal(18, 2)), 150, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (12, N'T?y tr?ng rang', N'Tẩy trắng răng bằng laser', CAST(2000000.00 AS Decimal(18, 2)), 90, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (13, N'Ch?a viêm nu?u', N'Điều trị viêm nướu, viêm quanh răng', CAST(400000.00 AS Decimal(18, 2)), 30, 1)
-GO
-INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active]) VALUES (14, N'Khám d?nh k?', N'Khám và theo dõi định kỳ', CAST(80000.00 AS Decimal(18, 2)), 15, 1)
-GO
-SET IDENTITY_INSERT [dbo].[Services] OFF
-GO
-SET IDENTITY_INSERT [dbo].[SystemConfigs] ON 
-GO
-INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by]) VALUES (1, N'clinic_name', N'Nha khoa An Tâm', CAST(N'2025-10-25T15:19:54.7515181' AS DateTime2), NULL)
-GO
-INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by]) VALUES (2, N'clinic_phone', N'0901234567', CAST(N'2025-10-25T15:19:54.7515181' AS DateTime2), NULL)
-GO
-INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by]) VALUES (3, N'clinic_email', N'contact@antamclinic.com', CAST(N'2025-10-25T15:19:54.7515181' AS DateTime2), NULL)
-GO
-INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by]) VALUES (4, N'payment_methods', N'CASH,CARD,TRANSFER', CAST(N'2025-10-25T15:19:54.7515181' AS DateTime2), NULL)
-GO
-INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by]) VALUES (5, N'logo_url', N'/assets/logo.png', CAST(N'2025-10-25T15:19:54.7515181' AS DateTime2), NULL)
-GO
-SET IDENTITY_INSERT [dbo].[SystemConfigs] OFF
-GO
-SET IDENTITY_INSERT [dbo].[Users] ON 
-GO
-INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at]) VALUES (1, N'admin', N'admin@clinic.com', N'1', N'System Admin', N'0900000000', 1, 1, CAST(N'2025-10-25T15:19:54.7409944' AS DateTime2))
-GO
-INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at]) VALUES (2, N'dr.john', N'john@clinic.com', N'1', N'Dr. John Doe', N'0911111111', 3, 1, CAST(N'2025-10-25T15:19:54.7409944' AS DateTime2))
-GO
-INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at]) VALUES (3, N'reception1', N'recp@clinic.com', N'1', N'Reception Staff', N'0922222222', 4, 1, CAST(N'2025-10-25T15:19:54.7409944' AS DateTime2))
-GO
-INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at]) VALUES (4, N'manager', N'manager@rang.com', N'1', N'manager', N'033333333333', 2, 1, CAST(N'2025-10-25T15:22:02.6450502' AS DateTime2))
-GO
-INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at]) VALUES (7, N'mimmnek', N'john.doe@email.com', N'123456', N'Dinh Thi Quoc ', N'0001231223', 1, 1, CAST(N'2025-10-26T12:25:37.5006029' AS DateTime2))
-GO
-SET IDENTITY_INSERT [dbo].[Users] OFF
-GO
-SET IDENTITY_INSERT [dbo].[WaitingQueue] ON 
-GO
-INSERT [dbo].[WaitingQueue] ([queue_id], [appointment_id], [position_in_queue], [status]) VALUES (1, 5, 1, N'WAITING')
-GO
-SET IDENTITY_INSERT [dbo].[WaitingQueue] OFF
-GO
-SET ANSI_PADDING ON
-GO
-/****** Object:  Index [UQ__Inventor__72E12F1B737DCDEE]    Script Date: 10/26/2025 19:56:46 ******/
-ALTER TABLE [dbo].[InventoryItems] ADD UNIQUE NONCLUSTERED 
-(
-	[name] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-SET ANSI_PADDING ON
-GO
-/****** Object:  Index [UQ__Roles__783254B1163BF5FA]    Script Date: 10/26/2025 19:56:46 ******/
-ALTER TABLE [dbo].[Roles] ADD UNIQUE NONCLUSTERED 
-(
-	[role_name] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-SET ANSI_PADDING ON
-GO
-/****** Object:  Index [UQ__Services__72E12F1B70B275A6]    Script Date: 10/26/2025 19:56:46 ******/
-ALTER TABLE [dbo].[Services] ADD UNIQUE NONCLUSTERED 
-(
-	[name] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-SET ANSI_PADDING ON
-GO
-/****** Object:  Index [UQ__SystemCo__BDF6033DECF2B579]    Script Date: 10/26/2025 19:56:46 ******/
-ALTER TABLE [dbo].[SystemConfigs] ADD UNIQUE NONCLUSTERED 
-(
-	[config_key] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-SET ANSI_PADDING ON
-GO
-/****** Object:  Index [UQ__Users__AB6E61641AC76A48]    Script Date: 10/26/2025 19:56:46 ******/
-ALTER TABLE [dbo].[Users] ADD UNIQUE NONCLUSTERED 
-(
-	[email] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-SET ANSI_PADDING ON
-GO
-/****** Object:  Index [UQ__Users__F3DBC5725822CE9E]    Script Date: 10/26/2025 19:56:46 ******/
-ALTER TABLE [dbo].[Users] ADD UNIQUE NONCLUSTERED 
-(
-	[username] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-/****** Object:  Index [UQ__WaitingQ__A50828FDBB6A5772]    Script Date: 10/26/2025 19:56:46 ******/
-ALTER TABLE [dbo].[WaitingQueue] ADD UNIQUE NONCLUSTERED 
-(
-	[appointment_id] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
-GO
-ALTER TABLE [dbo].[AppointmentRequests] ADD  DEFAULT ('PENDING') FOR [status]
-GO
-ALTER TABLE [dbo].[AppointmentRequests] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[Appointments] ADD  DEFAULT ('SCHEDULED') FOR [status]
-GO
-ALTER TABLE [dbo].[Appointments] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[Appointments] ADD  DEFAULT ('INTERNAL') FOR [source]
-GO
-ALTER TABLE [dbo].[DoctorSchedules] ADD  DEFAULT ('ACTIVE') FOR [status]
-GO
-ALTER TABLE [dbo].[DoctorSchedules] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[Examinations] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[InventoryItems] ADD  DEFAULT ((0)) FOR [quantity]
-GO
-ALTER TABLE [dbo].[InventoryItems] ADD  DEFAULT ((0)) FOR [min_stock]
-GO
-ALTER TABLE [dbo].[InventoryItems] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[InvoiceItems] ADD  DEFAULT ((1)) FOR [quantity]
-GO
-ALTER TABLE [dbo].[Invoices] ADD  DEFAULT ((0)) FOR [total_amount]
-GO
-ALTER TABLE [dbo].[Invoices] ADD  DEFAULT ((0)) FOR [discount_amount]
-GO
-ALTER TABLE [dbo].[Invoices] ADD  DEFAULT ('UNPAID') FOR [status]
-GO
-ALTER TABLE [dbo].[Invoices] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[MedicalRecords] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[PatientFiles] ADD  DEFAULT (sysutcdatetime()) FOR [uploaded_at]
-GO
-ALTER TABLE [dbo].[PatientImages] ADD  DEFAULT ('OTHER') FOR [image_type]
-GO
-ALTER TABLE [dbo].[PatientImages] ADD  DEFAULT (sysutcdatetime()) FOR [uploaded_at]
-GO
-ALTER TABLE [dbo].[Patients] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[Payments] ADD  DEFAULT ('CASH') FOR [method]
-GO
-ALTER TABLE [dbo].[Payments] ADD  DEFAULT (sysutcdatetime()) FOR [paid_at]
-GO
-ALTER TABLE [dbo].[Prescriptions] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[ScheduleRequests] ADD  DEFAULT ('PENDING') FOR [status]
-GO
-ALTER TABLE [dbo].[ScheduleRequests] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[Services] ADD  DEFAULT ((1)) FOR [is_active]
-GO
-ALTER TABLE [dbo].[StockTransactions] ADD  DEFAULT (sysutcdatetime()) FOR [performed_at]
-GO
-ALTER TABLE [dbo].[SystemConfigs] ADD  DEFAULT (sysutcdatetime()) FOR [updated_at]
-GO
-ALTER TABLE [dbo].[TreatmentPlans] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[Users] ADD  DEFAULT ((1)) FOR [is_active]
-GO
-ALTER TABLE [dbo].[Users] ADD  DEFAULT (sysutcdatetime()) FOR [created_at]
-GO
-ALTER TABLE [dbo].[WaitingQueue] ADD  DEFAULT ('WAITING') FOR [status]
-GO
-ALTER TABLE [dbo].[AppointmentRequests]  WITH CHECK ADD  CONSTRAINT [FK_AppointmentRequests_Doctor] FOREIGN KEY([preferred_doctor_id])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[AppointmentRequests] CHECK CONSTRAINT [FK_AppointmentRequests_Doctor]
-GO
-ALTER TABLE [dbo].[AppointmentRequests]  WITH CHECK ADD  CONSTRAINT [FK_AppointmentRequests_Patient] FOREIGN KEY([patient_id])
-REFERENCES [dbo].[Patients] ([patient_id])
-GO
-ALTER TABLE [dbo].[AppointmentRequests] CHECK CONSTRAINT [FK_AppointmentRequests_Patient]
-GO
-ALTER TABLE [dbo].[AppointmentRequests]  WITH CHECK ADD  CONSTRAINT [FK_AppointmentRequests_Service] FOREIGN KEY([service_id])
-REFERENCES [dbo].[Services] ([service_id])
-GO
-ALTER TABLE [dbo].[AppointmentRequests] CHECK CONSTRAINT [FK_AppointmentRequests_Service]
-GO
-ALTER TABLE [dbo].[Appointments]  WITH CHECK ADD  CONSTRAINT [FK_Appointments_CreatedByPatient] FOREIGN KEY([created_by_patient_id])
-REFERENCES [dbo].[Patients] ([patient_id])
-GO
-ALTER TABLE [dbo].[Appointments] CHECK CONSTRAINT [FK_Appointments_CreatedByPatient]
-GO
-ALTER TABLE [dbo].[Appointments]  WITH CHECK ADD  CONSTRAINT [FK_Appointments_CreatedByUser] FOREIGN KEY([created_by_user_id])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[Appointments] CHECK CONSTRAINT [FK_Appointments_CreatedByUser]
-GO
-ALTER TABLE [dbo].[Appointments]  WITH CHECK ADD  CONSTRAINT [FK_Appointments_Dentist] FOREIGN KEY([dentist_id])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[Appointments] CHECK CONSTRAINT [FK_Appointments_Dentist]
-GO
-ALTER TABLE [dbo].[Appointments]  WITH CHECK ADD  CONSTRAINT [FK_Appointments_Patient] FOREIGN KEY([patient_id])
-REFERENCES [dbo].[Patients] ([patient_id])
-GO
-ALTER TABLE [dbo].[Appointments] CHECK CONSTRAINT [FK_Appointments_Patient]
-GO
-ALTER TABLE [dbo].[Appointments]  WITH CHECK ADD  CONSTRAINT [FK_Appointments_Service] FOREIGN KEY([service_id])
-REFERENCES [dbo].[Services] ([service_id])
-GO
-ALTER TABLE [dbo].[Appointments] CHECK CONSTRAINT [FK_Appointments_Service]
-GO
-ALTER TABLE [dbo].[DoctorSchedules]  WITH CHECK ADD  CONSTRAINT [FK_DoctorSchedules_Doctor] FOREIGN KEY([doctor_id])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[DoctorSchedules] CHECK CONSTRAINT [FK_DoctorSchedules_Doctor]
-GO
-ALTER TABLE [dbo].[Employees]  WITH CHECK ADD  CONSTRAINT [FK_Employees_Users] FOREIGN KEY([user_id])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[Employees] CHECK CONSTRAINT [FK_Employees_Users]
-GO
-ALTER TABLE [dbo].[Examinations]  WITH CHECK ADD  CONSTRAINT [FK_Examinations_Record] FOREIGN KEY([record_id])
-REFERENCES [dbo].[MedicalRecords] ([record_id])
-GO
-ALTER TABLE [dbo].[Examinations] CHECK CONSTRAINT [FK_Examinations_Record]
-GO
-ALTER TABLE [dbo].[InvoiceItems]  WITH CHECK ADD  CONSTRAINT [FK_InvoiceItems_Invoice] FOREIGN KEY([invoice_id])
-REFERENCES [dbo].[Invoices] ([invoice_id])
-GO
-ALTER TABLE [dbo].[InvoiceItems] CHECK CONSTRAINT [FK_InvoiceItems_Invoice]
-GO
-ALTER TABLE [dbo].[InvoiceItems]  WITH CHECK ADD  CONSTRAINT [FK_InvoiceItems_Service] FOREIGN KEY([service_id])
-REFERENCES [dbo].[Services] ([service_id])
-GO
-ALTER TABLE [dbo].[InvoiceItems] CHECK CONSTRAINT [FK_InvoiceItems_Service]
-GO
-ALTER TABLE [dbo].[Invoices]  WITH CHECK ADD  CONSTRAINT [FK_Invoices_Appointment] FOREIGN KEY([appointment_id])
-REFERENCES [dbo].[Appointments] ([appointment_id])
-GO
-ALTER TABLE [dbo].[Invoices] CHECK CONSTRAINT [FK_Invoices_Appointment]
-GO
-ALTER TABLE [dbo].[Invoices]  WITH CHECK ADD  CONSTRAINT [FK_Invoices_Patient] FOREIGN KEY([patient_id])
-REFERENCES [dbo].[Patients] ([patient_id])
-GO
-ALTER TABLE [dbo].[Invoices] CHECK CONSTRAINT [FK_Invoices_Patient]
-GO
-ALTER TABLE [dbo].[MedicalRecords]  WITH CHECK ADD  CONSTRAINT [FK_MedicalRecords_Dentist] FOREIGN KEY([dentist_id])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[MedicalRecords] CHECK CONSTRAINT [FK_MedicalRecords_Dentist]
-GO
-ALTER TABLE [dbo].[MedicalRecords]  WITH CHECK ADD  CONSTRAINT [FK_MedicalRecords_Patient] FOREIGN KEY([patient_id])
-REFERENCES [dbo].[Patients] ([patient_id])
-GO
-ALTER TABLE [dbo].[MedicalRecords] CHECK CONSTRAINT [FK_MedicalRecords_Patient]
-GO
-ALTER TABLE [dbo].[PatientFiles]  WITH CHECK ADD  CONSTRAINT [FK_PatientFiles_Patients] FOREIGN KEY([patient_id])
-REFERENCES [dbo].[Patients] ([patient_id])
-GO
-ALTER TABLE [dbo].[PatientFiles] CHECK CONSTRAINT [FK_PatientFiles_Patients]
-GO
-ALTER TABLE [dbo].[PatientImages]  WITH CHECK ADD  CONSTRAINT [FK_PatientImages_Patient] FOREIGN KEY([patient_id])
-REFERENCES [dbo].[Patients] ([patient_id])
-GO
-ALTER TABLE [dbo].[PatientImages] CHECK CONSTRAINT [FK_PatientImages_Patient]
-GO
-ALTER TABLE [dbo].[PatientImages]  WITH CHECK ADD  CONSTRAINT [FK_PatientImages_Record] FOREIGN KEY([record_id])
-REFERENCES [dbo].[MedicalRecords] ([record_id])
-GO
-ALTER TABLE [dbo].[PatientImages] CHECK CONSTRAINT [FK_PatientImages_Record]
-GO
-ALTER TABLE [dbo].[PatientImages]  WITH CHECK ADD  CONSTRAINT [FK_PatientImages_Uploader] FOREIGN KEY([uploaded_by])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[PatientImages] CHECK CONSTRAINT [FK_PatientImages_Uploader]
-GO
-ALTER TABLE [dbo].[Payments]  WITH CHECK ADD  CONSTRAINT [FK_Payments_Invoice] FOREIGN KEY([invoice_id])
-REFERENCES [dbo].[Invoices] ([invoice_id])
-GO
-ALTER TABLE [dbo].[Payments] CHECK CONSTRAINT [FK_Payments_Invoice]
-GO
-ALTER TABLE [dbo].[PrescriptionItems]  WITH CHECK ADD  CONSTRAINT [FK_PrescriptionItems_Prescriptions] FOREIGN KEY([prescription_id])
-REFERENCES [dbo].[Prescriptions] ([prescription_id])
-GO
-ALTER TABLE [dbo].[PrescriptionItems] CHECK CONSTRAINT [FK_PrescriptionItems_Prescriptions]
-GO
-ALTER TABLE [dbo].[Prescriptions]  WITH CHECK ADD  CONSTRAINT [FK_Prescriptions_Dentist] FOREIGN KEY([dentist_id])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[Prescriptions] CHECK CONSTRAINT [FK_Prescriptions_Dentist]
-GO
-ALTER TABLE [dbo].[Prescriptions]  WITH CHECK ADD  CONSTRAINT [FK_Prescriptions_Patient] FOREIGN KEY([patient_id])
-REFERENCES [dbo].[Patients] ([patient_id])
-GO
-ALTER TABLE [dbo].[Prescriptions] CHECK CONSTRAINT [FK_Prescriptions_Patient]
-GO
-ALTER TABLE [dbo].[ScheduleRequests]  WITH CHECK ADD  CONSTRAINT [FK_ScheduleRequests_Employee] FOREIGN KEY([employee_id])
-REFERENCES [dbo].[Employees] ([employee_id])
-GO
-ALTER TABLE [dbo].[ScheduleRequests] CHECK CONSTRAINT [FK_ScheduleRequests_Employee]
-GO
-ALTER TABLE [dbo].[ScheduleRequests]  WITH CHECK ADD  CONSTRAINT [FK_ScheduleRequests_Reviewer] FOREIGN KEY([reviewed_by])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[ScheduleRequests] CHECK CONSTRAINT [FK_ScheduleRequests_Reviewer]
-GO
-ALTER TABLE [dbo].[StockTransactions]  WITH CHECK ADD  CONSTRAINT [FK_StockTransactions_Item] FOREIGN KEY([item_id])
-REFERENCES [dbo].[InventoryItems] ([item_id])
-GO
-ALTER TABLE [dbo].[StockTransactions] CHECK CONSTRAINT [FK_StockTransactions_Item]
-GO
-ALTER TABLE [dbo].[StockTransactions]  WITH CHECK ADD  CONSTRAINT [FK_StockTransactions_User] FOREIGN KEY([performed_by])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[StockTransactions] CHECK CONSTRAINT [FK_StockTransactions_User]
-GO
-ALTER TABLE [dbo].[SystemConfigs]  WITH CHECK ADD  CONSTRAINT [FK_SystemConfigs_UpdatedBy] FOREIGN KEY([updated_by])
-REFERENCES [dbo].[Users] ([user_id])
-GO
-ALTER TABLE [dbo].[SystemConfigs] CHECK CONSTRAINT [FK_SystemConfigs_UpdatedBy]
-GO
-ALTER TABLE [dbo].[TreatmentPlans]  WITH CHECK ADD  CONSTRAINT [FK_TreatmentPlans_Record] FOREIGN KEY([record_id])
-REFERENCES [dbo].[MedicalRecords] ([record_id])
-GO
-ALTER TABLE [dbo].[TreatmentPlans] CHECK CONSTRAINT [FK_TreatmentPlans_Record]
-GO
-ALTER TABLE [dbo].[TreatmentSessions]  WITH CHECK ADD  CONSTRAINT [FK_TreatmentSessions_Plan] FOREIGN KEY([plan_id])
-REFERENCES [dbo].[TreatmentPlans] ([plan_id])
-GO
-ALTER TABLE [dbo].[TreatmentSessions] CHECK CONSTRAINT [FK_TreatmentSessions_Plan]
-GO
-ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Roles] FOREIGN KEY([role_id])
-REFERENCES [dbo].[Roles] ([role_id])
-GO
-ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Roles]
-GO
-ALTER TABLE [dbo].[WaitingQueue]  WITH CHECK ADD  CONSTRAINT [FK_WaitingQueue_Appointments] FOREIGN KEY([appointment_id])
-REFERENCES [dbo].[Appointments] ([appointment_id])
-GO
-ALTER TABLE [dbo].[WaitingQueue] CHECK CONSTRAINT [FK_WaitingQueue_Appointments]
-GO
-ALTER TABLE [dbo].[AppointmentRequests]  WITH CHECK ADD CHECK  (([preferred_shift]='FullDay' OR [preferred_shift]='Afternoon' OR [preferred_shift]='Morning'))
-GO
-ALTER TABLE [dbo].[AppointmentRequests]  WITH CHECK ADD CHECK  (([status]='REJECTED' OR [status]='CONFIRMED' OR [status]='PENDING'))
-GO
-ALTER TABLE [dbo].[Appointments]  WITH CHECK ADD CHECK  (([booking_channel]='KIOSK' OR [booking_channel]='MOBILE' OR [booking_channel]='WEB'))
-GO
-ALTER TABLE [dbo].[Appointments]  WITH CHECK ADD CHECK  (([source]='ONLINE' OR [source]='INTERNAL'))
-GO
-ALTER TABLE [dbo].[Appointments]  WITH CHECK ADD CHECK  (([status]='CANCELLED' OR [status]='COMPLETED' OR [status]='CONFIRMED' OR [status]='SCHEDULED'))
-GO
-ALTER TABLE [dbo].[InventoryItems]  WITH CHECK ADD CHECK  (([min_stock]>=(0)))
-GO
-ALTER TABLE [dbo].[InventoryItems]  WITH CHECK ADD CHECK  (([quantity]>=(0)))
-GO
-ALTER TABLE [dbo].[PatientImages]  WITH CHECK ADD CHECK  (([image_type]='OTHER' OR [image_type]='AFTER' OR [image_type]='BEFORE' OR [image_type]='X-RAY'))
-GO
-ALTER TABLE [dbo].[Patients]  WITH CHECK ADD CHECK  (([gender]='O' OR [gender]='F' OR [gender]='M'))
-GO
-ALTER TABLE [dbo].[ScheduleRequests]  WITH CHECK ADD CHECK  (([shift]='FullDay' OR [shift]='Afternoon' OR [shift]='Morning'))
-GO
-ALTER TABLE [dbo].[ScheduleRequests]  WITH CHECK ADD CHECK  (([status]='REJECTED' OR [status]='APPROVED' OR [status]='PENDING'))
-GO
-ALTER TABLE [dbo].[Services]  WITH CHECK ADD CHECK  (([duration_minutes]>(0)))
-GO
-ALTER TABLE [dbo].[Services]  WITH CHECK ADD CHECK  (([price]>=(0)))
-GO
-ALTER TABLE [dbo].[StockTransactions]  WITH CHECK ADD CHECK  (([quantity]>(0)))
-GO
-ALTER TABLE [dbo].[StockTransactions]  WITH CHECK ADD CHECK  (([transaction_type]='OUT' OR [transaction_type]='IN'))
-GO
-ALTER TABLE [dbo].[TreatmentPlans]  WITH CHECK ADD CHECK  (([estimated_cost]>=(0)))
-GO
-ALTER TABLE [dbo].[TreatmentSessions]  WITH CHECK ADD CHECK  (([session_cost]>=(0)))
-GO
-ALTER TABLE [dbo].[WaitingQueue]  WITH CHECK ADD CHECK  (([status]='NO_SHOW' OR [status]='COMPLETED' OR [status]='IN_TREATMENT' OR [status]='CALLED' OR [status]='CHECKED_IN' OR [status]='WAITING'))
-GO
-USE [master]
-GO
-ALTER DATABASE [DentalClinicDB_MVP] SET  READ_WRITE 
 GO

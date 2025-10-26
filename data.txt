@@ -1,0 +1,741 @@
+USE [DentalClinicDB_MVP]
+GO
+
+-- ============================================
+-- XÓA DỮ LIỆU CŨ (NẾU CẦN)
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Roles] ON
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - ROLES
+-- ============================================
+INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (1, N'Quản trị viên')
+GO
+INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (2, N'Quản lý phòng khám')
+GO
+INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (3, N'Bác sĩ')
+GO
+INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (4, N'Tiếp tân')
+GO
+INSERT [dbo].[Roles] ([role_id], [role_name]) VALUES (5, N'Bệnh nhân')
+GO
+
+SET IDENTITY_INSERT [dbo].[Roles] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - USERS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Users] ON
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (1, N'admin001', N'admin@smiledental.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Nguyễn Văn An', N'0912345678', 1, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (2, N'manager001', N'manager@smiledental.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Trần Thị Hương', N'0987654321', 2, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (3, N'doctor_ngoc', N'ngoc.pham@smiledental.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Bác sĩ Phạm Thị Ngọc', N'0901112222', 3, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (4, N'doctor_hung', N'hung.tran@smiledental.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Bác sĩ Trần Minh Hùng', N'0902223333', 3, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (5, N'doctor_linh', N'linh.le@smiledental.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Bác sĩ Lê Thị Linh', N'0903334444', 3, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (6, N'reception_mai', N'mai.hoang@smiledental.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Hoàng Thị Mai', N'0904445555', 4, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (7, N'reception_hoa', N'hoa.nguyen@smiledental.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Nguyễn Thị Hoa', N'0905556666', 4, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (8, N'patient_hung', N'hung.vo@email.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Võ Quốc Hùng', N'0906667777', 5, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (9, N'patient_thu', N'thu.tran@email.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Trần Minh Thu', N'0907778888', 5, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[Users] ([user_id], [username], [email], [password_hash], [full_name], [phone], [role_id], [is_active], [created_at])
+VALUES (10, N'patient_cong', N'cong.le@email.vn', N'$2b$10$KIXDd8z8QvZ9WL.Q5xK9C.7nZ8Q5xK9C.7nZ8Q5xK9C', N'Lê Văn Công', N'0908889999', 5, 1, GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[Users] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - SERVICES
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Services] ON
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (1, N'Khám tổng quát', N'Khám sơ bộ tình trạng răng, gưới hàm và lợi', 200000, 30, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (2, N'Tẩy trắng răng', N'Tẩy trắng công nghệ advanced laser whitening', 1500000, 60, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (3, N'Trám răng composite', N'Trám răng sâu bằng vật liệu composite cao cấp', 350000, 45, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (4, N'Lấy cao răng', N'Vệ sinh lấy cao phòng chống viêm nha chu', 250000, 60, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (5, N'Nhổ răng', N'Nhổ răng an toàn với công nghệ hiện đại', 500000, 45, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (6, N'Cắm implant', N'Cắm ghép implant thay thế răng mất', 12000000, 120, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (7, N'Phục hình mão sứ', N'Phục hình bằng mão sứ cao cấp', 2500000, 90, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (8, N'Chỉnh nha', N'Chỉnh nha toàn bộ hàm răng', 6000000, 45, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (9, N'Điều trị tủy', N'Điều trị tủy răng (root canal)', 1200000, 90, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (10, N'Bảo quản tế bào gốc', N'Bảo quản tế bào gốc từ răng sữa', 3000000, 30, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (11, N'Cạo vôi răng', N'Cạo vôi chuyên sâu', 350000, 45, 1)
+GO
+
+INSERT [dbo].[Services] ([service_id], [name], [description], [price], [duration_minutes], [is_active])
+VALUES (12, N'Trị sâu răng', N'Điều trị sâu răng', 400000, 45, 1)
+GO
+
+SET IDENTITY_INSERT [dbo].[Services] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - PATIENTS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Patients] ON
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (1, N'Võ Quốc Hùng', CAST(N'1990-05-15' AS Date), N'M', N'0906667777', N'hung.vo@email.vn', N'123 Đường Nguyễn Huệ, Quận 1, TP.HCM', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (2, N'Trần Minh Thu', CAST(N'1988-03-22' AS Date), N'F', N'0907778888', N'thu.tran@email.vn', N'456 Đường Hàng Bông, Quận Hoàn Kiếm, Hà Nội', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (3, N'Lê Văn Công', CAST(N'1995-07-10' AS Date), N'M', N'0908889999', N'cong.le@email.vn', N'789 Đường Pasteur, Quận 1, TP.HCM', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (4, N'Phạm Hồng Anh', CAST(N'1992-11-30' AS Date), N'F', N'0934567890', N'anh.pham@email.vn', N'321 Đường Trần Hưng Đạo, Quận 5, TP.HCM', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (5, N'Ngô Thị Thanh Hương', CAST(N'1998-02-14' AS Date), N'F', N'0945678901', N'huong.ngo@email.vn', N'654 Đường Võ Văn Kiệt, Quận 4, TP.HCM', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (6, N'Đỗ Văn Kiên', CAST(N'1985-08-20' AS Date), N'M', N'0956789012', N'kien.do@email.vn', N'987 Đường Lê Lợi, Quận 1, TP.HCM', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (7, N'Bùi Thị Linh', CAST(N'2000-01-25' AS Date), N'F', N'0967890123', N'linh.bui@email.vn', N'258 Đường Cô Giang, Quận 1, TP.HCM', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (8, N'Hoàng Công Danh', CAST(N'1991-12-10' AS Date), N'M', N'0978901234', N'danh.hoang@email.vn', N'147 Đường Bình Thái, Quận 11, TP.HCM', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (9, N'Phan Thị Hồng', CAST(N'1993-06-08' AS Date), N'F', N'0989012345', N'hong.phan@email.vn', N'369 Đường Ung Văn Khiêm, Quận Bình Thạnh, TP.HCM', GETUTCDATE())
+GO
+
+INSERT [dbo].[Patients] ([patient_id], [full_name], [birth_date], [gender], [phone], [email], [address], [created_at])
+VALUES (10, N'Vũ Anh Tuấn', CAST(N'1987-09-17' AS Date), N'M', N'0990123456', N'tuan.vu@email.vn', N'741 Đường Chu Văn An, Quận Bình Thạnh, TP.HCM', GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[Patients] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - DOCTOR SCHEDULES
+-- ============================================
+SET IDENTITY_INSERT [dbo].[DoctorSchedules] ON
+GO
+
+INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at])
+VALUES (1, 3, CAST(GETDATE() AS Date), N'Sáng', CAST(N'08:00:00' AS Time), CAST(N'12:00:00' AS Time), N'A1', N'HOẠT ĐỘNG', GETUTCDATE())
+GO
+
+INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at])
+VALUES (2, 3, CAST(GETDATE() + 1 AS Date), N'Chiều', CAST(N'14:00:00' AS Time), CAST(N'18:00:00' AS Time), N'A1', N'HOẠT ĐỘNG', GETUTCDATE())
+GO
+
+INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at])
+VALUES (3, 4, CAST(GETDATE() AS Date), N'Chiều', CAST(N'14:00:00' AS Time), CAST(N'18:00:00' AS Time), N'A2', N'HOẠT ĐỘNG', GETUTCDATE())
+GO
+
+INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at])
+VALUES (4, 4, CAST(GETDATE() + 1 AS Date), N'Sáng', CAST(N'08:00:00' AS Time), CAST(N'12:00:00' AS Time), N'A2', N'HOẠT ĐỘNG', GETUTCDATE())
+GO
+
+INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at])
+VALUES (5, 5, CAST(GETDATE() + 2 AS Date), N'Sáng', CAST(N'08:00:00' AS Time), CAST(N'12:00:00' AS Time), N'A3', N'HOẠT ĐỘNG', GETUTCDATE())
+GO
+
+INSERT [dbo].[DoctorSchedules] ([schedule_id], [doctor_id], [work_date], [shift], [start_time], [end_time], [room_no], [status], [created_at])
+VALUES (6, 5, CAST(GETDATE() + 2 AS Date), N'Chiều', CAST(N'14:00:00' AS Time), CAST(N'18:00:00' AS Time), N'A3', N'HOẠT ĐỘNG', GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[DoctorSchedules] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - APPOINTMENTS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Appointments] ON
+GO
+
+INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id])
+VALUES (1, 1, 3, 1, CAST(GETDATE() + 2 AS Date) + CAST(N'08:30:00' AS Time), N'SCHEDULED', N'Khám tổng quát', GETUTCDATE(), N'ONLINE', N'WEB', 1)
+GO
+
+INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id])
+VALUES (2, 2, 4, 3, CAST(GETDATE() + 3 AS Date) + CAST(N'14:30:00' AS Time), N'SCHEDULED', N'Trám răng sâu', GETUTCDATE(), N'ONLINE', N'MOBILE', 2)
+GO
+
+INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id])
+VALUES (3, 3, 3, 4, CAST(GETDATE() + 4 AS Date) + CAST(N'09:00:00' AS Time), N'CONFIRMED', N'Lấy cao răng', GETUTCDATE(), N'INTERNAL', NULL, NULL)
+GO
+
+INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id])
+VALUES (4, 4, 4, 2, CAST(GETDATE() + 5 AS Date) + CAST(N'10:00:00' AS Time), N'SCHEDULED', N'Tẩy trắng', GETUTCDATE(), N'ONLINE', N'WEB', 4)
+GO
+
+INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id])
+VALUES (5, 5, 5, 1, CAST(GETDATE() + 6 AS Date) + CAST(N'08:30:00' AS Time), N'SCHEDULED', N'Khám định kỳ', GETUTCDATE(), N'ONLINE', N'MOBILE', 5)
+GO
+
+INSERT [dbo].[Appointments] ([appointment_id], [patient_id], [dentist_id], [service_id], [appointment_date], [status], [notes], [created_at], [source], [booking_channel], [created_by_patient_id])
+VALUES (6, 6, 3, 9, CAST(GETDATE() + 7 AS Date) + CAST(N'14:00:00' AS Time), N'SCHEDULED', N'Điều trị tủy', GETUTCDATE(), N'ONLINE', N'WEB', 6)
+GO
+
+SET IDENTITY_INSERT [dbo].[Appointments] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - APPOINTMENT REQUESTS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[AppointmentRequests] ON
+GO
+
+INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [created_at])
+VALUES (1, 7, N'Bùi Thị Linh', N'0967890123', N'linh.bui@email.vn', 1, 3, CAST(GETDATE() + 8 AS Date), N'Sáng', N'Muốn khám sáng', N'CHỜ XỬ LÝ', GETUTCDATE())
+GO
+
+INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [created_at])
+VALUES (2, NULL, N'Trịnh Văn Hùng', N'0978901234', N'hung.trinh@email.vn', 3, 4, CAST(GETDATE() + 10 AS Date), N'Chiều', N'Lần đầu đến khám', N'CHỜ XỬ LÝ', GETUTCDATE())
+GO
+
+INSERT [dbo].[AppointmentRequests] ([request_id], [patient_id], [full_name], [phone], [email], [service_id], [preferred_doctor_id], [preferred_date], [preferred_shift], [notes], [status], [created_at])
+VALUES (3, 8, N'Hoàng Công Danh', N'0978901234', N'danh.hoang@email.vn', 2, 5, CAST(GETDATE() + 9 AS Date), N'Sáng', N'Muốn tẩy trắng', N'CHỜ XỬ LÝ', GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[AppointmentRequests] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - MEDICAL RECORDS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[MedicalRecords] ON
+GO
+
+INSERT [dbo].[MedicalRecords] ([record_id], [patient_id], [dentist_id], [summary], [created_at])
+VALUES (1, 1, 3, N'Bệnh nhân có 2 răng sâu ở hàm dưới. Tiền sử: không dị ứng', GETUTCDATE())
+GO
+
+INSERT [dbo].[MedicalRecords] ([record_id], [patient_id], [dentist_id], [summary], [created_at])
+VALUES (2, 2, 4, N'Viêm nha chu nhẹ, cần lấy cao. Tổng quát sức khỏe bình thường', GETUTCDATE())
+GO
+
+INSERT [dbo].[MedicalRecords] ([record_id], [patient_id], [dentist_id], [summary], [created_at])
+VALUES (3, 3, 3, N'Khỏe mạnh, vệ sinh tốt. Nên xem xét tẩy trắng', GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[MedicalRecords] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - INVOICES
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Invoices] ON
+GO
+
+INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at])
+VALUES (1, 1, 1, 200000, 0, N'CHƯA THANH TOÁN', GETUTCDATE())
+GO
+
+INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at])
+VALUES (2, 2, 2, 350000, 35000, N'CHƯA THANH TOÁN', GETUTCDATE())
+GO
+
+INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at])
+VALUES (3, 3, 3, 250000, 0, N'ĐÃ THANH TOÁN', GETUTCDATE())
+GO
+
+INSERT [dbo].[Invoices] ([invoice_id], [patient_id], [appointment_id], [total_amount], [discount_amount], [status], [created_at])
+VALUES (4, 4, 4, 1500000, 150000, N'ĐÃ THANH TOÁN', GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[Invoices] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - INVOICE ITEMS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[InvoiceItems] ON
+GO
+
+INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price])
+VALUES (1, 1, 1, 1, 200000)
+GO
+
+INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price])
+VALUES (2, 2, 3, 1, 350000)
+GO
+
+INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price])
+VALUES (3, 3, 4, 1, 250000)
+GO
+
+INSERT [dbo].[InvoiceItems] ([item_id], [invoice_id], [service_id], [quantity], [unit_price])
+VALUES (4, 4, 2, 1, 1500000)
+GO
+
+SET IDENTITY_INSERT [dbo].[InvoiceItems] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - PAYMENTS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Payments] ON
+GO
+
+INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at])
+VALUES (1, 3, 250000, N'Tiền mặt', GETUTCDATE())
+GO
+
+INSERT [dbo].[Payments] ([payment_id], [invoice_id], [amount], [method], [paid_at])
+VALUES (2, 4, 1350000, N'Chuyển khoản', GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[Payments] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - INVENTORY ITEMS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[InventoryItems] ON
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (1, N'Mủ trám Composite A1', N'ống', 45, 10, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (2, N'Thuốc tê Lidocaine 2%', N'lọ', 30, 5, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (3, N'Bộ khoan nha khoa', N'bộ', 8, 2, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (4, N'Gạc y tế 5x5cm', N'hộp', 60, 20, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (5, N'Ngoặm miệng thép', N'cái', 15, 5, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (6, N'Hạt photon tẩy trắng', N'tuýp', 20, 5, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (7, N'Dây nylon cắm implant', N'cái', 12, 3, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (8, N'Tinh dầu vô cơ', N'chai', 10, 2, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (9, N'Dụng cụ cạo vôi', N'bộ', 5, 1, GETUTCDATE())
+GO
+
+INSERT [dbo].[InventoryItems] ([item_id], [name], [unit], [quantity], [min_stock], [created_at])
+VALUES (10, N'Kỹ thuật cánh', N'cái', 20, 5, GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[InventoryItems] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - STOCK TRANSACTIONS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[StockTransactions] ON
+GO
+
+INSERT [dbo].[StockTransactions] ([transaction_id], [item_id], [transaction_type], [quantity], [performed_by], [performed_at], [notes])
+VALUES (1, 1, N'IN', 20, 1, GETUTCDATE(), N'Nhập hàng mới từ nhà cung cấp')
+GO
+
+INSERT [dbo].[StockTransactions] ([transaction_id], [item_id], [transaction_type], [quantity], [performed_by], [performed_at], [notes])
+VALUES (2, 2, N'OUT', 5, 3, GETUTCDATE(), N'Sử dụng trong khám chữa bệnh')
+GO
+
+INSERT [dbo].[StockTransactions] ([transaction_id], [item_id], [transaction_type], [quantity], [performed_by], [performed_at], [notes])
+VALUES (3, 3, N'IN', 2, 1, GETUTCDATE(), N'Sửa chữa và kiểm tra khoan')
+GO
+
+INSERT [dbo].[StockTransactions] ([transaction_id], [item_id], [transaction_type], [quantity], [performed_by], [performed_at], [notes])
+VALUES (4, 4, N'OUT', 10, 4, GETUTCDATE(), N'Tiêu hao hàng tháng')
+GO
+
+INSERT [dbo].[StockTransactions] ([transaction_id], [item_id], [transaction_type], [quantity], [performed_by], [performed_at], [notes])
+VALUES (5, 6, N'IN', 15, 1, GETUTCDATE(), N'Chuẩn bị cho chiến dịch tẩy trắng')
+GO
+
+SET IDENTITY_INSERT [dbo].[StockTransactions] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - SYSTEM CONFIGS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[SystemConfigs] ON
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (1, N'clinic_name', N'Phòng Khám Nha Khoa Smile Dental', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (2, N'clinic_phone', N'02838888999', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (3, N'clinic_address', N'123 Đường Nguyễn Huệ, Quận 1, TP.HCM', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (4, N'clinic_email', N'info@smiledental.vn', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (5, N'clinic_website', N'www.smiledental.vn', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (6, N'appointment_reminder_hours', N'24', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (7, N'max_appointments_per_day', N'30', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (8, N'otp_validity_minutes', N'10', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (9, N'working_hours_start', N'08:00', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (10, N'working_hours_end', N'18:00', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (11, N'currency', N'VND', GETUTCDATE(), 1)
+GO
+
+INSERT [dbo].[SystemConfigs] ([config_id], [config_key], [config_value], [updated_at], [updated_by])
+VALUES (12, N'timezone', N'Asia/Ho_Chi_Minh', GETUTCDATE(), 1)
+GO
+
+SET IDENTITY_INSERT [dbo].[SystemConfigs] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - EMPLOYEES
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Employees] ON
+GO
+
+INSERT [dbo].[Employees] ([employee_id], [user_id], [position], [hire_date])
+VALUES (1, 1, N'Quản trị viên hệ thống', CAST(N'2022-01-15' AS Date))
+GO
+
+INSERT [dbo].[Employees] ([employee_id], [user_id], [position], [hire_date])
+VALUES (2, 2, N'Quản lý phòng khám', CAST(N'2021-06-01' AS Date))
+GO
+
+INSERT [dbo].[Employees] ([employee_id], [user_id], [position], [hire_date])
+VALUES (3, 3, N'Bác sĩ chuyên khoa', CAST(N'2020-03-15' AS Date))
+GO
+
+INSERT [dbo].[Employees] ([employee_id], [user_id], [position], [hire_date])
+VALUES (4, 4, N'Bác sĩ chuyên khoa', CAST(N'2020-09-20' AS Date))
+GO
+
+INSERT [dbo].[Employees] ([employee_id], [user_id], [position], [hire_date])
+VALUES (5, 5, N'Bác sĩ chuyên khoa', CAST(N'2021-05-10' AS Date))
+GO
+
+INSERT [dbo].[Employees] ([employee_id], [user_id], [position], [hire_date])
+VALUES (6, 6, N'Tiếp tân', CAST(N'2023-01-20' AS Date))
+GO
+
+INSERT [dbo].[Employees] ([employee_id], [user_id], [position], [hire_date])
+VALUES (7, 7, N'Tiếp tân', CAST(N'2023-02-15' AS Date))
+GO
+
+SET IDENTITY_INSERT [dbo].[Employees] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - SCHEDULE REQUESTS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[ScheduleRequests] ON
+GO
+
+INSERT [dbo].[ScheduleRequests] ([request_id], [employee_id], [date], [shift], [reason], [status], [created_at])
+VALUES (1, 3, CAST(GETDATE() + 10 AS Date), N'Sáng', N'Có việc gia đình không thể đi', N'CHỜ XỬ LÝ', GETUTCDATE())
+GO
+
+INSERT [dbo].[ScheduleRequests] ([request_id], [employee_id], [date], [shift], [reason], [status], [created_at])
+VALUES (2, 6, CAST(GETDATE() + 5 AS Date), N'Chiều', N'Muốn xin phép khám chữa bệnh', N'CHỜ XỬ LÝ', GETUTCDATE())
+GO
+
+INSERT [dbo].[ScheduleRequests] ([request_id], [employee_id], [date], [shift], [reason], [status], [created_at])
+VALUES (3, 4, CAST(GETDATE() + 15 AS Date), N'Cả ngày', N'Đi học tập chuyên môn', N'ĐÃ DUYỆT', GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[ScheduleRequests] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - WAITING QUEUE
+-- ============================================
+SET IDENTITY_INSERT [dbo].[WaitingQueue] ON
+GO
+
+INSERT [dbo].[WaitingQueue] ([queue_id], [appointment_id], [position_in_queue], [status])
+VALUES (1, 1, 1, N'CHỜ ĐỢI')
+GO
+
+INSERT [dbo].[WaitingQueue] ([queue_id], [appointment_id], [position_in_queue], [status])
+VALUES (2, 2, 2, N'CHỜ ĐỢI')
+GO
+
+INSERT [dbo].[WaitingQueue] ([queue_id], [appointment_id], [position_in_queue], [status])
+VALUES (3, 3, 1, N'ĐÃ GỌI')
+GO
+
+INSERT [dbo].[WaitingQueue] ([queue_id], [appointment_id], [position_in_queue], [status])
+VALUES (4, 4, 3, N'CHỜ ĐỢI')
+GO
+
+INSERT [dbo].[WaitingQueue] ([queue_id], [appointment_id], [position_in_queue], [status])
+VALUES (5, 5, 1, N'ĐANG KHÁM')
+GO
+
+INSERT [dbo].[WaitingQueue] ([queue_id], [appointment_id], [position_in_queue], [status])
+VALUES (6, 6, 2, N'CHỜ ĐỢI')
+GO
+
+SET IDENTITY_INSERT [dbo].[WaitingQueue] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - PRESCRIPTIONS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[Prescriptions] ON
+GO
+
+INSERT [dbo].[Prescriptions] ([prescription_id], [patient_id], [dentist_id], [created_at], [notes])
+VALUES (1, 1, 3, GETUTCDATE(), N'Sau trám răng')
+GO
+
+INSERT [dbo].[Prescriptions] ([prescription_id], [patient_id], [dentist_id], [created_at], [notes])
+VALUES (2, 2, 4, GETUTCDATE(), N'Điều trị viêm nha chu')
+GO
+
+INSERT [dbo].[Prescriptions] ([prescription_id], [patient_id], [dentist_id], [created_at], [notes])
+VALUES (3, 3, 3, GETUTCDATE(), N'Sau lấy cao')
+GO
+
+SET IDENTITY_INSERT [dbo].[Prescriptions] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - PRESCRIPTION ITEMS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[PrescriptionItems] ON
+GO
+
+INSERT [dbo].[PrescriptionItems] ([item_id], [prescription_id], [medication_name], [dosage], [duration], [instructions])
+VALUES (1, 1, N'Amoxicillin', N'500mg', N'3 ngày', N'Uống 3 lần/ngày, sau ăn')
+GO
+
+INSERT [dbo].[PrescriptionItems] ([item_id], [prescription_id], [medication_name], [dosage], [duration], [instructions])
+VALUES (2, 1, N'Ibuprofen', N'200mg', N'3 ngày', N'Uống khi đau, tối đa 6 viên/ngày')
+GO
+
+INSERT [dbo].[PrescriptionItems] ([item_id], [prescription_id], [medication_name], [dosage], [duration], [instructions])
+VALUES (3, 2, N'Chlorhexidine', N'0.12%', N'7 ngày', N'Súc miệng 2 lần/ngày')
+GO
+
+INSERT [dbo].[PrescriptionItems] ([item_id], [prescription_id], [medication_name], [dosage], [duration], [instructions])
+VALUES (4, 2, N'Metronidazole', N'400mg', N'5 ngày', N'Uống 3 lần/ngày, sau ăn')
+GO
+
+INSERT [dbo].[PrescriptionItems] ([item_id], [prescription_id], [medication_name], [dosage], [duration], [instructions])
+VALUES (5, 3, N'Penicillin V', N'250mg', N'7 ngày', N'Uống 4 lần/ngày, trước ăn')
+GO
+
+SET IDENTITY_INSERT [dbo].[PrescriptionItems] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - TREATMENT PLANS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[TreatmentPlans] ON
+GO
+
+INSERT [dbo].[TreatmentPlans] ([plan_id], [record_id], [plan_summary], [estimated_cost], [created_at], [notes])
+VALUES (1, 1, N'1. Trám 2 răng sâu - 2 buổi' + CHAR(13) + N'2. Hướng dẫn vệ sinh răng', 700000, GETUTCDATE(), N'Tái khám sau 2 tuần')
+GO
+
+INSERT [dbo].[TreatmentPlans] ([plan_id], [record_id], [plan_summary], [estimated_cost], [created_at], [notes])
+VALUES (2, 2, N'1. Lấy cao - 1 buổi' + CHAR(13) + N'2. Điều trị viêm lợi - 3 buổi', 900000, GETUTCDATE(), N'Hướng dẫn vệ sinh hàng ngày')
+GO
+
+INSERT [dbo].[TreatmentPlans] ([plan_id], [record_id], [plan_summary], [estimated_cost], [created_at], [notes])
+VALUES (3, 3, N'Tẩy trắng răng - 2 buổi (tuỳ chọn)', 3500000, GETUTCDATE(), N'Không bắt buộc, tùy chọn bệnh nhân')
+GO
+
+SET IDENTITY_INSERT [dbo].[TreatmentPlans] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - TREATMENT SESSIONS
+-- ============================================
+SET IDENTITY_INSERT [dbo].[TreatmentSessions] ON
+GO
+
+INSERT [dbo].[TreatmentSessions] ([session_id], [plan_id], [session_date], [procedure_done], [session_cost])
+VALUES (1, 1, CAST(GETDATE() + 2 AS Date) + CAST(N'08:30:00' AS Time), N'Trám răng 1.6', 350000)
+GO
+
+INSERT [dbo].[TreatmentSessions] ([session_id], [plan_id], [session_date], [procedure_done], [session_cost])
+VALUES (2, 1, CAST(GETDATE() + 3 AS Date) + CAST(N'09:00:00' AS Time), N'Trám răng 2.6', 350000)
+GO
+
+INSERT [dbo].[TreatmentSessions] ([session_id], [plan_id], [session_date], [procedure_done], [session_cost])
+VALUES (3, 2, CAST(GETDATE() + 5 AS Date) + CAST(N'14:00:00' AS Time), N'Lấy cao toàn bộ', 250000)
+GO
+
+SET IDENTITY_INSERT [dbo].[TreatmentSessions] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - PATIENT FILES
+-- ============================================
+SET IDENTITY_INSERT [dbo].[PatientFiles] ON
+GO
+
+INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at])
+VALUES (1, 1, N'Giấy tờ tùy thân, bảo hiểm y tế', GETUTCDATE())
+GO
+
+INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at])
+VALUES (2, 2, N'Kết quả xét nghiệm máu, giấy y tế có liên quan', GETUTCDATE())
+GO
+
+INSERT [dbo].[PatientFiles] ([file_id], [patient_id], [content], [uploaded_at])
+VALUES (3, 3, N'Báo cáo khám từ phòng khám khác', GETUTCDATE())
+GO
+
+SET IDENTITY_INSERT [dbo].[PatientFiles] OFF
+GO
+
+-- ============================================
+-- CHÈN DỮ LIỆU - PATIENT IMAGES
+-- ============================================
+SET IDENTITY_INSERT [dbo].[PatientImages] ON
+GO
+
+INSERT [dbo].[PatientImages] ([image_id], [patient_id], [record_id], [file_path], [image_type], [uploaded_at], [uploaded_by])
+VALUES (1, 1, 1, N'/images/xray_patient_1_001.jpg', N'X-Ray', GETUTCDATE(), 3)
+GO
+
+INSERT [dbo].[PatientImages] ([image_id], [patient_id], [record_id], [file_path], [image_type], [uploaded_at], [uploaded_by])
+VALUES (2, 1, 1, N'/images/before_patient_1_001.jpg', N'Trước', GETUTCDATE(), 3)
+GO
+
+INSERT [dbo].[PatientImages] ([image_id], [patient_id], [record_id], [file_path], [image_type], [uploaded_at], [uploaded_by])
+VALUES (3, 2, 2, N'/images/xray_patient_2_001.jpg', N'X-Ray', GETUTCDATE(), 4)
+GO
+
+INSERT [dbo].[PatientImages] ([image_id], [patient_id], [record_id], [file_path], [image_type], [uploaded_at], [uploaded_by])
+VALUES (4, 3, 3, N'/images/before_patient_3_001.jpg', N'Trước', GETUTCDATE(), 3)
+GO
+
+SET IDENTITY_INSERT [dbo].[PatientImages] OFF
+GO
+
+-- ============================================
+-- HOÀN THÀNH
+-- ============================================
+PRINT N'✅ Đã chèn thành công dữ liệu tiếng Việt vào cơ sở dữ liệu DentalClinicDB_MVP!'
+PRINT N''
+PRINT N'📊 TÓM TẮT DỮ LIỆU ĐÃ CHÈN:'
+PRINT N'   👥 Roles: 5 vai trò'
+PRINT N'   👨‍💼 Users: 10 tài khoản người dùng'
+PRINT N'   🏥 Patients: 10 bệnh nhân'
+PRINT N'   📋 Services: 12 dịch vụ'
+PRINT N'   📅 Appointments: 6 lịch hẹn'
+PRINT N'   📝 Appointment Requests: 3 yêu cầu lịch hẹn'
+PRINT N'   🗂️ Medical Records: 3 hồ sơ bệnh án'
+PRINT N'   💰 Invoices: 4 hóa đơn'
+PRINT N'   💊 Prescriptions: 3 đơn thuốc'
+PRINT N'   🏪 Inventory Items: 10 vật dụng kho'
+PRINT N'   📦 Stock Transactions: 5 giao dịch kho'
+PRINT N'   🔧 System Configs: 12 cấu hình hệ thống'
+PRINT N''
+PRINT N'✨ Dữ liệu đã sẵn sàng để sử dụng!'
+GO
