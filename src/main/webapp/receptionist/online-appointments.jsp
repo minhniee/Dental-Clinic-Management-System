@@ -324,6 +324,56 @@
             }
         }
     </style>
+    
+    <script>
+        function confirmRequest(requestId, status, statusFilter) {
+            if (confirm('Bạn có chắc chắn muốn xác nhận yêu cầu này?')) {
+                updateRequestStatus(requestId, status, statusFilter);
+            }
+        }
+        
+        function rejectRequest(requestId, statusFilter) {
+            if (confirm('Bạn có chắc chắn muốn từ chối yêu cầu này?')) {
+                updateRequestStatus(requestId, 'REJECTED', statusFilter);
+            }
+        }
+        
+        function updateRequestStatus(requestId, status, statusFilter) {
+            // Create a form dynamically
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '${pageContext.request.contextPath}/receptionist/online-appointments';
+            
+            // Add form fields
+            const actionField = document.createElement('input');
+            actionField.type = 'hidden';
+            actionField.name = 'action';
+            actionField.value = 'update_status';
+            form.appendChild(actionField);
+            
+            const requestIdField = document.createElement('input');
+            requestIdField.type = 'hidden';
+            requestIdField.name = 'requestId';
+            requestIdField.value = requestId;
+            form.appendChild(requestIdField);
+            
+            const statusField = document.createElement('input');
+            statusField.type = 'hidden';
+            statusField.name = 'status';
+            statusField.value = status;
+            form.appendChild(statusField);
+            
+            const statusFilterField = document.createElement('input');
+            statusFilterField.type = 'hidden';
+            statusFilterField.name = 'statusFilter';
+            statusFilterField.value = statusFilter || '';
+            form.appendChild(statusFilterField);
+            
+            // Submit the form
+            document.body.appendChild(form);
+            form.submit();
+        }
+    </script>
 </head>
 <body>
     <c:if test="${empty sessionScope.user}">
@@ -520,27 +570,15 @@
                                                         </a>
                                                         
                                                         <c:if test="${request.status eq 'PENDING'}">
-                                                            <form method="post" style="display: inline;">
-                                                                <input type="hidden" name="action" value="update_status">
-                                                                <input type="hidden" name="requestId" value="${request.requestId}">
-                                                                <input type="hidden" name="status" value="CONFIRMED">
-                                                                <input type="hidden" name="statusFilter" value="${statusFilter}">
-                                                                <button type="submit" class="btn btn-success btn-sm" 
-                                                                        onclick="return confirm('Bạn có chắc chắn muốn xác nhận yêu cầu này?')">
-                                                                    <i class="fas fa-check"></i> Xác Nhận
-                                                                </button>
-                                                            </form>
+                                                            <button type="button" class="btn btn-success btn-sm" 
+                                                                    onclick="confirmRequest(${request.requestId}, 'CONFIRMED', '${statusFilter}')">
+                                                                <i class="fas fa-check"></i> Xác Nhận
+                                                            </button>
                                                             
-                                                            <form method="post" style="display: inline;">
-                                                                <input type="hidden" name="action" value="update_status">
-                                                                <input type="hidden" name="requestId" value="${request.requestId}">
-                                                                <input type="hidden" name="status" value="REJECTED">
-                                                                <input type="hidden" name="statusFilter" value="${statusFilter}">
-                                                                <button type="submit" class="btn btn-danger btn-sm" 
-                                                                        onclick="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này?')">
-                                                                    <i class="fas fa-times"></i> Từ Chối
-                                                                </button>
-                                                            </form>
+                                                            <button type="button" class="btn btn-danger btn-sm" 
+                                                                    onclick="rejectRequest(${request.requestId}, '${statusFilter}')">
+                                                                <i class="fas fa-times"></i> Từ Chối
+                                                            </button>
                                                         </c:if>
                                                     </div>
                                                 </td>
