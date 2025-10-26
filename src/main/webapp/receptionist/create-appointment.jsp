@@ -65,10 +65,25 @@
             color: #0f172a;
             margin-bottom: 0.5rem;
             font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
         }
 
         .form-group .required {
             color: #dc2626;
+            font-weight: 700;
+        }
+
+        .form-group label::after {
+            content: '';
+        }
+
+        .form-group label:has(.required)::after {
+            content: '*';
+            color: #dc2626;
+            font-weight: 700;
+            margin-left: 0.25rem;
         }
 
         .form-control {
@@ -87,18 +102,236 @@
 
         .form-control.error {
             border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
         }
 
         .error-message {
             color: #dc2626;
             font-size: 0.75rem;
             margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .error-message i {
+            font-size: 0.75rem;
+        }
+
+        .validation-summary {
+            background-color: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            display: none;
+        }
+
+        .validation-summary.show {
+            display: block;
+        }
+
+        .validation-summary h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .validation-summary ul {
+            margin: 0;
+            padding-left: 1.25rem;
+        }
+
+        .validation-summary li {
+            font-size: 0.75rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .validation-summary li::before {
+            content: '•';
+            color: #dc2626;
+            font-weight: bold;
+        }
+
+        .form-group:has(.error) label {
+            color: #dc2626;
+        }
+
+        .form-group:has(.error) .help-text {
+            color: #dc2626;
+        }
+
+        .business-hours-info {
+            background-color: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            color: #0c4a6e;
+        }
+
+        .business-hours-info h4 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .business-hours-info ul {
+            margin: 0;
+            padding-left: 1.25rem;
+            font-size: 0.75rem;
+        }
+
+        .business-hours-info li {
+            margin-bottom: 0.25rem;
         }
 
         .help-text {
             color: #64748b;
             font-size: 0.75rem;
             margin-top: 0.25rem;
+        }
+
+        /* DateTime Input Styling */
+        .datetime-container {
+            display: flex;
+            gap: 0.75rem;
+            align-items: stretch;
+            flex-wrap: wrap;
+        }
+
+        .datetime-input-wrapper {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .datetime-input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            font-size: 1rem;
+            transition: all 0.2s ease-in-out;
+            background-color: #ffffff;
+        }
+
+        .datetime-input:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
+        }
+
+        .datetime-input.error {
+            border-color: #dc2626;
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
+        }
+
+        .datetime-input.invalid-minutes {
+            border-color: #f59e0b;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.1);
+            background-color: #fffbeb;
+        }
+
+        .minutes-warning {
+            background-color: #fef3c7;
+            color: #92400e;
+            border: 1px solid #fcd34d;
+            border-radius: 0.375rem;
+            padding: 0.5rem 0.75rem;
+            margin-top: 0.5rem;
+            font-size: 0.75rem;
+            display: none;
+        }
+
+        .minutes-warning.show {
+            display: block;
+        }
+
+        .minutes-warning i {
+            margin-right: 0.5rem;
+        }
+
+        .current-time-btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s ease-in-out;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+            background-color: #64748b;
+            color: #ffffff;
+            white-space: nowrap;
+            min-height: 48px;
+        }
+
+        .current-time-btn:hover {
+            background-color: #475569;
+            transform: translateY(-1px);
+        }
+
+        .current-time-btn:active {
+            transform: translateY(0);
+        }
+
+        .current-time-btn.success {
+            background-color: #059669;
+        }
+
+        .datetime-help {
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background-color: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            font-size: 0.75rem;
+            color: #475569;
+        }
+
+        .datetime-help h5 {
+            margin: 0 0 0.5rem 0;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #0f172a;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .datetime-help ul {
+            margin: 0;
+            padding-left: 1rem;
+        }
+
+        .datetime-help li {
+            margin-bottom: 0.25rem;
+        }
+
+        @media (max-width: 640px) {
+            .datetime-container {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .datetime-input-wrapper {
+                min-width: unset;
+            }
+            
+            .current-time-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
 
         .btn {
@@ -245,6 +478,25 @@
                         </div>
                     </c:if>
 
+                    <!-- Business Hours Information -->
+                    <div class="business-hours-info">
+                        <h4><i class="fas fa-clock"></i> Thông Tin Giờ Làm Việc</h4>
+                        <ul>
+                            <li>Giờ làm việc: 8:00 - 18:00</li>
+                            <li>Ngày làm việc: Thứ 2 - Thứ 6</li>
+                            <li>Bước nhảy thời gian: 30 phút (8:00, 8:30, 9:00, 9:30, ...)</li>
+                            <li>Có thể đặt lịch trong ngày hiện tại nếu thời gian còn hợp lệ</li>
+                            <li>Không thể đặt lịch vào cuối tuần hoặc ngoài giờ làm việc</li>
+                            <li>Không thể đặt lịch trước 30 phút từ thời điểm hiện tại</li>
+                        </ul>
+                    </div>
+
+                    <!-- Validation Summary -->
+                    <div id="validationSummary" class="validation-summary">
+                        <h4><i class="fas fa-exclamation-triangle"></i> Vui lòng kiểm tra lại các thông tin sau:</h4>
+                        <ul id="validationErrors"></ul>
+                    </div>
+
                     <!-- Appointment Form -->
                     <form method="POST" action="${pageContext.request.contextPath}/receptionist/appointments" class="needs-validation" novalidate>
                         <input type="hidden" name="action" value="${action eq 'update' ? 'update' : 'create'}">
@@ -296,6 +548,10 @@
                                     </option>
                                 </c:forEach>
                             </select>
+                            <div id="patientId-error" class="error-message" style="display: none;">
+                                <i class="fas fa-exclamation-circle"></i>
+                                <span>Vui lòng chọn bệnh nhân</span>
+                            </div>
                             <div class="help-text">Chọn bệnh nhân từ danh sách hoặc sử dụng tìm kiếm nhanh ở trên</div>
                         </div>
 
@@ -313,6 +569,10 @@
                                         </option>
                                     </c:forEach>
                                 </select>
+                                <div id="dentistId-error" class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>Vui lòng chọn bác sĩ</span>
+                                </div>
                                 <div class="help-text">Chọn bác sĩ sẽ thực hiện điều trị</div>
                             </div>
                         </div>
@@ -338,6 +598,10 @@
                                         </option>
                                     </c:forEach>
                                 </select>
+                                <div id="serviceId-error" class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span>Vui lòng chọn dịch vụ</span>
+                                </div>
                                 <div class="help-text">Chọn dịch vụ điều trị</div>
                             </div>
 
@@ -346,13 +610,40 @@
                                 <label for="appointmentDateTime">
                                     Ngày và Giờ Hẹn <span class="required">*</span>
                                 </label>
-                                <input type="datetime-local" 
-                                       id="appointmentDateTime" 
-                                       name="appointmentDateTime" 
-                                       class="form-control" 
-                                       required 
-                                       value="${not empty appointment ? appointment.appointmentDateForInput : ''}">
-                                <div class="help-text">Chọn ngày và giờ hẹn khám</div>
+                                <div class="datetime-container">
+                                    <div class="datetime-input-wrapper">
+                                        <input type="datetime-local" 
+                                               id="appointmentDateTime" 
+                                               name="appointmentDateTime" 
+                                               class="datetime-input" 
+                                               step="1800"
+                                               required 
+                                               value="${not empty appointment ? appointment.appointmentDateForInput : ''}">
+                                    </div>
+                                    <button type="button" 
+                                            id="setCurrentTimeBtn" 
+                                            class="current-time-btn">
+                                        <i class="fas fa-clock"></i>
+                                        <span>Hiện tại</span>
+                                    </button>
+                                </div>
+                                <div id="appointmentDateTime-error" class="error-message" style="display: none;">
+                                    <i class="fas fa-exclamation-circle"></i>
+                                    <span id="appointmentDateTime-error-text">Vui lòng chọn ngày và giờ hẹn</span>
+                                </div>
+                                <div id="minutesWarning" class="minutes-warning">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <span>Phút chỉ có thể là 00 hoặc 30. Đã tự động điều chỉnh.</span>
+                                </div>
+                                <div class="datetime-help">
+                                    <h5><i class="fas fa-info-circle"></i> Hướng dẫn đặt lịch</h5>
+                                    <ul>
+                                        <li>Giờ làm việc: 8:00 - 18:00 (thứ 2 - thứ 6)</li>
+                                        <li><strong>Phút chỉ có thể là 00 hoặc 30</strong> (8:00, 8:30, 9:00, 9:30...)</li>
+                                        <li>Có thể đặt lịch trong ngày hiện tại</li>
+                                        <li>Không thể đặt lịch trước 30 phút từ hiện tại</li>
+                                    </ul>
+                                </div>
                             </div>
                         </div>
 
@@ -395,57 +686,343 @@
     </div>
 
     <script>
-        // Form validation
+        // Enhanced form validation with business hours and Vietnamese error messages
         (function() {
             'use strict';
+            
+            // Business hours configuration
+            const BUSINESS_HOURS = {
+                startHour: 8,
+                endHour: 18,
+                workingDays: [1, 2, 3, 4, 5] // Monday to Friday
+            };
+            
+            // Validation functions
+            function validatePatient() {
+                const patientId = document.getElementById('patientId');
+                const errorDiv = document.getElementById('patientId-error');
+                
+                if (!patientId.value || patientId.value === '') {
+                    showError(patientId, errorDiv, 'Vui lòng chọn bệnh nhân');
+                    return false;
+                } else {
+                    hideError(patientId, errorDiv);
+                    return true;
+                }
+            }
+            
+            function validateDentist() {
+                const dentistId = document.getElementById('dentistId');
+                const errorDiv = document.getElementById('dentistId-error');
+                
+                if (!dentistId.value || dentistId.value === '') {
+                    showError(dentistId, errorDiv, 'Vui lòng chọn bác sĩ');
+                    return false;
+                } else {
+                    hideError(dentistId, errorDiv);
+                    return true;
+                }
+            }
+            
+            function validateService() {
+                const serviceId = document.getElementById('serviceId');
+                const errorDiv = document.getElementById('serviceId-error');
+                
+                if (!serviceId.value || serviceId.value === '') {
+                    showError(serviceId, errorDiv, 'Vui lòng chọn dịch vụ');
+                    return false;
+                } else {
+                    hideError(serviceId, errorDiv);
+                    return true;
+                }
+            }
+            
+            function validateAppointmentDateTime() {
+                const dateTimeInput = document.getElementById('appointmentDateTime');
+                const errorDiv = document.getElementById('appointmentDateTime-error');
+                const errorText = document.getElementById('appointmentDateTime-error-text');
+                
+                if (!dateTimeInput.value) {
+                    showError(dateTimeInput, errorDiv, 'Vui lòng chọn ngày và giờ hẹn');
+                    return false;
+                }
+                
+                const selectedDate = new Date(dateTimeInput.value);
+                const now = new Date();
+                
+                // Check if time is in the past (more than 30 minutes ago)
+                const thirtyMinutesAgo = new Date(now.getTime() - (30 * 60 * 1000));
+                if (selectedDate <= thirtyMinutesAgo) {
+                    errorText.textContent = 'Không thể chọn thời gian đã qua (ít nhất 30 phút trước)';
+                    showError(dateTimeInput, errorDiv, 'Không thể chọn thời gian đã qua (ít nhất 30 phút trước)');
+                    return false;
+                }
+                
+                // Check business hours
+                const hour = selectedDate.getHours();
+                const minutes = selectedDate.getMinutes();
+                const dayOfWeek = selectedDate.getDay();
+                
+                if (!BUSINESS_HOURS.workingDays.includes(dayOfWeek)) {
+                    errorText.textContent = 'Chỉ có thể đặt lịch từ thứ 2 đến thứ 6';
+                    showError(dateTimeInput, errorDiv, 'Chỉ có thể đặt lịch từ thứ 2 đến thứ 6');
+                    return false;
+                }
+                
+                if (hour < BUSINESS_HOURS.startHour || hour >= BUSINESS_HOURS.endHour) {
+                    errorText.textContent = 'Giờ làm việc từ 8:00 đến 18:00';
+                    showError(dateTimeInput, errorDiv, 'Giờ làm việc từ 8:00 đến 18:00');
+                    return false;
+                }
+                
+                // Check if minutes are valid (0 or 30)
+                if (minutes !== 0 && minutes !== 30) {
+                    errorText.textContent = 'Phút chỉ có thể là 00 hoặc 30 (ví dụ: 8:00, 8:30, 9:00)';
+                    showError(dateTimeInput, errorDiv, 'Phút chỉ có thể là 00 hoặc 30');
+                    return false;
+                }
+                
+                hideError(dateTimeInput, errorDiv);
+                return true;
+            }
+            
+            function showError(input, errorDiv, message) {
+                // Add error class to both datetime-input and form-control for compatibility
+                input.classList.add('error');
+                if (input.classList.contains('datetime-input')) {
+                    input.classList.add('error');
+                } else {
+                    input.classList.add('error');
+                }
+                errorDiv.style.display = 'flex';
+                errorDiv.querySelector('span').textContent = message;
+            }
+            
+            function hideError(input, errorDiv) {
+                input.classList.remove('error');
+                errorDiv.style.display = 'none';
+            }
+            
+            function validateForm() {
+                const errors = [];
+                
+                if (!validatePatient()) {
+                    errors.push('Vui lòng chọn bệnh nhân');
+                }
+                
+                if (!validateDentist()) {
+                    errors.push('Vui lòng chọn bác sĩ');
+                }
+                
+                if (!validateService()) {
+                    errors.push('Vui lòng chọn dịch vụ');
+                }
+                
+                if (!validateAppointmentDateTime()) {
+                    errors.push('Vui lòng kiểm tra lại ngày và giờ hẹn');
+                }
+                
+                // Show validation summary
+                const summaryDiv = document.getElementById('validationSummary');
+                const errorsList = document.getElementById('validationErrors');
+                
+                if (errors.length > 0) {
+                    errorsList.innerHTML = '';
+                    errors.forEach(error => {
+                        const li = document.createElement('li');
+                        li.textContent = error;
+                        errorsList.appendChild(li);
+                    });
+                    summaryDiv.classList.add('show');
+                    summaryDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    return false;
+                } else {
+                    summaryDiv.classList.remove('show');
+                    return true;
+                }
+            }
+            
+            // Initialize form validation
             window.addEventListener('load', function() {
-                var forms = document.getElementsByClassName('needs-validation');
-                var validation = Array.prototype.filter.call(forms, function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
-                            event.preventDefault();
-                            event.stopPropagation();
-                        }
-                        form.classList.add('was-validated');
-                    }, false);
+                const form = document.querySelector('.needs-validation');
+                
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    
+                    if (validateForm()) {
+                        // If validation passes, submit the form
+                        form.submit();
+                    }
                 });
-            }, false);
+                
+                // Add real-time validation
+                document.getElementById('patientId').addEventListener('change', validatePatient);
+                document.getElementById('dentistId').addEventListener('change', validateDentist);
+                document.getElementById('serviceId').addEventListener('change', validateService);
+                document.getElementById('appointmentDateTime').addEventListener('change', validateAppointmentDateTime);
+            });
         })();
 
-        // Auto-set current date/time if creating new appointment
+        // Auto-set current date/time if creating new appointment with business hours
         document.addEventListener('DOMContentLoaded', function() {
             const dateTimeInput = document.getElementById('appointmentDateTime');
             
-            // Set minimum date/time to now
+            // Set minimum date/time to 30 minutes ago (allow same-day appointments)
             const now = new Date();
-            const minDateTime = now.toISOString().slice(0, 16);
+            const thirtyMinutesAgo = new Date(now.getTime() - (30 * 60 * 1000));
+            const minDateTime = thirtyMinutesAgo.toISOString().slice(0, 16);
             dateTimeInput.min = minDateTime;
             
             // Only set default if this is a new appointment and no value is set
-            <c:if test="${action ne 'update'}">
-                if (!dateTimeInput.value) {
-                    // Round to next 15 minutes
-                    const rounded = new Date(Math.ceil(now.getTime() / (15 * 60 * 1000)) * (15 * 60 * 1000));
-                    dateTimeInput.value = rounded.toISOString().slice(0, 16);
+            var isUpdate = '${action}' === 'update';
+            if (!isUpdate && !dateTimeInput.value) {
+                // Round to next 30 minutes and ensure it's within business hours
+                let rounded = new Date(Math.ceil(now.getTime() / (30 * 60 * 1000)) * (30 * 60 * 1000));
+                
+                // If it's weekend, set to next Monday at 8:00 AM
+                if (rounded.getDay() === 0) { // Sunday
+                    rounded = new Date(rounded);
+                    rounded.setDate(rounded.getDate() + 1);
+                    rounded.setHours(8, 0, 0, 0);
+                } else if (rounded.getDay() === 6) { // Saturday
+                    rounded = new Date(rounded);
+                    rounded.setDate(rounded.getDate() + 2);
+                    rounded.setHours(8, 0, 0, 0);
+                } else if (rounded.getHours() < 8) {
+                    // If before 8 AM, set to 8:00 AM
+                    rounded.setHours(8, 0, 0, 0);
+                } else if (rounded.getHours() >= 18) {
+                    // If after 6 PM, set to next day at 8:00 AM
+                    rounded.setDate(rounded.getDate() + 1);
+                    rounded.setHours(8, 0, 0, 0);
                 }
-            </c:if>
+                
+                dateTimeInput.value = rounded.toISOString().slice(0, 16);
+            }
+        });
+
+        // Current time button functionality
+        document.getElementById('setCurrentTimeBtn').addEventListener('click', function() {
+            const dateTimeInput = document.getElementById('appointmentDateTime');
+            const now = new Date();
+            
+            // Round to next 30 minutes and ensure it's within business hours
+            let rounded = new Date(Math.ceil(now.getTime() / (30 * 60 * 1000)) * (30 * 60 * 1000));
+            
+            // If it's weekend, set to next Monday at 8:00 AM
+            if (rounded.getDay() === 0) { // Sunday
+                rounded = new Date(rounded);
+                rounded.setDate(rounded.getDate() + 1);
+                rounded.setHours(8, 0, 0, 0);
+            } else if (rounded.getDay() === 6) { // Saturday
+                rounded = new Date(rounded);
+                rounded.setDate(rounded.getDate() + 2);
+                rounded.setHours(8, 0, 0, 0);
+            } else if (rounded.getHours() < 8) {
+                // If before 8 AM, set to 8:00 AM
+                rounded.setHours(8, 0, 0, 0);
+            } else if (rounded.getHours() >= 18) {
+                // If after 6 PM, set to next day at 8:00 AM
+                rounded.setDate(rounded.getDate() + 1);
+                rounded.setHours(8, 0, 0, 0);
+            }
+            
+            dateTimeInput.value = rounded.toISOString().slice(0, 16);
+            
+            // Trigger validation to clear any previous errors
+            validateAppointmentDateTime();
+            
+            // Show success message briefly
+            const btn = this;
+            const originalText = btn.innerHTML;
+            const isSameDay = rounded.toDateString() === now.toDateString();
+            btn.innerHTML = `<i class="fas fa-check"></i> <span>${isSameDay ? 'Hôm nay' : 'Đã đặt'}</span>`;
+            btn.classList.add('success');
+            
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.classList.remove('success');
+            }, 1500);
         });
 
         // Check for conflicts when date/time changes
         document.getElementById('appointmentDateTime').addEventListener('change', function() {
             const selectedDate = new Date(this.value);
             const now = new Date();
+            const conflictWarning = document.getElementById('conflictWarning');
+            const minutesWarning = document.getElementById('minutesWarning');
+            const input = this;
             
-            if (selectedDate <= now) {
-                // Reset to minimum allowed time
-                const minDateTime = now.toISOString().slice(0, 16);
-                this.value = minDateTime;
+            // Clear previous warnings
+            input.classList.remove('invalid-minutes');
+            minutesWarning.classList.remove('show');
+            
+            // Check if time is more than 30 minutes in the past
+            const thirtyMinutesAgo = new Date(now.getTime() - (30 * 60 * 1000));
+            if (selectedDate <= thirtyMinutesAgo) {
+                // Reset to minimum allowed time within business hours (30-minute intervals)
+                let minDateTime = new Date(now);
+                minDateTime.setMinutes(Math.ceil(minDateTime.getMinutes() / 30) * 30);
                 
-                document.getElementById('conflictWarning').style.display = 'block';
-                document.getElementById('conflictWarning').innerHTML = 
-                    '<i class="fas fa-exclamation-triangle"></i><strong>Cảnh báo:</strong> Không thể chọn thời gian trong quá khứ. Đã tự động điều chỉnh về thời gian hiện tại.';
+                // Ensure it's within business hours
+                if (minDateTime.getDay() === 0) { // Sunday
+                    minDateTime.setDate(minDateTime.getDate() + 1);
+                    minDateTime.setHours(8, 0, 0, 0);
+                } else if (minDateTime.getDay() === 6) { // Saturday
+                    minDateTime.setDate(minDateTime.getDate() + 2);
+                    minDateTime.setHours(8, 0, 0, 0);
+                } else if (minDateTime.getHours() < 8) {
+                    minDateTime.setHours(8, 0, 0, 0);
+                } else if (minDateTime.getHours() >= 18) {
+                    minDateTime.setDate(minDateTime.getDate() + 1);
+                    minDateTime.setHours(8, 0, 0, 0);
+                }
+                
+                this.value = minDateTime.toISOString().slice(0, 16);
+                
+                conflictWarning.style.display = 'block';
+                conflictWarning.innerHTML = 
+                    '<i class="fas fa-exclamation-triangle"></i><strong>Cảnh báo:</strong> Không thể chọn thời gian đã qua (ít nhất 30 phút trước). Đã tự động điều chỉnh về giờ làm việc gần nhất.';
             } else {
-                document.getElementById('conflictWarning').style.display = 'none';
+                // Check if it's within business hours
+                const hour = selectedDate.getHours();
+                const minutes = selectedDate.getMinutes();
+                const dayOfWeek = selectedDate.getDay();
+                
+                if (![1, 2, 3, 4, 5].includes(dayOfWeek)) {
+                    conflictWarning.style.display = 'block';
+                    conflictWarning.innerHTML = 
+                        '<i class="fas fa-exclamation-triangle"></i><strong>Cảnh báo:</strong> Chỉ có thể đặt lịch từ thứ 2 đến thứ 6.';
+                } else if (hour < 8 || hour >= 18) {
+                    conflictWarning.style.display = 'block';
+                    conflictWarning.innerHTML = 
+                        '<i class="fas fa-exclamation-triangle"></i><strong>Cảnh báo:</strong> Giờ làm việc từ 8:00 đến 18:00.';
+                } else if (minutes !== 0 && minutes !== 30) {
+                    // Auto-adjust to nearest 30-minute interval
+                    const adjustedDate = new Date(selectedDate);
+                    const originalMinutes = minutes;
+                    
+                    if (minutes < 15) {
+                        adjustedDate.setMinutes(0);
+                    } else if (minutes < 45) {
+                        adjustedDate.setMinutes(30);
+                    } else {
+                        adjustedDate.setMinutes(0);
+                        adjustedDate.setHours(adjustedDate.getHours() + 1);
+                    }
+                    
+                    this.value = adjustedDate.toISOString().slice(0, 16);
+                    
+                    // Show minutes warning
+                    input.classList.add('invalid-minutes');
+                    minutesWarning.classList.add('show');
+                    
+                    // Hide conflict warning since we handled it
+                    conflictWarning.style.display = 'none';
+                } else {
+                    conflictWarning.style.display = 'none';
+                }
             }
         });
 
