@@ -326,17 +326,29 @@
     </style>
     
     <script>
-        function confirmRequest(requestId, status, statusFilter) {
-            if (confirm('Bạn có chắc chắn muốn xác nhận yêu cầu này?')) {
-                updateRequestStatus(requestId, status, statusFilter);
-            }
-        }
-        
-        function rejectRequest(requestId, statusFilter) {
-            if (confirm('Bạn có chắc chắn muốn từ chối yêu cầu này?')) {
-                updateRequestStatus(requestId, 'REJECTED', statusFilter);
-            }
-        }
+        // Handle button clicks using event delegation
+        document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('click', function(e) {
+                const btn = e.target.closest('button[data-action]');
+                if (!btn) return;
+                
+                const action = btn.getAttribute('data-action');
+                const requestId = btn.getAttribute('data-request-id');
+                const status = btn.getAttribute('data-status');
+                const statusFilter = btn.getAttribute('data-filter');
+                
+                let confirmMessage = '';
+                if (action === 'confirm') {
+                    confirmMessage = 'Bạn có chắc chắn muốn xác nhận yêu cầu này?';
+                } else if (action === 'reject') {
+                    confirmMessage = 'Bạn có chắc chắn muốn từ chối yêu cầu này?';
+                }
+                
+                if (confirm(confirmMessage)) {
+                    updateRequestStatus(requestId, status, statusFilter);
+                }
+            });
+        });
         
         function updateRequestStatus(requestId, status, statusFilter) {
             // Create a form dynamically
@@ -363,11 +375,14 @@
             statusField.value = status;
             form.appendChild(statusField);
             
-            const statusFilterField = document.createElement('input');
-            statusFilterField.type = 'hidden';
-            statusFilterField.name = 'statusFilter';
-            statusFilterField.value = statusFilter || '';
-            form.appendChild(statusFilterField);
+            // Only add statusFilter if it has a value
+            if (statusFilter && statusFilter.trim() !== '') {
+                const statusFilterField = document.createElement('input');
+                statusFilterField.type = 'hidden';
+                statusFilterField.name = 'statusFilter';
+                statusFilterField.value = statusFilter;
+                form.appendChild(statusFilterField);
+            }
             
             // Submit the form
             document.body.appendChild(form);
@@ -564,19 +579,14 @@
                                                 </td>
                                                 <td>
                                                     <div class="actions-container">
-                                                        <a href="${pageContext.request.contextPath}/receptionist/online-appointments?action=view&id=${request.requestId}" 
-                                                           class="btn btn-secondary btn-sm">
-                                                            <i class="fas fa-eye"></i> Xem
-                                                        </a>
-                                                        
                                                         <c:if test="${request.status eq 'PENDING'}">
                                                             <button type="button" class="btn btn-success btn-sm" 
-                                                                    onclick="confirmRequest(${request.requestId}, 'CONFIRMED', '${statusFilter}')">
+                                                                    data-action="confirm" data-request-id="${request.requestId}" data-status="CONFIRMED" data-filter="${statusFilter}">
                                                                 <i class="fas fa-check"></i> Xác Nhận
                                                             </button>
                                                             
                                                             <button type="button" class="btn btn-danger btn-sm" 
-                                                                    onclick="rejectRequest(${request.requestId}, '${statusFilter}')">
+                                                                    data-action="reject" data-request-id="${request.requestId}" data-status="REJECTED" data-filter="${statusFilter}">
                                                                 <i class="fas fa-times"></i> Từ Chối
                                                             </button>
                                                         </c:if>

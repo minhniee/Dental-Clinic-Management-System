@@ -59,8 +59,7 @@
                 <li><a href="${ctx}/receptionist/appointments?action=new">Đặt Lịch Hẹn Mới</a></li>
                 <li><a href="${ctx}/receptionist/appointment-calendar">Xem Lịch Tuần</a></li>
                 <li class="divider"></li>
-                <li><a class="${fn:contains(currentPath, '/receptionist/queue') ? 'active' : ''}" href="${ctx}/receptionist/queue">Quản Lý Hàng Chờ</a></li>
-                <li><a href="${ctx}/receptionist/check-in">Check-in Bệnh Nhân</a></li>
+
                 <li class="divider"></li>
                 <li><a class="${fn:contains(currentPath, '/receptionist/invoices') ? 'active' : ''}" href="${ctx}/receptionist/invoices">Hóa Đơn & Thanh Toán</a></li>
                 <li><a href="${ctx}/receptionist/invoices?action=new">Tạo Hóa Đơn Mới</a></li>
