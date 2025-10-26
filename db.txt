@@ -1,401 +1,416 @@
-USE [master]
-GO
+-- ===================================================================
+-- 🦷 Dental Clinic Management System (Full Version, Cleaned)
+-- SQL Server Script - Complete schema + seed data (no trigger)
+-- ===================================================================
 
--- ============================================
--- TẠO DATABASE HỖ TRỢ TIẾNG VIỆT
--- ============================================
-IF EXISTS (SELECT * FROM sys.databases WHERE name = 'DentalClinicDB_MVP')
+USE master;
+IF DB_ID('DentalClinicDB_MVP') IS NOT NULL
 BEGIN
-    ALTER DATABASE [DentalClinicDB_MVP] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
-    DROP DATABASE [DentalClinicDB_MVP]
+    ALTER DATABASE DentalClinicDB_MVP SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+    DROP DATABASE DentalClinicDB_MVP;
 END
 GO
 
-CREATE DATABASE [DentalClinicDB_MVP]
-
+CREATE DATABASE DentalClinicDB_MVP;
+GO
+USE DentalClinicDB_MVP;
 GO
 
-ALTER DATABASE [DentalClinicDB_MVP] SET COMPATIBILITY_LEVEL = 160
+-- ======================================================
+-- 1️⃣ USER & ROLE MANAGEMENT
+-- ======================================================
+IF OBJECT_ID('dbo.Roles','U') IS NOT NULL DROP TABLE dbo.Roles;
+IF OBJECT_ID('dbo.Users','U') IS NOT NULL DROP TABLE dbo.Users;
+IF OBJECT_ID('dbo.Employees','U') IS NOT NULL DROP TABLE dbo.Employees;
 GO
 
-USE [DentalClinicDB_MVP]
+CREATE TABLE Roles (
+    role_id   INT IDENTITY(1,1) PRIMARY KEY,
+    role_name VARCHAR(50) NOT NULL UNIQUE
+);
 GO
 
--- ============================================
--- TẠO BẢNG ROLES
--- ============================================
-CREATE TABLE [dbo].[Roles](
-	[role_id] [int] IDENTITY(1,1) NOT NULL,
-	[role_name] [nvarchar](50) NOT NULL,
-	PRIMARY KEY CLUSTERED ([role_id] ASC),
-	UNIQUE NONCLUSTERED ([role_name] ASC)
-) ON [PRIMARY]
+CREATE TABLE Users (
+    user_id       INT IDENTITY(1,1) PRIMARY KEY,
+    username      VARCHAR(100) NOT NULL UNIQUE,
+    email         VARCHAR(200) NOT NULL UNIQUE,
+    password_hash VARCHAR(500) NULL,
+    full_name     NVARCHAR(200) NULL,
+    phone         VARCHAR(50)  NULL,
+    role_id       INT NOT NULL,
+    is_active     BIT NOT NULL DEFAULT 1,
+    created_at    DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_Users_Roles FOREIGN KEY (role_id) REFERENCES Roles(role_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG USERS
--- ============================================
-CREATE TABLE [dbo].[Users](
-	[user_id] [int] IDENTITY(1,1) NOT NULL,
-	[username] [varchar](100) NOT NULL,
-	[email] [varchar](200) NOT NULL,
-	[password_hash] [varchar](500) NULL,
-	[full_name] [nvarchar](200) NULL,
-	[phone] [varchar](50) NULL,
-	[role_id] [int] NOT NULL,
-	[is_active] [bit] NOT NULL DEFAULT 1,
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	PRIMARY KEY CLUSTERED ([user_id] ASC),
-	UNIQUE NONCLUSTERED ([email] ASC),
-	UNIQUE NONCLUSTERED ([username] ASC),
-	CONSTRAINT [FK_Users_Roles] FOREIGN KEY([role_id]) REFERENCES [dbo].[Roles] ([role_id])
-) ON [PRIMARY]
+CREATE TABLE Employees (
+    employee_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id     INT NOT NULL,
+    position    VARCHAR(100),
+    hire_date   DATE NULL,
+    CONSTRAINT FK_Employees_Users FOREIGN KEY (user_id) REFERENCES Users(user_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG PATIENTS
--- ============================================
-CREATE TABLE [dbo].[Patients](
-	[patient_id] [int] IDENTITY(1,1) NOT NULL,
-	[full_name] [nvarchar](200) NOT NULL,
-	[birth_date] [date] NULL,
-	[gender] [char](1) NULL CHECK ([gender] IN ('M', 'F', 'O')),
-	[phone] [varchar](50) NULL,
-	[email] [varchar](150) NULL,
-	[address] [nvarchar](300) NULL,
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	[avatar] [varchar](max) NULL,
-	PRIMARY KEY CLUSTERED ([patient_id] ASC)
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+-- ======================================================
+-- 2️⃣ PATIENT MANAGEMENT
+-- ======================================================
+IF OBJECT_ID('dbo.PatientFiles','U') IS NOT NULL DROP TABLE dbo.PatientFiles;
+IF OBJECT_ID('dbo.Patients','U') IS NOT NULL DROP TABLE dbo.Patients;
 GO
 
--- ============================================
--- TẠO BẢNG SERVICES
--- ============================================
-CREATE TABLE [dbo].[Services](
-	[service_id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [nvarchar](150) NOT NULL,
-	[description] [nvarchar](500) NULL,
-	[price] [decimal](18, 2) NOT NULL CHECK ([price] >= 0),
-	[duration_minutes] [int] NULL CHECK ([duration_minutes] > 0),
-	[is_active] [bit] NOT NULL DEFAULT 1,
-	PRIMARY KEY CLUSTERED ([service_id] ASC),
-	UNIQUE NONCLUSTERED ([name] ASC)
-) ON [PRIMARY]
+CREATE TABLE Patients (
+    patient_id  INT IDENTITY(1,1) PRIMARY KEY,
+    full_name   NVARCHAR(200) NOT NULL,
+    birth_date  DATE NULL,
+    gender      CHAR(1) NULL CHECK (gender IN ('M','F','O')),
+    phone       VARCHAR(50) NULL,
+    email       VARCHAR(150) NULL,
+    address     VARCHAR(300) NULL,
+    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+);
 GO
 
--- ============================================
--- TẠO BẢNG APPOINTMENTS
--- ============================================
-CREATE TABLE [dbo].[Appointments](
-	[appointment_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[dentist_id] [int] NOT NULL,
-	[service_id] [int] NOT NULL,
-	[appointment_date] [datetime2](7) NOT NULL,
-	[status] [nvarchar](50) NOT NULL DEFAULT 'SCHEDULED' CHECK ([status] IN ('SCHEDULED', 'CONFIRMED', 'COMPLETED', 'CANCELLED')),
-	[notes] [nvarchar](500) NULL,
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	[source] [varchar](20) NOT NULL DEFAULT 'INTERNAL' CHECK ([source] IN ('INTERNAL', 'ONLINE')),
-	[booking_channel] [varchar](20) NULL CHECK ([booking_channel] IN ('WEB', 'MOBILE', 'KIOSK')),
-	[created_by_patient_id] [int] NULL,
-	[created_by_user_id] [int] NULL,
-	[confirmation_code] [varchar](10) NULL,
-	[confirmed_at] [datetime2](7) NULL,
-	PRIMARY KEY CLUSTERED ([appointment_id] ASC),
-	CONSTRAINT [FK_Appointments_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
-	CONSTRAINT [FK_Appointments_Dentist] FOREIGN KEY([dentist_id]) REFERENCES [dbo].[Users] ([user_id]),
-	CONSTRAINT [FK_Appointments_Service] FOREIGN KEY([service_id]) REFERENCES [dbo].[Services] ([service_id]),
-	CONSTRAINT [FK_Appointments_CreatedByPatient] FOREIGN KEY([created_by_patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
-	CONSTRAINT [FK_Appointments_CreatedByUser] FOREIGN KEY([created_by_user_id]) REFERENCES [dbo].[Users] ([user_id])
-) ON [PRIMARY]
+CREATE TABLE PatientFiles (
+    file_id     INT IDENTITY(1,1) PRIMARY KEY,
+    patient_id  INT NOT NULL,
+    content     VARCHAR(MAX) NULL,
+    uploaded_at DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_PatientFiles_Patients FOREIGN KEY (patient_id) REFERENCES Patients(patient_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG APPOINTMENT REQUESTS
--- ============================================
-CREATE TABLE [dbo].[AppointmentRequests](
-	[request_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NULL,
-	[full_name] [nvarchar](200) NOT NULL,
-	[phone] [varchar](50) NOT NULL,
-	[email] [varchar](150) NULL,
-	[service_id] [int] NULL,
-	[preferred_doctor_id] [int] NULL,
-	[preferred_date] [date] NULL,
-	[preferred_shift] [nvarchar](20) NULL CHECK ([preferred_shift] IN (N'Sáng', N'Chiều', N'Cả ngày')),
-	[notes] [nvarchar](500) NULL,
-	[status] [nvarchar](20) NOT NULL DEFAULT N'CHỜ XỬ LÝ' CHECK ([status] IN (N'CHỜ XỬ LÝ', N'ĐÃ XÁC NHẬN', N'TỪ CHỐI')),
-	[otp_code] [varchar](10) NULL,
-	[otp_expires_at] [datetime2](7) NULL,
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	[confirmed_at] [datetime2](7) NULL,
-	PRIMARY KEY CLUSTERED ([request_id] ASC),
-	CONSTRAINT [FK_AppointmentRequests_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
-	CONSTRAINT [FK_AppointmentRequests_Doctor] FOREIGN KEY([preferred_doctor_id]) REFERENCES [dbo].[Users] ([user_id]),
-	CONSTRAINT [FK_AppointmentRequests_Service] FOREIGN KEY([service_id]) REFERENCES [dbo].[Services] ([service_id])
-) ON [PRIMARY]
+-- ======================================================
+-- 3️⃣ APPOINTMENT & QUEUE
+-- ======================================================
+IF OBJECT_ID('dbo.WaitingQueue','U') IS NOT NULL DROP TABLE dbo.WaitingQueue;
+IF OBJECT_ID('dbo.AppointmentRequests','U') IS NOT NULL DROP TABLE dbo.AppointmentRequests;
+IF OBJECT_ID('dbo.Appointments','U') IS NOT NULL DROP TABLE dbo.Appointments;
+IF OBJECT_ID('dbo.Services','U') IS NOT NULL DROP TABLE dbo.Services;
 GO
 
--- ============================================
--- TẠO BẢNG DOCTOR SCHEDULES
--- ============================================
-CREATE TABLE [dbo].[DoctorSchedules](
-	[schedule_id] [int] IDENTITY(1,1) NOT NULL,
-	[doctor_id] [int] NOT NULL,
-	[work_date] [date] NOT NULL,
-	[shift] [nvarchar](50) NOT NULL,
-	[start_time] [time](7) NULL,
-	[end_time] [time](7) NULL,
-	[room_no] [varchar](50) NULL,
-	[status] [nvarchar](20) NOT NULL DEFAULT N'HOẠT ĐỘNG' CHECK ([status] IN (N'HOẠT ĐỘNG', N'NGHỈ')),
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	PRIMARY KEY CLUSTERED ([schedule_id] ASC),
-	CONSTRAINT [FK_DoctorSchedules_Doctor] FOREIGN KEY([doctor_id]) REFERENCES [dbo].[Users] ([user_id])
-) ON [PRIMARY]
+CREATE TABLE Services (
+    service_id        INT IDENTITY(1,1) PRIMARY KEY,
+    name              VARCHAR(150) NOT NULL UNIQUE,
+    description       NVARCHAR(500) NULL,
+    price             DECIMAL(18,2) NOT NULL CHECK (price >= 0),
+    duration_minutes  INT NULL CHECK (duration_minutes > 0),
+    is_active         BIT NOT NULL DEFAULT 1
+);
 GO
 
--- ============================================
--- TẠO BẢNG EMPLOYEES
--- ============================================
-CREATE TABLE [dbo].[Employees](
-	[employee_id] [int] IDENTITY(1,1) NOT NULL,
-	[user_id] [int] NOT NULL,
-	[position] [nvarchar](100) NULL,
-	[hire_date] [date] NULL,
-	PRIMARY KEY CLUSTERED ([employee_id] ASC),
-	CONSTRAINT [FK_Employees_Users] FOREIGN KEY([user_id]) REFERENCES [dbo].[Users] ([user_id])
-) ON [PRIMARY]
+CREATE TABLE AppointmentRequests (
+    request_id           INT IDENTITY(1,1) PRIMARY KEY,
+    patient_id           INT NULL,
+    full_name            NVARCHAR(200) NOT NULL,
+    phone                VARCHAR(50) NOT NULL,
+    email                VARCHAR(150) NULL,
+    service_id           INT NULL,
+    preferred_doctor_id   INT NULL,
+    preferred_date       DATE NULL,
+    preferred_shift      VARCHAR(20) NULL CHECK (preferred_shift IN ('Morning','Afternoon','FullDay')),
+    notes                NVARCHAR(500) NULL,
+    status               VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','CONFIRMED','REJECTED')),
+    otp_code             VARCHAR(10) NULL,
+    otp_expires_at       DATETIME2 NULL,
+    created_at           DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    confirmed_at         DATETIME2 NULL,
+    CONSTRAINT FK_AppointmentRequests_Patient FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT FK_AppointmentRequests_Service FOREIGN KEY (service_id) REFERENCES Services(service_id),
+    CONSTRAINT FK_AppointmentRequests_Doctor FOREIGN KEY (preferred_doctor_id) REFERENCES Users(user_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG MEDICAL RECORDS
--- ============================================
-CREATE TABLE [dbo].[MedicalRecords](
-	[record_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[dentist_id] [int] NULL,
-	[summary] [nvarchar](max) NULL,
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	PRIMARY KEY CLUSTERED ([record_id] ASC),
-	CONSTRAINT [FK_MedicalRecords_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
-	CONSTRAINT [FK_MedicalRecords_Dentist] FOREIGN KEY([dentist_id]) REFERENCES [dbo].[Users] ([user_id])
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+CREATE TABLE Appointments (
+    appointment_id    INT IDENTITY(1,1) PRIMARY KEY,
+    patient_id        INT NOT NULL,
+    dentist_id        INT NOT NULL,
+    service_id        INT NOT NULL,
+    appointment_date  DATETIME2 NOT NULL,
+    status            VARCHAR(50) NOT NULL DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED','CONFIRMED','COMPLETED','CANCELLED')),
+    notes             NVARCHAR(500) NULL,
+    created_at        DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    source            VARCHAR(20) NOT NULL DEFAULT 'INTERNAL' CHECK (source IN ('INTERNAL','ONLINE')),
+    booking_channel   VARCHAR(20) NULL CHECK (booking_channel IN ('WEB','MOBILE','KIOSK')),
+    created_by_patient_id INT NULL,
+    created_by_user_id    INT NULL,
+    confirmation_code VARCHAR(10) NULL,
+    confirmed_at      DATETIME2 NULL,
+    CONSTRAINT FK_Appointments_Patient FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT FK_Appointments_Dentist FOREIGN KEY (dentist_id) REFERENCES Users(user_id),
+    CONSTRAINT FK_Appointments_Service FOREIGN KEY (service_id) REFERENCES Services(service_id),
+    CONSTRAINT FK_Appointments_CreatedByPatient FOREIGN KEY (created_by_patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT FK_Appointments_CreatedByUser FOREIGN KEY (created_by_user_id) REFERENCES Users(user_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG EXAMINATIONS
--- ============================================
-CREATE TABLE [dbo].[Examinations](
-	[exam_id] [int] IDENTITY(1,1) NOT NULL,
-	[record_id] [int] NOT NULL,
-	[findings] [nvarchar](max) NULL,
-	[diagnosis] [nvarchar](max) NULL,
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	PRIMARY KEY CLUSTERED ([exam_id] ASC),
-	CONSTRAINT [FK_Examinations_Record] FOREIGN KEY([record_id]) REFERENCES [dbo].[MedicalRecords] ([record_id])
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+CREATE TABLE WaitingQueue (
+    queue_id          INT IDENTITY(1,1) PRIMARY KEY,
+    appointment_id    INT NOT NULL UNIQUE,
+    position_in_queue INT NULL,
+    status            VARCHAR(50) NOT NULL DEFAULT 'WAITING' CHECK (status IN ('WAITING','CHECKED_IN','CALLED','IN_TREATMENT','COMPLETED','NO_SHOW')),
+    CONSTRAINT FK_WaitingQueue_Appointments FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG TREATMENT PLANS
--- ============================================
-CREATE TABLE [dbo].[TreatmentPlans](
-	[plan_id] [int] IDENTITY(1,1) NOT NULL,
-	[record_id] [int] NOT NULL,
-	[plan_summary] [nvarchar](max) NULL,
-	[estimated_cost] [decimal](18, 2) NULL CHECK ([estimated_cost] >= 0),
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	[notes] [nvarchar](max) NULL,
-	PRIMARY KEY CLUSTERED ([plan_id] ASC),
-	CONSTRAINT [FK_TreatmentPlans_Record] FOREIGN KEY([record_id]) REFERENCES [dbo].[MedicalRecords] ([record_id])
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+-- ======================================================
+-- 4️⃣ MEDICAL RECORDS & TREATMENT
+-- ======================================================
+IF OBJECT_ID('dbo.PrescriptionItems','U') IS NOT NULL DROP TABLE dbo.PrescriptionItems;
+IF OBJECT_ID('dbo.Prescriptions','U') IS NOT NULL DROP TABLE dbo.Prescriptions;
+IF OBJECT_ID('dbo.TreatmentSessions','U') IS NOT NULL DROP TABLE dbo.TreatmentSessions;
+IF OBJECT_ID('dbo.TreatmentPlans','U') IS NOT NULL DROP TABLE dbo.TreatmentPlans;
+IF OBJECT_ID('dbo.Examinations','U') IS NOT NULL DROP TABLE dbo.Examinations;
+IF OBJECT_ID('dbo.MedicalRecords','U') IS NOT NULL DROP TABLE dbo.MedicalRecords;
 GO
 
--- ============================================
--- TẠO BẢNG TREATMENT SESSIONS
--- ============================================
-CREATE TABLE [dbo].[TreatmentSessions](
-	[session_id] [int] IDENTITY(1,1) NOT NULL,
-	[plan_id] [int] NOT NULL,
-	[session_date] [datetime2](7) NOT NULL,
-	[procedure_done] [nvarchar](500) NULL,
-	[session_cost] [decimal](18, 2) NULL CHECK ([session_cost] >= 0),
-	PRIMARY KEY CLUSTERED ([session_id] ASC),
-	CONSTRAINT [FK_TreatmentSessions_Plan] FOREIGN KEY([plan_id]) REFERENCES [dbo].[TreatmentPlans] ([plan_id])
-) ON [PRIMARY]
+CREATE TABLE MedicalRecords (
+    record_id   INT IDENTITY(1,1) PRIMARY KEY,
+    patient_id  INT NOT NULL,
+    dentist_id  INT NULL,
+    summary     NVARCHAR(MAX) NULL,
+    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_MedicalRecords_Patient FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT FK_MedicalRecords_Dentist FOREIGN KEY (dentist_id) REFERENCES Users(user_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG PRESCRIPTIONS
--- ============================================
-CREATE TABLE [dbo].[Prescriptions](
-	[prescription_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[dentist_id] [int] NULL,
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	[notes] [nvarchar](500) NULL,
-	PRIMARY KEY CLUSTERED ([prescription_id] ASC),
-	CONSTRAINT [FK_Prescriptions_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
-	CONSTRAINT [FK_Prescriptions_Dentist] FOREIGN KEY([dentist_id]) REFERENCES [dbo].[Users] ([user_id])
-) ON [PRIMARY]
+CREATE TABLE Examinations (
+    exam_id     INT IDENTITY(1,1) PRIMARY KEY,
+    record_id   INT NOT NULL,
+    findings    NVARCHAR(MAX) NULL,
+    diagnosis   NVARCHAR(MAX) NULL,
+    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_Examinations_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG PRESCRIPTION ITEMS
--- ============================================
-CREATE TABLE [dbo].[PrescriptionItems](
-	[item_id] [int] IDENTITY(1,1) NOT NULL,
-	[prescription_id] [int] NOT NULL,
-	[medication_name] [nvarchar](200) NOT NULL,
-	[dosage] [nvarchar](100) NULL,
-	[duration] [nvarchar](100) NULL,
-	[instructions] [nvarchar](300) NULL,
-	PRIMARY KEY CLUSTERED ([item_id] ASC),
-	CONSTRAINT [FK_PrescriptionItems_Prescriptions] FOREIGN KEY([prescription_id]) REFERENCES [dbo].[Prescriptions] ([prescription_id])
-) ON [PRIMARY]
+CREATE TABLE TreatmentPlans (
+    plan_id         INT IDENTITY(1,1) PRIMARY KEY,
+    record_id       INT NOT NULL,
+    plan_summary    NVARCHAR(MAX) NULL,
+    estimated_cost  DECIMAL(18,2) NULL CHECK (estimated_cost >= 0),
+    created_at      DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_TreatmentPlans_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG INVOICES
--- ============================================
-CREATE TABLE [dbo].[Invoices](
-	[invoice_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[appointment_id] [int] NULL,
-	[total_amount] [decimal](18, 2) NOT NULL DEFAULT 0,
-	[discount_amount] [decimal](18, 2) NOT NULL DEFAULT 0,
-	[net_amount] AS ([total_amount]-[discount_amount]),
-	[status] [nvarchar](50) NOT NULL DEFAULT N'CHƯA THANH TOÁN' CHECK ([status] IN (N'CHƯA THANH TOÁN', N'ĐÃ THANH TOÁN')),
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	PRIMARY KEY CLUSTERED ([invoice_id] ASC),
-	CONSTRAINT [FK_Invoices_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
-	CONSTRAINT [FK_Invoices_Appointment] FOREIGN KEY([appointment_id]) REFERENCES [dbo].[Appointments] ([appointment_id])
-) ON [PRIMARY]
+CREATE TABLE TreatmentSessions (
+    session_id      INT IDENTITY(1,1) PRIMARY KEY,
+    plan_id         INT NOT NULL,
+    session_date    DATETIME2 NOT NULL,
+    procedure_done  NVARCHAR(500) NULL,
+    session_cost    DECIMAL(18,2) NULL CHECK (session_cost >= 0),
+    CONSTRAINT FK_TreatmentSessions_Plan FOREIGN KEY (plan_id) REFERENCES TreatmentPlans(plan_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG INVOICE ITEMS
--- ============================================
-CREATE TABLE [dbo].[InvoiceItems](
-	[item_id] [int] IDENTITY(1,1) NOT NULL,
-	[invoice_id] [int] NOT NULL,
-	[service_id] [int] NULL,
-	[quantity] [int] NOT NULL DEFAULT 1,
-	[unit_price] [decimal](18, 2) NOT NULL,
-	[total_price] AS ([quantity]*[unit_price]),
-	PRIMARY KEY CLUSTERED ([item_id] ASC),
-	CONSTRAINT [FK_InvoiceItems_Invoice] FOREIGN KEY([invoice_id]) REFERENCES [dbo].[Invoices] ([invoice_id]),
-	CONSTRAINT [FK_InvoiceItems_Service] FOREIGN KEY([service_id]) REFERENCES [dbo].[Services] ([service_id])
-) ON [PRIMARY]
+CREATE TABLE Prescriptions (
+    prescription_id INT IDENTITY(1,1) PRIMARY KEY,
+    patient_id      INT NOT NULL,
+    dentist_id      INT NULL,
+    created_at      DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    notes           NVARCHAR(500) NULL,
+    CONSTRAINT FK_Prescriptions_Patient FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT FK_Prescriptions_Dentist FOREIGN KEY (dentist_id) REFERENCES Users(user_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG PAYMENTS
--- ============================================
-CREATE TABLE [dbo].[Payments](
-	[payment_id] [int] IDENTITY(1,1) NOT NULL,
-	[invoice_id] [int] NOT NULL,
-	[amount] [decimal](18, 2) NOT NULL,
-	[method] [nvarchar](50) NOT NULL DEFAULT N'Tiền mặt',
-	[paid_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	PRIMARY KEY CLUSTERED ([payment_id] ASC),
-	CONSTRAINT [FK_Payments_Invoice] FOREIGN KEY([invoice_id]) REFERENCES [dbo].[Invoices] ([invoice_id])
-) ON [PRIMARY]
+CREATE TABLE PrescriptionItems (
+    item_id         INT IDENTITY(1,1) PRIMARY KEY,
+    prescription_id INT NOT NULL,
+    medication_name NVARCHAR(200) NOT NULL,
+    dosage          VARCHAR(100) NULL,
+    duration        VARCHAR(100) NULL,
+    instructions    NVARCHAR(300) NULL,
+    CONSTRAINT FK_PrescriptionItems_Prescriptions FOREIGN KEY (prescription_id) REFERENCES Prescriptions(prescription_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG INVENTORY ITEMS
--- ============================================
-CREATE TABLE [dbo].[InventoryItems](
-	[item_id] [int] IDENTITY(1,1) NOT NULL,
-	[name] [nvarchar](200) NOT NULL,
-	[unit] [nvarchar](50) NULL,
-	[quantity] [int] NOT NULL DEFAULT 0 CHECK ([quantity] >= 0),
-	[min_stock] [int] NOT NULL DEFAULT 0 CHECK ([min_stock] >= 0),
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	PRIMARY KEY CLUSTERED ([item_id] ASC),
-	UNIQUE NONCLUSTERED ([name] ASC)
-) ON [PRIMARY]
+-- ======================================================
+-- 5️⃣ INVENTORY MANAGEMENT
+-- ======================================================
+IF OBJECT_ID('dbo.StockTransactions','U') IS NOT NULL DROP TABLE dbo.StockTransactions;
+IF OBJECT_ID('dbo.InventoryItems','U') IS NOT NULL DROP TABLE dbo.InventoryItems;
 GO
 
--- ============================================
--- TẠO BẢNG STOCK TRANSACTIONS
--- ============================================
-CREATE TABLE [dbo].[StockTransactions](
-	[transaction_id] [int] IDENTITY(1,1) NOT NULL,
-	[item_id] [int] NOT NULL,
-	[transaction_type] [varchar](20) NOT NULL CHECK ([transaction_type] IN ('IN', 'OUT')),
-	[quantity] [int] NOT NULL CHECK ([quantity] > 0),
-	[performed_by] [int] NULL,
-	[performed_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	[notes] [nvarchar](500) NULL,
-	PRIMARY KEY CLUSTERED ([transaction_id] ASC),
-	CONSTRAINT [FK_StockTransactions_Item] FOREIGN KEY([item_id]) REFERENCES [dbo].[InventoryItems] ([item_id]),
-	CONSTRAINT [FK_StockTransactions_User] FOREIGN KEY([performed_by]) REFERENCES [dbo].[Users] ([user_id])
-) ON [PRIMARY]
+CREATE TABLE InventoryItems (
+    item_id     INT IDENTITY(1,1) PRIMARY KEY,
+    name        NVARCHAR(200) NOT NULL UNIQUE,
+    unit        VARCHAR(50) NULL,
+    quantity    INT NOT NULL DEFAULT 0 CHECK (quantity >= 0),
+    min_stock   INT NOT NULL DEFAULT 0 CHECK (min_stock >= 0),
+    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
+);
 GO
 
--- ============================================
--- TẠO BẢNG PATIENT FILES
--- ============================================
-CREATE TABLE [dbo].[PatientFiles](
-	[file_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[content] [varchar](max) NULL,
-	[uploaded_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	PRIMARY KEY CLUSTERED ([file_id] ASC),
-	CONSTRAINT [FK_PatientFiles_Patients] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id])
-) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+CREATE TABLE StockTransactions (
+    transaction_id   INT IDENTITY(1,1) PRIMARY KEY,
+    item_id          INT NOT NULL,
+    transaction_type VARCHAR(20) NOT NULL CHECK (transaction_type IN ('IN','OUT')),
+    quantity         INT NOT NULL CHECK (quantity > 0),
+    performed_by     INT NULL,
+    performed_at     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    notes            NVARCHAR(500) NULL,
+    CONSTRAINT FK_StockTransactions_Item FOREIGN KEY (item_id) REFERENCES InventoryItems(item_id),
+    CONSTRAINT FK_StockTransactions_User FOREIGN KEY (performed_by) REFERENCES Users(user_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG PATIENT IMAGES
--- ============================================
-CREATE TABLE [dbo].[PatientImages](
-	[image_id] [int] IDENTITY(1,1) NOT NULL,
-	[patient_id] [int] NOT NULL,
-	[record_id] [int] NULL,
-	[file_path] [nvarchar](500) NOT NULL,
-	[image_type] [nvarchar](50) NOT NULL DEFAULT N'Khác' CHECK ([image_type] IN (N'X-Ray', N'Trước', N'Sau', N'Khác')),
-	[uploaded_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	[uploaded_by] [int] NULL,
-	PRIMARY KEY CLUSTERED ([image_id] ASC),
-	CONSTRAINT [FK_PatientImages_Patient] FOREIGN KEY([patient_id]) REFERENCES [dbo].[Patients] ([patient_id]),
-	CONSTRAINT [FK_PatientImages_Record] FOREIGN KEY([record_id]) REFERENCES [dbo].[MedicalRecords] ([record_id]),
-	CONSTRAINT [FK_PatientImages_Uploader] FOREIGN KEY([uploaded_by]) REFERENCES [dbo].[Users] ([user_id])
-) ON [PRIMARY]
+-- ======================================================
+-- 6️⃣ BILLING & PAYMENT
+-- ======================================================
+IF OBJECT_ID('dbo.Payments','U') IS NOT NULL DROP TABLE dbo.Payments;
+IF OBJECT_ID('dbo.InvoiceItems','U') IS NOT NULL DROP TABLE dbo.InvoiceItems;
+IF OBJECT_ID('dbo.Invoices','U') IS NOT NULL DROP TABLE dbo.Invoices;
 GO
 
--- ============================================
--- TẠO BẢNG SCHEDULE REQUESTS
--- ============================================
-CREATE TABLE [dbo].[ScheduleRequests](
-	[request_id] [int] IDENTITY(1,1) NOT NULL,
-	[employee_id] [int] NOT NULL,
-	[date] [date] NOT NULL,
-	[shift] [nvarchar](50) NOT NULL CHECK ([shift] IN (N'Sáng', N'Chiều', N'Cả ngày')),
-	[reason] [nvarchar](500) NULL,
-	[status] [nvarchar](20) NOT NULL DEFAULT N'CHỜ XỬ LÝ' CHECK ([status] IN (N'CHỜ XỬ LÝ', N'ĐÃ DUYỆT', N'TỪ CHỐI')),
-	[created_at] [datetime2](7) NOT NULL DEFAULT GETUTCDATE(),
-	[reviewed_by] [int] NULL,
-	[reviewed_at] [datetime2](7) NULL,
-	PRIMARY KEY CLUSTERED ([request_id] ASC),
-	CONSTRAINT [FK_ScheduleRequests_Employee] FOREIGN KEY([employee_id]) REFERENCES [dbo].[Employees] ([employee_id]),
-	CONSTRAINT [FK_ScheduleRequests_Reviewer] FOREIGN KEY([reviewed_by]) REFERENCES [dbo].[Users] ([user_id])
-) ON [PRIMARY]
+CREATE TABLE Invoices (
+    invoice_id     INT IDENTITY(1,1) PRIMARY KEY,
+    patient_id     INT NOT NULL,
+    appointment_id INT NULL,
+    total_amount   DECIMAL(18,2) NOT NULL DEFAULT 0,
+    discount_amount DECIMAL(18,2) NOT NULL DEFAULT 0,
+    net_amount     AS (total_amount - discount_amount),
+    status         VARCHAR(50) NOT NULL DEFAULT 'UNPAID',
+    created_at     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_Invoices_Patient FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT FK_Invoices_Appointment FOREIGN KEY (appointment_id) REFERENCES Appointments(appointment_id)
+);
 GO
 
--- ============================================
--- TẠO BẢNG WAITING QUEUE
--- ============================================
-CREATE TABLE [dbo].[WaitingQueue](
-	[queue_id] [int] IDENTITY(1,1) NOT NULL,
-	[appointment_id] [int] NOT NULL,
-	[position_in_queue] [int] NULL,
-	[status] [nvarchar](50) NOT NULL DEFAULT N'CHỜ ĐỢI' CHECK ([status] IN (N'CHỜ ĐỢI', N'ĐÃ GỌI', N'ĐANG KHÁM', N'HOÀN THÀNH', N'KHÔNG ĐẾN')),
-	PRIMARY KEY CLUSTERED ([queue_id] ASC),
-	UNIQUE NONCLUSTERED ([appointment_id] ASC),
-	CONSTRAINT [FK_WaitingQueue_Appointments] FOREIGN KEY([appointment_id]) REFERENCES [dbo].[Appointments] ([appointment_id])
-) ON [PRIMARY]
+CREATE TABLE InvoiceItems (
+    item_id     INT IDENTITY(1,1) PRIMARY KEY,
+    invoice_id  INT NOT NULL,
+    service_id  INT NULL,
+    quantity    INT NOT NULL DEFAULT 1,
+    unit_price  DECIMAL(18,2) NOT NULL,
+    total_price AS (quantity * unit_price),
+    CONSTRAINT FK_InvoiceItems_Invoice FOREIGN KEY (invoice_id) REFERENCES Invoices(invoice_id),
+    CONSTRAINT FK_InvoiceItems_Service FOREIGN KEY (service_id) REFERENCES Services(service_id)
+);
 GO
+
+CREATE TABLE Payments (
+    payment_id  INT IDENTITY(1,1) PRIMARY KEY,
+    invoice_id  INT NOT NULL,
+    amount      DECIMAL(18,2) NOT NULL,
+    method      VARCHAR(50) NOT NULL DEFAULT 'CASH',
+    paid_at     DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_Payments_Invoice FOREIGN KEY (invoice_id) REFERENCES Invoices(invoice_id)
+);
+GO
+
+-- ======================================================
+-- 7️⃣ ADDITIONAL MODULES (NEW)
+-- ======================================================
+-- ScheduleRequests
+IF OBJECT_ID('dbo.ScheduleRequests','U') IS NOT NULL DROP TABLE dbo.ScheduleRequests;
+GO
+CREATE TABLE ScheduleRequests (
+    request_id   INT IDENTITY(1,1) PRIMARY KEY,
+    employee_id  INT NOT NULL,
+    date         DATE NOT NULL,
+    shift        VARCHAR(50) NOT NULL CHECK (shift IN ('Morning','Afternoon','FullDay')),
+    reason       NVARCHAR(500) NULL,
+    status       VARCHAR(20) NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING','APPROVED','REJECTED')),
+    created_at   DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    reviewed_by  INT NULL,
+    reviewed_at  DATETIME2 NULL,
+    CONSTRAINT FK_ScheduleRequests_Employee FOREIGN KEY (employee_id) REFERENCES Employees(employee_id),
+    CONSTRAINT FK_ScheduleRequests_Reviewer FOREIGN KEY (reviewed_by) REFERENCES Users(user_id)
+);
+GO
+
+CREATE TABLE DoctorSchedules (
+    schedule_id INT IDENTITY(1,1) PRIMARY KEY,
+    doctor_id   INT NOT NULL,
+    work_date   DATE NOT NULL,
+    shift       VARCHAR(50) NOT NULL,
+    start_time  TIME(7) NULL,
+    end_time    TIME(7) NULL,
+    room_no     VARCHAR(50) NULL,
+    status      VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT FK_DoctorSchedules_Doctor FOREIGN KEY (doctor_id) REFERENCES Users(user_id)
+);
+
+-- SystemConfigs
+IF OBJECT_ID('dbo.SystemConfigs','U') IS NOT NULL DROP TABLE dbo.SystemConfigs;
+GO
+CREATE TABLE SystemConfigs (
+    config_id    INT IDENTITY(1,1) PRIMARY KEY,
+    config_key   VARCHAR(100) NOT NULL UNIQUE,
+    config_value NVARCHAR(MAX) NULL,
+    updated_at   DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    updated_by   INT NULL,
+    CONSTRAINT FK_SystemConfigs_UpdatedBy FOREIGN KEY (updated_by) REFERENCES Users(user_id)
+);
+GO
+
+-- PatientImages
+IF OBJECT_ID('dbo.PatientImages','U') IS NOT NULL DROP TABLE dbo.PatientImages;
+GO
+CREATE TABLE PatientImages (
+    image_id     INT IDENTITY(1,1) PRIMARY KEY,
+    patient_id   INT NOT NULL,
+    record_id    INT NULL,
+    file_path    NVARCHAR(500) NOT NULL,
+    image_type   VARCHAR(50) NOT NULL DEFAULT 'OTHER' CHECK (image_type IN ('X-RAY','BEFORE','AFTER','OTHER')),
+    uploaded_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    uploaded_by  INT NULL,
+    CONSTRAINT FK_PatientImages_Patient FOREIGN KEY (patient_id) REFERENCES Patients(patient_id),
+    CONSTRAINT FK_PatientImages_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id),
+    CONSTRAINT FK_PatientImages_Uploader FOREIGN KEY (uploaded_by) REFERENCES Users(user_id)
+);
+GO
+
+-- ======================================================
+-- 8️⃣ SEED DATA
+-- ======================================================
+
+INSERT INTO Roles (role_name)
+VALUES ('Administrator'), ('ClinicManager'), ('Dentist'), ('Receptionist'), ('Patient');
+GO
+
+INSERT INTO Users (username, email, password_hash, full_name, phone, role_id)
+VALUES
+('admin','admin@clinic.com','1','System Admin','0900000000',1),
+('dr.john','john@clinic.com','1','Dr. John Doe','0911111111',3),
+('reception1','recp@clinic.com','1','Reception Staff','0922222222',4);
+GO
+
+
+INSERT INTO InventoryItems(name, unit, quantity, min_stock)
+VALUES
+('Gloves (box)', 'box', 50, 10),
+('Masks (box)',  'box', 40, 10),
+('Mouthwash',    'bottle', 20, 5);
+GO
+
+INSERT INTO Services(name, description, price, duration_minutes, is_active) VALUES
+('Oral Examination', 'General oral health check', 100000, 20, 1),
+('Teeth Cleaning', 'Scaling and polishing',       300000, 40, 1),
+('Filling',        'Composite filling',           500000, 45, 1),
+('Root Canal',     'Endodontic treatment',       1500000, 90, 1);
+GO
+
+INSERT INTO SystemConfigs(config_key, config_value)
+VALUES
+('clinic_name', N'Nha khoa An Tâm'),
+('clinic_phone', '0901234567'),
+('clinic_email', 'contact@antamclinic.com'),
+('payment_methods', 'CASH,CARD,TRANSFER'),
+('logo_url', '/assets/logo.png');
+GO
+
+-- Sample AppointmentRequests data
+INSERT INTO AppointmentRequests (full_name, phone, email, service_id, preferred_doctor_id, preferred_date, preferred_shift, notes, status)
+VALUES
+(N'Nguyễn Văn A', '0901234567', 'nguyenvana@email.com', 1, 2, '2025-10-22', 'Morning', 'Cần khám răng sâu', 'PENDING'),
+(N'Trần Thị B', '0901234568', 'tranthib@email.com', 2, 2, '2025-10-23', 'Afternoon', 'Làm sạch răng', 'PENDING'),
+(N'Lê Văn C', '0901234569', 'levanc@email.com', 3, 2, '2025-10-24', 'Morning', 'Trám răng', 'CONFIRMED');
+GO
+
+PRINT '✅ DentalClinicDB_MVP full schema (no trigger) created successfully.';
