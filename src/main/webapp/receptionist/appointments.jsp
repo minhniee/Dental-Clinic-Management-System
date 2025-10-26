@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Lịch Hẹn - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/receptionist.css">
     <style>
         .appointments-container {
             display: flex;
@@ -256,7 +257,7 @@
                                 <i class="fas fa-calendar-plus"></i>
                                 Đặt Lịch Hẹn Mới
                             </a>
-                            <a href="${pageContext.request.contextPath}/receptionist/appointments?action=calendar" 
+                            <a href="${pageContext.request.contextPath}/receptionist/appointment-calendar" 
                                class="btn btn-secondary">
                                 <i class="fas fa-calendar-alt"></i>
                                 Xem Lịch
@@ -294,14 +295,16 @@
                                 </select>
                             </div>
                             <div>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-search"></i>
-                                    Lọc
-                                </button>
-                                <a href="${pageContext.request.contextPath}/receptionist/appointments" class="btn btn-secondary">
-                                    <i class="fas fa-refresh"></i>
-                                    Làm Mới
-                                </a>
+                                <div class="button-group">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i>
+                                        Lọc
+                                    </button>
+                                    <a href="${pageContext.request.contextPath}/receptionist/appointments" class="btn btn-secondary">
+                                        <i class="fas fa-refresh"></i>
+                                        Làm Mới
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -407,8 +410,8 @@
                                                         </a>
                                                         <a href="${pageContext.request.contextPath}/receptionist/appointments?action=edit&id=${appointment.appointmentId}" 
                                                            class="btn btn-primary btn-sm">
-                                                           Cập nhật
                                                             <i class="fas fa-edit"></i>
+                                                            Cập nhật
                                                         </a>
                                                         <c:if test="${appointment.status eq 'SCHEDULED'}">
                                                             <form method="POST" action="${pageContext.request.contextPath}/receptionist/appointments" style="display: inline;">

@@ -332,4 +332,34 @@ public class PatientDAO {
             return false;
         }
     }
+
+    /**
+     * Search patients by name, phone, or email
+     */
+    public List<Patient> searchPatients(String searchTerm) {
+        String sql = "SELECT * FROM Patients WHERE " +
+                    "full_name LIKE ? OR phone LIKE ? OR email LIKE ? " +
+                    "ORDER BY full_name ASC";
+        
+        List<Patient> patients = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            String searchPattern = "%" + searchTerm + "%";
+            statement.setString(1, searchPattern);
+            statement.setString(2, searchPattern);
+            statement.setString(3, searchPattern);
+            
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                patients.add(mapResultSetToPatient(rs));
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error searching patients with term: " + searchTerm, e);
+        }
+        
+        return patients;
+    }
 }

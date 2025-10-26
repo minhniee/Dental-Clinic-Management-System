@@ -355,7 +355,7 @@
                                     <tr>
                                         <td><strong>#${appointment.appointmentId}</strong></td>
                                         <td>
-                                            <strong><fmt:formatDate value="${appointment.appointmentDate}" pattern="dd/MM/yyyy HH:mm"/></strong>
+                                            <strong><fmt:formatDate value="${appointment.appointmentDateAsDate}" pattern="dd/MM/yyyy HH:mm"/></strong>
                                         </td>
                                         <td>
                                             <div class="patient-info">${appointment.patientName}</div>

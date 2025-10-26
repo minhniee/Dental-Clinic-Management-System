@@ -33,6 +33,22 @@ public class HomeServlet extends HttpServlet {
             throws ServletException, IOException {
         
         try {
+            // Check for success/error messages in session
+            String successMessage = (String) request.getSession().getAttribute("successMessage");
+            String errorMessage = (String) request.getSession().getAttribute("errorMessage");
+            
+            if (successMessage != null) {
+                request.setAttribute("successMessage", successMessage);
+                // Remove from session after displaying
+                request.getSession().removeAttribute("successMessage");
+            }
+            
+            if (errorMessage != null) {
+                request.setAttribute("errorMessage", errorMessage);
+                // Remove from session after displaying
+                request.getSession().removeAttribute("errorMessage");
+            }
+            
             // Load dentists from database
             List<User> dentists = dentistDAO.getAllActiveDentists();
             request.setAttribute("dentists", dentists);
@@ -52,7 +68,7 @@ public class HomeServlet extends HttpServlet {
             // Set empty lists to avoid null pointer exceptions
             request.setAttribute("dentists", new ArrayList<>());
             request.setAttribute("services", new ArrayList<>());
-            request.setAttribute("errorMessage", "Unable to load page content. Please try again later.");
+            request.setAttribute("errorMessage", "Không thể tải nội dung trang. Vui lòng thử lại sau.");
             
             // Forward to home page with error message
             request.getRequestDispatcher("/home.jsp").forward(request, response);

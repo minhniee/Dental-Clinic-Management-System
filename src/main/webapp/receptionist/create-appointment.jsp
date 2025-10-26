@@ -15,6 +15,7 @@
         - Hệ Thống Quản Lý Phòng Khám Nha Khoa
     </title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/receptionist.css">
     <style>
         .form-container {
             max-width: 900px;

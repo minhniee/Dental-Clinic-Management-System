@@ -1,3 +1,5 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@ page pageEncoding="UTF-8" %>
     <!-- Footer -->
     <footer class="bg-dark text-light py-5 mt-5">
         <div class="container">

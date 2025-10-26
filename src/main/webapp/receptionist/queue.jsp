@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Hàng Chờ - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/receptionist.css">
     <style>
         .queue-container {
             display: flex;
@@ -376,7 +377,7 @@
                                                 </td>
                                                 <td>
                                                     <c:if test="${not empty queueItem.appointment.appointmentDate}">
-                                                        <fmt:formatDate value="${queueItem.appointment.appointmentDate}" pattern="HH:mm"/>
+                                                        <fmt:formatDate value="${queueItem.appointment.appointmentDateAsDate}" pattern="HH:mm"/>
                                                     </c:if>
                                                 </td>
                                                 <td>

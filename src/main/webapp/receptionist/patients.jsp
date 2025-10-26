@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản Lý Bệnh Nhân - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/receptionist.css">
     <style>
         .search-container {
             background: #ffffff;
@@ -242,7 +243,7 @@
                     <div class="search-form">
                         <div class="form-group" style="flex: 2;">
                             <label for="search">Tìm Kiếm Bệnh Nhân</label>
-                            <form method="GET" action="${pageContext.request.contextPath}/receptionist/patients">
+                            <form method="GET" action="${pageContext.request.contextPath}/receptionist/patients" id="searchForm">
                                 <input type="hidden" name="action" value="search">
                                 <input type="text" 
                                        id="search" 
@@ -252,7 +253,7 @@
                                        value="${searchTerm}">
                             </form>
                         </div>
-                        <div style="display: flex; gap: 0.5rem;">
+                        <div class="button-group">
                             <button type="submit" form="searchForm" class="btn btn-secondary">
                                 <i class="fas fa-search"></i> Tìm Kiếm
                             </button>

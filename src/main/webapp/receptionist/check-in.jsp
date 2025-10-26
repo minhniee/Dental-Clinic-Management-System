@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Check-in Bệnh Nhân - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/receptionist.css">
     <style>
         .checkin-container {
             max-width: 1200px;
@@ -291,7 +292,7 @@
                                                 data-patient-phone="${patientPhone}">
                                                 <td>
                                                     <strong style="color: #0f172a;">
-                                                        <fmt:formatDate value="${appointment.appointmentDate}" pattern="HH:mm"/>
+                                                        <fmt:formatDate value="${appointment.appointmentDateAsDate}" pattern="HH:mm"/>
                                                     </strong>
                                                 </td>
                                                 <td>

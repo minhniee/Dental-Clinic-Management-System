@@ -51,12 +51,21 @@
         <c:if test="${role eq 'receptionist'}">
             <ul>
                 <li><a class="${fn:endsWith(currentPath, '/receptionist/dashboard') or fn:endsWith(currentPath, '/receptionist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/receptionist/dashboard">Tổng Quan</a></li>
-                <li><a href="${ctx}/receptionist/patients?action=new">Đăng Ký Bệnh Nhân</a></li>
-                <li><a href="${ctx}/receptionist/patients">Danh Sách Bệnh Nhân</a></li>
-                <li><a class="${fn:endsWith(currentPath, '/receptionist/appointments') ? 'active' : ''}" href="${ctx}/receptionist/appointments">Lịch Hẹn</a></li>
-                <li><a href="${ctx}/receptionist/invoices">Hóa Đơn & Thanh Toán</a></li>
+                <li class="divider"></li>
+                <li><a class="${fn:contains(currentPath, '/receptionist/patients') ? 'active' : ''}" href="${ctx}/receptionist/patients">Quản Lý Bệnh Nhân</a></li>
+                <li><a href="${ctx}/receptionist/patients?action=new">Đăng Ký Bệnh Nhân Mới</a></li>
+                <li class="divider"></li>
+                <li><a class="${fn:contains(currentPath, '/receptionist/appointments') ? 'active' : ''}" href="${ctx}/receptionist/appointments">Quản Lý Lịch Hẹn</a></li>
+                <li><a href="${ctx}/receptionist/appointments?action=new">Đặt Lịch Hẹn Mới</a></li>
+                <li><a href="${ctx}/receptionist/appointment-calendar">Xem Lịch Tuần</a></li>
+                <li class="divider"></li>
+                <li><a class="${fn:contains(currentPath, '/receptionist/queue') ? 'active' : ''}" href="${ctx}/receptionist/queue">Quản Lý Hàng Chờ</a></li>
+                <li><a href="${ctx}/receptionist/check-in">Check-in Bệnh Nhân</a></li>
+                <li class="divider"></li>
+                <li><a class="${fn:contains(currentPath, '/receptionist/invoices') ? 'active' : ''}" href="${ctx}/receptionist/invoices">Hóa Đơn & Thanh Toán</a></li>
+                <li><a href="${ctx}/receptionist/invoices?action=new">Tạo Hóa Đơn Mới</a></li>
+                <li class="divider"></li>
                 <li><a class="${fn:endsWith(currentPath, '/receptionist/online-appointments') ? 'active' : ''}" href="${ctx}/receptionist/online-appointments">Lịch Hẹn Trực Tuyến</a></li>
-                
             </ul>
         </c:if>
 

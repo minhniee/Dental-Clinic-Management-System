@@ -28,7 +28,7 @@
                             Đặt Lịch Hẹn
                         </a>
                         <a href="#dentists" class="btn btn-outline-primary btn-lg px-4 py-3"
-                           style="border-color: #06b6d4; color: #06b6d4; border-radius: 0.5rem;">
+                           style="border-color: #06b6d4; color: #06b6d4; border-radius: 0.5rem; text-decoration: none; background-color: transparent;">
                             <i class="fas fa-user-md me-2"></i>
                             Gặp Gỡ Đội Ngũ
                         </a>
@@ -51,7 +51,7 @@
     <!-- Alert Messages -->
     <c:if test="${not empty successMessage}">
         <div class="container mt-4">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show" role="alert" style="position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 1050; min-width: 400px; max-width: 600px;">
                 <i class="fas fa-check-circle me-2"></i>
                 ${successMessage}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -61,7 +61,7 @@
     
     <c:if test="${not empty errorMessage}">
         <div class="container mt-4">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert" style="position: fixed; top: 100px; left: 50%; transform: translateX(-50%); z-index: 1050; min-width: 400px; max-width: 600px;">
                 <i class="fas fa-exclamation-triangle me-2"></i>
                 ${errorMessage}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
@@ -224,10 +224,12 @@
                                         
                                         <!-- Book Button -->
                                         <div class="text-center">
-                                            <a href="#contact" class="btn btn-outline-primary w-100" 
-                                               style="border-color: #06b6d4; color: #06b6d4; border-radius: 0.5rem;">
-                                                <i class="fas fa-calendar-plus me-2"></i>
-                                                Đặt Dịch Vụ Này
+                                            <a href="#contact" class="btn btn-outline-primary w-100 position-relative overflow-hidden" 
+                                               style="border: 2px solid #6bd9f1; color: #193a40; border-radius: 0.5rem; padding: 0.75rem 1.5rem; font-weight: 600; transition: all 0.3s ease;">
+                                                <span class="position-relative z-index-1">
+                                                    <i class="fas fa-calendar-plus me-2"></i>
+                                                    Đặt Dịch Vụ Này
+                                                </span>
                                             </a>
                                         </div>
                                     </div>
@@ -280,9 +282,11 @@
                                             Họ và Tên <span class="text-danger">*</span>
                                         </label>
                                         <input type="text" class="form-control" id="fullName" name="fullName" 
-                                               required style="border-color: #d1d5db; border-radius: 0.5rem;">
+                                               required pattern="[a-zA-ZÀ-ỹ\s]{5,50}" minlength="5" maxlength="50"
+                                               placeholder="Ví dụ: Nguyễn Văn A"
+                                               style="border-color: #d1d5db; border-radius: 0.5rem;">
                                         <div class="invalid-feedback">
-                                            Vui lòng cung cấp họ và tên đầy đủ của bạn.
+                                            Họ và tên phải có từ 5 đến 50 ký tự, chỉ chứa chữ cái và khoảng trắng.
                                         </div>
                                     </div>
                                     
@@ -292,9 +296,11 @@
                                             Địa Chỉ Email <span class="text-danger">*</span>
                                         </label>
                                         <input type="email" class="form-control" id="email" name="email" 
-                                               required style="border-color: #d1d5db; border-radius: 0.5rem;">
+                                               required pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"
+                                               placeholder="Ví dụ: nguyenvana@gmail.com"
+                                               style="border-color: #d1d5db; border-radius: 0.5rem;">
                                         <div class="invalid-feedback">
-                                            Vui lòng cung cấp địa chỉ email hợp lệ.
+                                            Vui lòng nhập địa chỉ email hợp lệ (ví dụ: nguyenvana@gmail.com).
                                         </div>
                                     </div>
                                 </div>
@@ -306,9 +312,11 @@
                                             Số Điện Thoại <span class="text-danger">*</span>
                                         </label>
                                         <input type="tel" class="form-control" id="phone" name="phone" 
-                                               required style="border-color: #d1d5db; border-radius: 0.5rem;">
+                                               required pattern="[0-9]{10,11}" minlength="10" maxlength="11"
+                                               placeholder="Ví dụ: 0912345678"
+                                               style="border-color: #d1d5db; border-radius: 0.5rem;">
                                         <div class="invalid-feedback">
-                                            Vui lòng cung cấp số điện thoại của bạn.
+                                            Số điện thoại phải có từ 10 đến 11 chữ số (ví dụ: 0912345678).
                                         </div>
                                     </div>
                                     
@@ -472,8 +480,43 @@
 
 <!-- Form Validation Script -->
 <script>
-    // Set minimum date to today
-    document.getElementById('preferredDate').min = new Date().toISOString().split('T')[0];
+    document.addEventListener('DOMContentLoaded', function() {
+        // Set minimum and maximum date for preferred date field
+        var preferredDateInput = document.getElementById('preferredDate');
+        var today = new Date();
+        var maxDate = new Date();
+        maxDate.setDate(today.getDate() + 90); // 90 days from today
+        
+        preferredDateInput.min = today.toISOString().split('T')[0];
+        preferredDateInput.max = maxDate.toISOString().split('T')[0];
+        
+        // Validate date range on change
+        preferredDateInput.addEventListener('change', function() {
+            var selectedDate = new Date(this.value);
+            if (selectedDate < today) {
+                this.setCustomValidity('Ngày không thể là ngày trong quá khứ.');
+            } else if (selectedDate > maxDate) {
+                this.setCustomValidity('Ngày hẹn không thể vượt quá 90 ngày kể từ hôm nay.');
+            } else {
+                this.setCustomValidity('');
+            }
+        });
+        
+        // Enhanced phone validation
+        var phoneInput = document.getElementById('phone');
+        phoneInput.addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, ''); // Only allow numbers
+        });
+        
+        // Auto-hide notifications after 5 seconds
+        var alerts = document.querySelectorAll('.alert');
+        alerts.forEach(function(alert) {
+            setTimeout(function() {
+                var bsAlert = new bootstrap.Alert(alert);
+                bsAlert.close();
+            }, 5000);
+        });
+    });
     
     // Bootstrap form validation
     (function() {

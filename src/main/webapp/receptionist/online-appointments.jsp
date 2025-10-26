@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Lịch Hẹn Trực Tuyến - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/receptionist.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .container {
@@ -259,6 +260,7 @@
             gap: 0.5rem;
             align-items: center;
             flex-wrap: wrap;
+            justify-content: flex-start;
         }
 
         .request-info {
@@ -375,10 +377,12 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-filter"></i>
-                                Lọc
-                            </button>
+                            <div class="button-group">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-filter"></i>
+                                    Lọc
+                                </button>
+                            </div>
                         </div>
                     </form>
                 </div>

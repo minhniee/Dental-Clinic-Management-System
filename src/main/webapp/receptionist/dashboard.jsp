@@ -9,6 +9,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bảng Điều Khiển Lễ Tân - Hệ Thống Quản Lý Phòng Khám Nha Khoa</title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/receptionist.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .btn-link {
@@ -302,7 +303,7 @@
                     <i class="fas fa-list-ol"></i>
                     <span>Quản Lý Hàng Chờ</span>
                 </a>
-                <a href="${pageContext.request.contextPath}/receptionist/appointments?action=calendar" 
+                <a href="${pageContext.request.contextPath}/receptionist/appointment-calendar" 
                    class="quick-action-btn">
                     <i class="fas fa-calendar-alt"></i>
                     <span>Xem Lịch Tuần</span>

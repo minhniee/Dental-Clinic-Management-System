@@ -27,6 +27,16 @@ body {
     color: var(--text-dark);
 }
 
+/* Link Styles */
+a {
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+a:hover {
+    color: var(--primary) !important;
+    text-decoration: none;
+}
+
 /* Typography */
 .display-4 {
     font-size: 2.5rem;
@@ -64,13 +74,23 @@ body {
 /* Card Styles */
 .card {
     border-radius: var(--border-radius) !important;
-    transition: var(--transition);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
     border: 1px solid var(--border-color);
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-md) !important;
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15) !important;
+    border-color: var(--primary);
+}
+
+/* Card title hover effect */
+.card-title {
+    transition: color 0.3s ease;
+}
+
+.card:hover .card-title {
+    color: var(--primary) !important;
 }
 
 .card-body {
@@ -92,9 +112,10 @@ body {
 }
 
 .btn-primary:hover {
-    background-color: var(--primary-dark);
-    border-color: var(--primary-dark);
-    transform: translateY(-1px);
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(6, 182, 212, 0.4);
 }
 
 .btn-outline-primary {
@@ -103,9 +124,11 @@ body {
 }
 
 .btn-outline-primary:hover {
-    background-color: var(--primary);
-    border-color: var(--primary);
-    transform: translateY(-1px);
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: white !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(6, 182, 212, 0.4);
 }
 
 /* Form Styles */
@@ -113,12 +136,17 @@ body {
     border-radius: 0.5rem;
     border: 1px solid #d1d5db;
     padding: 0.75rem 1rem;
-    transition: var(--transition);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.form-control:hover, .form-select:hover {
+    border-color: var(--primary);
 }
 
 .form-control:focus, .form-select:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 0.2rem rgba(6, 182, 212, 0.25);
+    transform: translateY(-1px);
 }
 
 .form-label {
@@ -150,6 +178,12 @@ body {
     border-radius: 0.5rem;
     padding: 0.5rem 1rem;
     font-weight: 500;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.badge:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
 /* Section Spacing */
@@ -172,6 +206,8 @@ section {
 .btn-primary:hover, .btn-primary:focus {
     background-color: #5568d3 !important;
     border-color: #5568d3 !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(102, 126, 234, 0.4);
 }
 
 .btn-success {
@@ -182,6 +218,8 @@ section {
 .btn-success:hover, .btn-success:focus {
     background-color: #38a169 !important;
     border-color: #38a169 !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(72, 187, 120, 0.4);
 }
 
 .btn-danger {
@@ -192,6 +230,8 @@ section {
 .btn-danger:hover, .btn-danger:focus {
     background-color: #e53e3e !important;
     border-color: #e53e3e !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(245, 101, 101, 0.4);
 }
 
 .btn-warning {
@@ -202,6 +242,8 @@ section {
 .btn-warning:hover, .btn-warning:focus {
     background-color: #dd6b20 !important;
     border-color: #dd6b20 !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(237, 137, 54, 0.4);
 }
 
 .btn-secondary {
@@ -212,6 +254,8 @@ section {
 .btn-secondary:hover, .btn-secondary:focus {
     background-color: #4a5568 !important;
     border-color: #4a5568 !important;
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 16px rgba(113, 128, 150, 0.4);
 }
 
 /* Navigation Active State */
@@ -223,6 +267,23 @@ section {
 /* Icon Styles */
 .text-primary {
     color: var(--primary) !important;
+}
+
+/* Icon Hover Effects */
+.fas, .far, .fa, [class*="fa-"] {
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.card:hover .fas,
+.card:hover .far,
+.card:hover [class*="fa-"] {
+    transform: scale(1.15);
+}
+
+.btn:hover .fas,
+.btn:hover .far,
+.btn:hover [class*="fa-"] {
+    transform: scale(1.1) rotate(5deg);
 }
 
 /* Background Colors */
@@ -351,4 +412,48 @@ section {
         --text-light: #cccccc;
         --border-color: #404040;
     }
+}
+
+/* Service Section Button Custom Hover Effect */
+#services .btn-outline-primary {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid #06b6d4 !important;
+    background: transparent;
+    z-index: 1;
+}
+
+#services .btn-outline-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #06b6d4, #0891b2);
+    transition: left 0.4s ease;
+    z-index: -1;
+}
+
+#services .btn-outline-primary:hover::before {
+    left: 0;
+}
+
+#services .btn-outline-primary:hover {
+    color: white !important;
+    border-color: #06b6d4 !important;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(6, 182, 212, 0.4);
+}
+
+#services .btn-outline-primary .position-relative {
+    z-index: 2;
+}
+
+#services .btn-outline-primary i {
+    transition: transform 0.3s ease;
+}
+
+#services .btn-outline-primary:hover i {
+    transform: rotate(45deg);
 }

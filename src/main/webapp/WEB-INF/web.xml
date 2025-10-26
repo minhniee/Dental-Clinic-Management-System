@@ -7,7 +7,7 @@
     <display-name>Dental Clinic Management System</display-name>
 
     <welcome-file-list>
-        <welcome-file>home.jsp</welcome-file>
+        <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
 
     <!-- Session Configuration -->

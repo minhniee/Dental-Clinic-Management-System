@@ -29,22 +29,28 @@ public class AppointmentRequestServlet extends HttpServlet {
             throws ServletException, IOException {
         
         try {
-            // Get and validate form parameters
-            String fullName = validateRequired(request.getParameter("fullName"), "Full name");
+            // Get and validate form parameters with enhanced validation
+            String fullName = validateFullName(request.getParameter("fullName"));
             String email = validateEmail(request.getParameter("email"));
-            String phone = validateRequired(request.getParameter("phone"), "Phone number");
-            String serviceIdStr = validateRequired(request.getParameter("serviceId"), "Service");
-            String preferredDateStr = validateRequired(request.getParameter("preferredDate"), "Preferred date");
+            String phone = validatePhone(request.getParameter("phone"));
+            String serviceIdStr = request.getParameter("serviceId");
+            String preferredDateStr = request.getParameter("preferredDate");
             String message = request.getParameter("message");
             String preferredDoctorIdStr = request.getParameter("preferredDoctorId");
             String preferredShift = request.getParameter("preferredShift");
 
-            // Parse and validate service ID
+            // Validate service ID
             Integer serviceId;
             try {
-                serviceId = Integer.parseInt(serviceIdStr);
+                if (serviceIdStr == null || serviceIdStr.trim().isEmpty()) {
+                    throw new IllegalArgumentException("Vui lòng chọn dịch vụ bạn muốn đặt lịch.");
+                }
+                serviceId = Integer.parseInt(serviceIdStr.trim());
+                if (serviceId <= 0) {
+                    throw new IllegalArgumentException("Lựa chọn dịch vụ không hợp lệ.");
+                }
             } catch (NumberFormatException e) {
-                sendErrorResponse(request, response, "Invalid service selection.");
+                sendErrorResponse(request, response, "Mã dịch vụ không hợp lệ. Vui lòng chọn lại dịch vụ.");
                 return;
             }
 
@@ -52,24 +58,22 @@ public class AppointmentRequestServlet extends HttpServlet {
             Integer preferredDoctorId = null;
             if (preferredDoctorIdStr != null && !preferredDoctorIdStr.trim().isEmpty()) {
                 try {
-                    preferredDoctorId = Integer.parseInt(preferredDoctorIdStr);
+                    preferredDoctorId = Integer.parseInt(preferredDoctorIdStr.trim());
+                    if (preferredDoctorId <= 0) {
+                        preferredDoctorId = null;
+                    }
                 } catch (NumberFormatException e) {
-                    sendErrorResponse(request, response, "Invalid doctor selection.");
-                    return;
+                    // If invalid, just ignore it since it's optional
+                    preferredDoctorId = null;
                 }
             }
 
-            // Parse and validate preferred date
-            LocalDate preferredDate;
-            try {
-                preferredDate = LocalDate.parse(preferredDateStr);
-                if (preferredDate.isBefore(LocalDate.now())) {
-                    sendErrorResponse(request, response, "Preferred date cannot be in the past.");
-                    return;
-                }
-            } catch (DateTimeParseException e) {
-                sendErrorResponse(request, response, "Invalid date format.");
-                return;
+            // Validate preferred date using the new method
+            LocalDate preferredDate = validatePreferredDate(preferredDateStr);
+
+            // Validate message length if provided
+            if (message != null && message.trim().length() > 500) {
+                throw new IllegalArgumentException("Ghi chú không được vượt quá 500 ký tự.");
             }
 
             // Create appointment request object
@@ -90,11 +94,11 @@ public class AppointmentRequestServlet extends HttpServlet {
             if (success) {
                 // Send success response
                 sendSuccessResponse(request, response, 
-                    "Your appointment request has been submitted successfully! " +
-                    "We will contact you within 24 hours to confirm your appointment.");
+                    "Yêu cầu đặt lịch hẹn của bạn đã được gửi thành công! " +
+                    "Chúng tôi sẽ liên hệ với bạn trong vòng 24 giờ để xác nhận lịch hẹn.");
             } else {
                 sendErrorResponse(request, response, 
-                    "Failed to submit your appointment request. Please try again.");
+                    "Không thể gửi yêu cầu đặt lịch hẹn. Vui lòng thử lại.");
             }
 
         } catch (IllegalArgumentException e) {
@@ -103,7 +107,7 @@ public class AppointmentRequestServlet extends HttpServlet {
             // Log the error
             getServletContext().log("Error processing appointment request", e);
             sendErrorResponse(request, response, 
-                "An unexpected error occurred. Please try again later.");
+                "Đã xảy ra lỗi không mong muốn. Vui lòng thử lại sau.");
         }
     }
 
@@ -120,7 +124,15 @@ public class AppointmentRequestServlet extends HttpServlet {
      */
     private String validateRequired(String value, String fieldName) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException(fieldName + " is required.");
+            throw new IllegalArgumentException(fieldName + " là bắt buộc. Vui lòng điền thông tin này.");
+        }
+        // Check for minimum length
+        if (value.trim().length() < 2) {
+            throw new IllegalArgumentException(fieldName + " phải có ít nhất 2 ký tự.");
+        }
+        // Check for maximum length
+        if (value.trim().length() > 100) {
+            throw new IllegalArgumentException(fieldName + " không được vượt quá 100 ký tự.");
         }
         return value;
     }
@@ -130,10 +142,100 @@ public class AppointmentRequestServlet extends HttpServlet {
      */
     private String validateEmail(String email) {
         email = validateRequired(email, "Email");
-        if (!email.contains("@") || !email.contains(".")) {
-            throw new IllegalArgumentException("Please enter a valid email address.");
+        
+        // Remove extra spaces
+        email = email.trim().toLowerCase();
+        
+        // Check email format
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        if (!email.matches(emailRegex)) {
+            throw new IllegalArgumentException("Địa chỉ email không hợp lệ. Vui lòng nhập email đúng định dạng (ví dụ: nguyenvana@gmail.com).");
         }
+        
+        // Check email length
+        if (email.length() > 100) {
+            throw new IllegalArgumentException("Email không được vượt quá 100 ký tự.");
+        }
+        
         return email;
+    }
+
+    /**
+     * Validate phone number
+     */
+    private String validatePhone(String phone) {
+        phone = validateRequired(phone, "Số điện thoại");
+        
+        // Remove spaces, dashes, parentheses
+        String cleanedPhone = phone.replaceAll("[\\s\\-\\(\\)]", "");
+        
+        // Check if phone contains only digits
+        if (!cleanedPhone.matches("^[0-9]+$")) {
+            throw new IllegalArgumentException("Số điện thoại chỉ được chứa chữ số. Vui lòng nhập lại.");
+        }
+        
+        // Check phone length (Vietnamese phone numbers are typically 10 digits)
+        if (cleanedPhone.length() < 10 || cleanedPhone.length() > 11) {
+            throw new IllegalArgumentException("Số điện thoại phải có từ 10 đến 11 chữ số.");
+        }
+        
+        // Check if phone starts with 0 or +84
+        if (!cleanedPhone.startsWith("0") && !cleanedPhone.startsWith("+84")) {
+            throw new IllegalArgumentException("Số điện thoại Việt Nam phải bắt đầu bằng 0 hoặc +84.");
+        }
+        
+        return phone;
+    }
+
+    /**
+     * Validate full name
+     */
+    private String validateFullName(String fullName) {
+        fullName = validateRequired(fullName, "Họ và tên");
+        
+        // Check if name contains only letters, spaces, and common Vietnamese characters
+        if (!fullName.matches("^[\\p{L}\\s]+$")) {
+            throw new IllegalArgumentException("Họ và tên chỉ được chứa chữ cái và khoảng trắng.");
+        }
+        
+        // Check name length
+        if (fullName.trim().length() < 5) {
+            throw new IllegalArgumentException("Họ và tên phải có ít nhất 5 ký tự.");
+        }
+        
+        if (fullName.trim().length() > 50) {
+            throw new IllegalArgumentException("Họ và tên không được vượt quá 50 ký tự.");
+        }
+        
+        return fullName.trim();
+    }
+
+    /**
+     * Validate preferred date
+     */
+    private LocalDate validatePreferredDate(String dateStr) {
+        if (dateStr == null || dateStr.trim().isEmpty()) {
+            throw new IllegalArgumentException("Ngày ưa thích là bắt buộc.");
+        }
+        
+        LocalDate preferredDate;
+        try {
+            preferredDate = LocalDate.parse(dateStr);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Định dạng ngày không hợp lệ. Vui lòng chọn lại ngày.");
+        }
+        
+        // Check if date is in the past
+        if (preferredDate.isBefore(LocalDate.now())) {
+            throw new IllegalArgumentException("Ngày ưa thích không thể là ngày trong quá khứ. Vui lòng chọn ngày khác.");
+        }
+        
+        // Check if date is too far in the future (e.g., more than 90 days)
+        if (preferredDate.isAfter(LocalDate.now().plusDays(90))) {
+            throw new IllegalArgumentException("Ngày hẹn không thể vượt quá 90 ngày kể từ hôm nay.");
+        }
+        
+        return preferredDate;
     }
 
     /**
@@ -142,8 +244,11 @@ public class AppointmentRequestServlet extends HttpServlet {
     private void sendSuccessResponse(HttpServletRequest request, HttpServletResponse response, String message)
             throws ServletException, IOException {
         
-        request.setAttribute("successMessage", message);
-        request.getRequestDispatcher("/home.jsp").forward(request, response);
+        // Store success message in session
+        request.getSession().setAttribute("successMessage", message);
+        
+        // Redirect to home page
+        response.sendRedirect(request.getContextPath() + "/home");
     }
 
     /**
@@ -152,7 +257,10 @@ public class AppointmentRequestServlet extends HttpServlet {
     private void sendErrorResponse(HttpServletRequest request, HttpServletResponse response, String message)
             throws ServletException, IOException {
         
-        request.setAttribute("errorMessage", message);
-        request.getRequestDispatcher("/home.jsp").forward(request, response);
+        // Store error message in session
+        request.getSession().setAttribute("errorMessage", message);
+        
+        // Redirect to home page
+        response.sendRedirect(request.getContextPath() + "/home");
     }
 }
