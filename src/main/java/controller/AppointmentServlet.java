@@ -19,6 +19,8 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.DayOfWeek;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.time.LocalDate;
@@ -367,27 +369,27 @@ public class AppointmentServlet extends HttpServlet {
         String appointmentDateTimeStr = request.getParameter("appointmentDateTime");
         String notes = request.getParameter("notes");
         
-        // Validate required fields
+        // Validate required fields with Vietnamese error messages
         if (patientIdParam == null || patientIdParam.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Patient is required");
+            request.setAttribute("errorMessage", "Vui lòng chọn bệnh nhân");
             handleNewAppointment(request, response);
             return;
         }
         
         if (dentistIdParam == null || dentistIdParam.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Dentist is required");
+            request.setAttribute("errorMessage", "Vui lòng chọn bác sĩ");
             handleNewAppointment(request, response);
             return;
         }
         
         if (serviceIdParam == null || serviceIdParam.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Service is required");
+            request.setAttribute("errorMessage", "Vui lòng chọn dịch vụ");
             handleNewAppointment(request, response);
             return;
         }
         
         if (appointmentDateTimeStr == null || appointmentDateTimeStr.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Appointment date and time is required");
+            request.setAttribute("errorMessage", "Vui lòng chọn ngày và giờ hẹn");
             handleNewAppointment(request, response);
             return;
         }
@@ -413,6 +415,32 @@ public class AppointmentServlet extends HttpServlet {
                 }
             }
             
+            // Validate business hours (8:00 AM - 6:00 PM, Monday to Friday)
+            LocalTime appointmentTime = appointmentDateTime.toLocalTime();
+            DayOfWeek dayOfWeek = appointmentDateTime.getDayOfWeek();
+            
+            // Check if it's weekend
+            if (dayOfWeek == DayOfWeek.SATURDAY || dayOfWeek == DayOfWeek.SUNDAY) {
+                request.setAttribute("errorMessage", "Chỉ có thể đặt lịch từ thứ 2 đến thứ 6");
+                handleNewAppointment(request, response);
+                return;
+            }
+            
+            // Check if it's within business hours (8:00 - 18:00)
+            if (appointmentTime.isBefore(LocalTime.of(8, 0)) || appointmentTime.isAfter(LocalTime.of(17, 59))) {
+                request.setAttribute("errorMessage", "Giờ làm việc từ 8:00 đến 18:00");
+                handleNewAppointment(request, response);
+                return;
+            }
+            
+            // Check if appointment is more than 30 minutes in the past
+            LocalDateTime thirtyMinutesAgo = LocalDateTime.now().minusMinutes(30);
+            if (appointmentDateTime.isBefore(thirtyMinutesAgo)) {
+                request.setAttribute("errorMessage", "Không thể đặt lịch trước 30 phút từ thời điểm hiện tại");
+                handleNewAppointment(request, response);
+                return;
+            }
+            
             // Get service information to calculate end time
             Service service = serviceDAO.getServiceById(serviceId);
             LocalDateTime endTime = appointmentDateTime.plusMinutes(service != null && service.getDurationMinutes() != null ? 
@@ -420,7 +448,7 @@ public class AppointmentServlet extends HttpServlet {
             
             // Check for conflicts
             if (appointmentDAO.hasConflictingAppointment(dentistId, appointmentDateTime, endTime, null)) {
-                request.setAttribute("errorMessage", "The selected time conflicts with another appointment for this dentist.");
+                request.setAttribute("errorMessage", "Thời gian đã chọn trùng với lịch hẹn khác của bác sĩ này");
                 handleNewAppointment(request, response);
                 return;
             }
@@ -448,18 +476,18 @@ public class AppointmentServlet extends HttpServlet {
             int appointmentId = appointmentDAO.createAppointment(appointment);
             
             if (appointmentId > 0) {
-                request.setAttribute("successMessage", "Appointment created successfully with ID: " + appointmentId);
+                request.setAttribute("successMessage", "Đặt lịch hẹn thành công với ID: " + appointmentId);
                 response.sendRedirect(request.getContextPath() + "/receptionist/appointments?action=list");
             } else {
-                request.setAttribute("errorMessage", "Failed to create appointment. Please try again.");
+                request.setAttribute("errorMessage", "Không thể tạo lịch hẹn. Vui lòng thử lại.");
                 handleNewAppointment(request, response);
             }
             
         } catch (NumberFormatException e) {
-            request.setAttribute("errorMessage", "Invalid patient, dentist, or service ID");
+            request.setAttribute("errorMessage", "ID bệnh nhân, bác sĩ hoặc dịch vụ không hợp lệ");
             handleNewAppointment(request, response);
         } catch (DateTimeParseException e) {
-            request.setAttribute("errorMessage", "Invalid date and time format");
+            request.setAttribute("errorMessage", "Định dạng ngày và giờ không hợp lệ");
             handleNewAppointment(request, response);
         }
     }
