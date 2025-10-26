@@ -34,7 +34,7 @@
                 <li><a class="${fn:endsWith(currentPath, '/manager/dashboard') ? 'active' : ''}" href="${ctx}/manager/dashboard">Báo Cáo Vận Hành</a></li>
                 <li class="divider"></li>
                 <li><a href="${ctx}/manager/employees">Quản Lý Nhân Viên</a></li>
-                <li><a href="${ctx}/manager/schedule-requests">Phê Duyệt Yêu Cầu Nghỉ</a></li>
+<%--                <li><a href="${ctx}/manager/schedule-requests">Phê Duyệt Yêu Cầu Nghỉ</a></li>--%>
                 <li class="divider"></li>
                 <li><a href="${ctx}/manager/inventory">Quản Lý Vật Tư & Thiết Bị</a></li>
                 <li><a href="${ctx}/manager/stock-transactions">Giao Dịch Kho</a></li>

@@ -11,71 +11,103 @@
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
     <style>
         .user-management {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 1.5rem;
         }
         
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid #e0e0e0;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 1rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
         
         .page-title {
             font-size: 2rem;
-            color: #2c3e50;
+            color: white;
             margin: 0;
+            font-weight: 700;
         }
         
         .btn-primary {
-            background: #3498db;
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 0.75rem;
             cursor: pointer;
             text-decoration: none;
             display: inline-block;
-            font-size: 14px;
-            transition: background 0.3s;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
         }
         
         .btn-primary:hover {
-            background: #2980b9;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
         
         .btn-success {
-            background: #27ae60;
+            background: #10b981;
             color: white;
-            padding: 8px 16px;
+            padding: 0.5rem 1rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
         
         .btn-danger {
-            background: #e74c3c;
+            background: #ef4444;
             color: white;
-            padding: 8px 16px;
+            padding: 0.5rem 1rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
         }
         
         .btn-warning {
-            background: #f39c12;
+            background: #f59e0b;
             color: white;
-            padding: 8px 16px;
+            padding: 0.5rem 1rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 0.5rem;
             cursor: pointer;
-            font-size: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-warning:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
         }
         
         .alert {
@@ -99,9 +131,10 @@
         
         .users-table {
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
             overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
         
         .table {
@@ -110,47 +143,67 @@
         }
         
         .table th {
-            background: #34495e;
-            color: white;
-            padding: 15px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            color: #1f2937;
+            padding: 1rem;
             text-align: left;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
         }
         
         .table td {
-            padding: 15px;
-            border-bottom: 1px solid #ecf0f1;
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+        
+        .table td:last-child {
+            white-space: normal;
         }
         
         .table tr:hover {
-            background: #f8f9fa;
+            background: #f8fafc;
+            transition: all 0.2s ease;
         }
         
         .status-badge {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.4rem;
+            font-size: 0.75rem;
             font-weight: 600;
+            display: inline-block;
             text-transform: uppercase;
+            letter-spacing: 0.3px;
+            white-space: nowrap;
         }
         
         .status-active {
-            background: #d4edda;
-            color: #155724;
+            background: #10b981;
+            color: white;
+            border: none;
         }
         
         .status-inactive {
-            background: #f8d7da;
-            color: #721c24;
+            background: #ef4444;
+            color: white;
+            border: none;
         }
         
         .role-badge {
-            background: #3498db;
+            background: #667eea;
             color: white;
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 11px;
+            padding: 0.35rem 0.75rem;
+            border-radius: 0.4rem;
+            font-size: 0.75rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            display: inline-block;
+            white-space: nowrap;
         }
         
         .form-group {
@@ -166,16 +219,37 @@
         
         .form-control {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-size: 14px;
+            padding: 0.875rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 0.75rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
         
         .form-control:focus {
             outline: none;
-            border-color: #3498db;
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-control.error {
+            border-color: #dc2626;
+            background: #fef2f2;
+        }
+        
+        .form-control.success {
+            border-color: #059669;
+        }
+        
+        .error-message {
+            color: #dc2626;
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        
+        .error-message.show {
+            display: block;
         }
         
         .modal {
@@ -192,10 +266,23 @@
         .modal-content {
             background-color: white;
             margin: 5% auto;
-            padding: 20px;
-            border-radius: 8px;
+            padding: 2rem;
+            border-radius: 1rem;
             width: 80%;
             max-width: 500px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
         
         .modal-header {
@@ -227,61 +314,66 @@
             border-top: 1px solid #ecf0f1;
         }
         
+        .modal-footer .btn-primary {
+            background: #667eea;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-footer .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
         .btn-secondary {
             background: #6c757d;
             color: white;
-            padding: 10px 20px;
+            padding: 0.75rem 1.5rem;
             border: none;
-            border-radius: 4px;
+            border-radius: 0.5rem;
             cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
         
         .btn-secondary:hover {
             background: #5a6268;
         }
         
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .btn-danger:hover {
-            background: #c82333;
-        }
-        
-        .btn-success {
-            background: #28a745;
-            color: white;
-            padding: 8px 16px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 12px;
-        }
-        
-        .btn-success:hover {
-            background: #218838;
-        }
-        
         .action-buttons {
             display: flex;
-            gap: 5px;
+            gap: 0.4rem;
             flex-wrap: wrap;
+            align-items: center;
         }
         
-        .status-active {
-            color: #28a745;
-            font-weight: bold;
+        .action-buttons .btn-primary {
+            background: #3b82f6;
+            color: white;
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            white-space: nowrap;
+            flex-shrink: 0;
+            border: none;
         }
         
-        .status-inactive {
-            color: #dc3545;
-            font-weight: bold;
+        .action-buttons .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .action-buttons .btn-warning,
+        .action-buttons .btn-danger,
+        .action-buttons .btn-success {
+            font-size: 0.75rem;
+            padding: 0.35rem 0.65rem;
+            white-space: nowrap;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -296,7 +388,7 @@
     </c:if>
     
     <div class="header">
-        <h1>🦷 Quản Lý Người Dùng</h1>
+        <h1>Quản Lý Người Dùng</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
@@ -308,8 +400,8 @@
         <main class="dashboard-content">
             <div class="user-management">
                 <div class="page-header">
-                    <h2 class="page-title">👥 Quản Lý Người Dùng</h2>
-                    <button class="btn-primary" onclick="openCreateUserModal()">+ Tạo Người Dùng Mới</button>
+                    <h2 class="page-title">Quản Lý Người Dùng</h2>
+                    <button class="btn-primary" onclick="openCreateUserModal()">Tạo Người Dùng Mới</button>
                 </div>
 
                 <c:if test="${not empty success}">
@@ -348,7 +440,7 @@
                                     </td>
                                     <td>
                                         <span class="status-badge ${user.active ? 'status-active' : 'status-inactive'}">
-                                            ${user.active ? '✅ Hoạt Động' : '❌ Không Hoạt Động'}
+                                            ${user.active ? 'Hoạt Động' : 'Không Hoạt Động'}
                                         </span>
                                     </td>
                                     <td>
@@ -357,14 +449,14 @@
                                     <td>
                                         <div class="action-buttons">
                                             <button class="btn-primary" onclick="openEditUserModal(${user.userId}, '${user.username}', '${user.email}', '${user.fullName}', '${user.phone}')">
-                                                ✏️ Chỉnh Sửa
+                                                Chỉnh Sửa
                                             </button>
                                             <button class="btn-warning" onclick="openUpdateRoleModal(${user.userId}, '${user.role.roleName}', ${user.role.roleId})">
-                                                🔄 Đổi Vai Trò
+                                                Đổi Vai Trò
                                             </button>
                                             <button class="btn-${user.active ? 'danger' : 'success'}" 
                                                     onclick="updateUserStatus(${user.userId}, ${!user.active})">
-                                                ${user.active ? '🔒 Khóa' : '🔓 Mở'}
+                                                ${user.active ? 'Khóa' : 'Mở'}
                                             </button>
                                         </div>
                                     </td>
@@ -384,32 +476,37 @@
                 <h3>Tạo Người Dùng Mới</h3>
                 <span class="close" onclick="closeCreateUserModal()">&times;</span>
             </div>
-            <form action="${pageContext.request.contextPath}/admin/users" method="post">
+            <form action="${pageContext.request.contextPath}/admin/users" method="post" id="createUserForm" onsubmit="return validateCreateForm()">
                 <input type="hidden" name="action" value="createUser">
                 
                 <div class="form-group">
                     <label for="username">Tên Đăng Nhập *</label>
                     <input type="text" id="username" name="username" class="form-control" required>
+                    <div class="error-message" id="usernameError">Tên đăng nhập không được để trống</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="email">Email *</label>
                     <input type="email" id="email" name="email" class="form-control" required>
+                    <div class="error-message" id="emailError">Email không hợp lệ</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="password">Mật Khẩu *</label>
                     <input type="password" id="password" name="password" class="form-control" required>
+                    <div class="error-message" id="passwordError">Mật khẩu phải có ít nhất 6 ký tự</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="fullName">Họ Tên *</label>
                     <input type="text" id="fullName" name="fullName" class="form-control" required>
+                    <div class="error-message" id="fullNameError">Họ tên không được để trống</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="phone">Số Điện Thoại</label>
-                    <input type="text" id="phone" name="phone" class="form-control">
+                    <input type="text" id="phone" name="phone" class="form-control" placeholder="VD: 0123456789">
+                    <div class="error-message" id="phoneError">Số điện thoại phải có 10 số và bắt đầu bằng 0</div>
                 </div>
                 
                 <div class="form-group">
@@ -466,28 +563,32 @@
                 <h3>Chỉnh Sửa Thông Tin Người Dùng</h3>
                 <span class="close" onclick="closeEditUserModal()">&times;</span>
             </div>
-            <form action="${pageContext.request.contextPath}/admin/users" method="post">
+            <form action="${pageContext.request.contextPath}/admin/users" method="post" id="editUserForm" onsubmit="return validateEditForm()">
                 <input type="hidden" name="action" value="updateUser">
                 <input type="hidden" id="editUserId" name="userId">
                 
                 <div class="form-group">
                     <label for="editUsername">Tên Đăng Nhập *</label>
                     <input type="text" id="editUsername" name="username" class="form-control" required>
+                    <div class="error-message" id="editUsernameError">Tên đăng nhập không được để trống</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="editEmail">Email *</label>
                     <input type="email" id="editEmail" name="email" class="form-control" required>
+                    <div class="error-message" id="editEmailError">Email không hợp lệ</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="editFullName">Họ Tên *</label>
                     <input type="text" id="editFullName" name="fullName" class="form-control" required>
+                    <div class="error-message" id="editFullNameError">Họ tên không được để trống</div>
                 </div>
                 
                 <div class="form-group">
                     <label for="editPhone">Số Điện Thoại</label>
-                    <input type="text" id="editPhone" name="phone" class="form-control">
+                    <input type="text" id="editPhone" name="phone" class="form-control" placeholder="VD: 0123456789">
+                    <div class="error-message" id="editPhoneError">Số điện thoại phải có 10 số và bắt đầu bằng 0</div>
                 </div>
                 
                 <div class="modal-footer">
@@ -499,6 +600,169 @@
     </div>
 
     <script>
+        // Validation functions
+        function validatePhone(phone) {
+            // Phone must be 10 digits, start with 0, no letters
+            const phoneRegex = /^0\d{9}$/;
+            return phoneRegex.test(phone);
+        }
+        
+        function validateEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+        
+        function validatePassword(password) {
+            // Password must be at least 6 characters
+            return password.length >= 6;
+        }
+        
+        function showError(inputId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.remove('success');
+            input.classList.add('error');
+            error.textContent = message;
+            error.classList.add('show');
+        }
+        
+        function showSuccess(inputId, errorId) {
+            const input = document.getElementById(inputId);
+            const error = document.getElementById(errorId);
+            input.classList.remove('error');
+            input.classList.add('success');
+            error.classList.remove('show');
+        }
+        
+        function validateCreateForm() {
+            let isValid = true;
+            
+            // Validate username
+            const username = document.getElementById('username').value.trim();
+            if (username === '') {
+                showError('username', 'usernameError', 'Tên đăng nhập không được để trống');
+                isValid = false;
+            } else {
+                showSuccess('username', 'usernameError');
+            }
+            
+            // Validate email
+            const email = document.getElementById('email').value.trim();
+            if (email === '') {
+                showError('email', 'emailError', 'Email không được để trống');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('email', 'emailError', 'Email không hợp lệ');
+                isValid = false;
+            } else {
+                showSuccess('email', 'emailError');
+            }
+            
+            // Validate password
+            const password = document.getElementById('password').value;
+            if (password === '') {
+                showError('password', 'passwordError', 'Mật khẩu không được để trống');
+                isValid = false;
+            } else if (!validatePassword(password)) {
+                showError('password', 'passwordError', 'Mật khẩu phải có ít nhất 6 ký tự');
+                isValid = false;
+            } else {
+                showSuccess('password', 'passwordError');
+            }
+            
+            // Validate full name
+            const fullName = document.getElementById('fullName').value.trim();
+            if (fullName === '') {
+                showError('fullName', 'fullNameError', 'Họ tên không được để trống');
+                isValid = false;
+            } else {
+                showSuccess('fullName', 'fullNameError');
+            }
+            
+            // Validate phone (optional but must be valid if provided)
+            const phone = document.getElementById('phone').value.trim();
+            if (phone !== '') {
+                if (!validatePhone(phone)) {
+                    showError('phone', 'phoneError', 'Số điện thoại phải có 10 số và bắt đầu bằng 0');
+                    isValid = false;
+                } else {
+                    showSuccess('phone', 'phoneError');
+                }
+            }
+            
+            return isValid;
+        }
+        
+        function validateEditForm() {
+            let isValid = true;
+            
+            // Validate username
+            const username = document.getElementById('editUsername').value.trim();
+            if (username === '') {
+                showError('editUsername', 'editUsernameError', 'Tên đăng nhập không được để trống');
+                isValid = false;
+            } else {
+                showSuccess('editUsername', 'editUsernameError');
+            }
+            
+            // Validate email
+            const email = document.getElementById('editEmail').value.trim();
+            if (email === '') {
+                showError('editEmail', 'editEmailError', 'Email không được để trống');
+                isValid = false;
+            } else if (!validateEmail(email)) {
+                showError('editEmail', 'editEmailError', 'Email không hợp lệ');
+                isValid = false;
+            } else {
+                showSuccess('editEmail', 'editEmailError');
+            }
+            
+            // Validate full name
+            const fullName = document.getElementById('editFullName').value.trim();
+            if (fullName === '') {
+                showError('editFullName', 'editFullNameError', 'Họ tên không được để trống');
+                isValid = false;
+            } else {
+                showSuccess('editFullName', 'editFullNameError');
+            }
+            
+            // Validate phone (optional but must be valid if provided)
+            const phone = document.getElementById('editPhone').value.trim();
+            if (phone !== '') {
+                if (!validatePhone(phone)) {
+                    showError('editPhone', 'editPhoneError', 'Số điện thoại phải có 10 số và bắt đầu bằng 0');
+                    isValid = false;
+                } else {
+                    showSuccess('editPhone', 'editPhoneError');
+                }
+            }
+            
+            return isValid;
+        }
+        
+        // Real-time validation for phone field
+        document.getElementById('phone')?.addEventListener('input', function(e) {
+            const phone = e.target.value.trim();
+            if (phone === '') {
+                showSuccess('phone', 'phoneError');
+            } else if (!validatePhone(phone)) {
+                showError('phone', 'phoneError', 'Số điện thoại phải có 10 số và bắt đầu bằng 0');
+            } else {
+                showSuccess('phone', 'phoneError');
+            }
+        });
+        
+        document.getElementById('editPhone')?.addEventListener('input', function(e) {
+            const phone = e.target.value.trim();
+            if (phone === '') {
+                showSuccess('editPhone', 'editPhoneError');
+            } else if (!validatePhone(phone)) {
+                showError('editPhone', 'editPhoneError', 'Số điện thoại phải có 10 số và bắt đầu bằng 0');
+            } else {
+                showSuccess('editPhone', 'editPhoneError');
+            }
+        });
+        
         function openCreateUserModal() {
             document.getElementById('createUserModal').style.display = 'block';
         }

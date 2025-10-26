@@ -101,7 +101,7 @@ public class ManagerStockTransactionServlet extends HttpServlet {
             List<InventoryItem> items = inventoryItemDAO.getAllInventoryItems();
 
             request.setAttribute("transactions", transactions);
-            request.setAttribute("items", items);
+            request.setAttribute("allItems", items);
             request.setAttribute("itemFilter", itemFilter);
             request.setAttribute("typeFilter", typeFilter);
             request.setAttribute("dateFrom", dateFrom);

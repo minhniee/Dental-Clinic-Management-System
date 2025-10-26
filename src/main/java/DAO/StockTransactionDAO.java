@@ -59,8 +59,13 @@ public class StockTransactionDAO {
         }
 
         if (dateTo != null && !dateTo.trim().isEmpty()) {
-            sql.append(" AND CAST(st.performed_at AS DATE) <= ?");
-            parameters.add(Date.valueOf(dateTo));
+            // Add 1 day to dateTo to include the entire day (to 23:59:59)
+            Date dateToValue = Date.valueOf(dateTo);
+            long timeInMillis = dateToValue.getTime();
+            timeInMillis += 86400000; // Add 1 day (24 hours in milliseconds)
+            Date dateToEndOfDay = new Date(timeInMillis);
+            sql.append(" AND st.performed_at < ?");
+            parameters.add(new Timestamp(dateToEndOfDay.getTime()));
         }
 
         sql.append(" ORDER BY st.performed_at DESC");

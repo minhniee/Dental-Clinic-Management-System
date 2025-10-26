@@ -400,9 +400,6 @@
                             <a href="${pageContext.request.contextPath}/manager/weekly-schedule" class="btn btn-secondary">
                                 📊 Xem Lịch Tuần
                             </a>
-                            <button type="button" onclick="generatePreview()" class="btn btn-warning">
-                                👁️ Xem Trước
-                            </button>
                             <button type="submit" class="btn btn-primary">
                                 📅 Phân Công Lịch Làm Việc
                             </button>

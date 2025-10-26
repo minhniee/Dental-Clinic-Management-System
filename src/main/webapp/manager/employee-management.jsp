@@ -170,18 +170,29 @@
         .modal-content {
             background-color: #ffffff;
             margin: 5% auto;
-            padding: 2rem;
+            padding: 0;
             border-radius: 0.75rem;
             width: 90%;
-            max-width: 600px;
+            max-width: 900px;
+            max-height: 90vh;
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .modal-body {
+            padding: 2rem;
+            overflow-y: auto;
+            flex: 1;
+            min-height: 0;
         }
         
         .modal-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 1.5rem;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e2e8f0;
         }
         
         .modal-header h2 {
@@ -211,6 +222,30 @@
             font-weight: 500;
         }
         
+        #multiSchedulePreview {
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 0.5rem;
+        }
+        
+        #multiSchedulePreview::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        #multiSchedulePreview::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 10px;
+        }
+        
+        #multiSchedulePreview::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        #multiSchedulePreview::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
         .form-group input,
         .form-group select {
             width: 100%;
@@ -237,7 +272,13 @@
             display: flex;
             justify-content: flex-end;
             gap: 1rem;
-            margin-top: 1.5rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid #e2e8f0;
+            background: #ffffff;
+            border-bottom-left-radius: 0.75rem;
+            border-bottom-right-radius: 0.75rem;
+            position: sticky;
+            bottom: 0;
         }
         
         .btn {
@@ -352,7 +393,7 @@
     </c:if>
     
     <div class="header">
-        <h1>👥 Quản Lý Nhân Viên</h1>
+        <h1>Quản Lý Nhân Viên</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
@@ -434,11 +475,11 @@
                 <!-- Schedule Management Buttons -->
                 <div style="margin-bottom: 1.5rem; display: flex; gap: 1rem; flex-wrap: wrap;">
                     <button onclick="viewAllSchedules()" class="btn btn-primary">
-                        📅 Quản Lý Lịch Làm Việc Tổng Thể
+                        Quản Lý Lịch Làm Việc Tổng Thể
                     </button>
-                    <button onclick="assignMultipleEmployees()" class="btn btn-success">
-                        👥 Phân Công Cho Nhiều Nhân Viên
-                    </button>
+<%--                    <button onclick="assignMultipleEmployees()" class="btn btn-success">--%>
+<%--                        Phân Công Cho Nhiều Nhân Viên--%>
+<%--                    </button>--%>
                 </div>
 
                 <!-- Employee Cards -->
@@ -487,11 +528,8 @@
                             </div>
                             
                             <div class="employee-actions">
-                                <button class="btn-small btn-primary" onclick="assignWorkSchedule(${user.userId}, '${user.fullName}', '${user.role.roleName}')">
-                                    📅 Phân Công Lịch Làm Việc
-                                </button>
                                 <button class="btn-small btn-success" onclick="viewEmployeeSchedule(${user.userId})">
-                                    👁️ Xem Lịch Làm Việc
+                                    Xem Lịch Làm Việc
                                 </button>
                             </div>
                         </div>
@@ -608,11 +646,12 @@
 
     <!-- Multiple Employees Schedule Assignment Modal -->
     <div id="multipleEmployeesModal" class="modal">
-        <div class="modal-content" style="max-width: 900px;">
+        <div class="modal-content">
             <div class="modal-header">
                 <h2>Phân Công Lịch Làm Việc Cho Nhiều Nhân Viên</h2>
                 <span class="close" onclick="closeMultipleEmployeesModal()">&times;</span>
             </div>
+            <div class="modal-body">
             <form action="${pageContext.request.contextPath}/admin/schedules" method="post">
                 <input type="hidden" name="action" value="assignMultipleWeeklySchedule">
                 
@@ -719,20 +758,12 @@
                 </div>
                 
                 <!-- Notes removed - not supported in database -->
-                
-                <!-- Preview -->
-                <div class="form-group">
-                    <label>Xem trước lịch làm việc:</label>
-                    <div id="multiSchedulePreview" style="background: #f8fafc; padding: 1rem; border-radius: 0.5rem; margin-top: 0.5rem;">
-                        <p style="color: #64748b; font-style: italic;">Chọn nhân viên, tuần và ngày để xem trước</p>
-                    </div>
-                </div>
-                
+            </form>
+            </div>
                 <div class="modal-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeMultipleEmployeesModal()">Hủy</button>
-                    <button type="submit" class="btn btn-primary">Phân Công Cho Tất Cả</button>
+                    <button type="button" class="btn btn-primary" onclick="document.querySelector('#multipleEmployeesModal form').submit()">Phân Công Cho Tất Cả</button>
                 </div>
-            </form>
         </div>
     </div>
 
@@ -755,11 +786,11 @@
         }
 
         function viewEmployeeSchedule(employeeId) {
-            window.location.href = '${pageContext.request.contextPath}/admin/employee-schedule?employeeId=' + employeeId;
+            window.location.href = '${pageContext.request.contextPath}/manager/employee-schedule?employeeId=' + employeeId;
         }
 
         function viewAllSchedules() {
-            window.location.href = '${pageContext.request.contextPath}/admin/schedules';
+            window.location.href = '${pageContext.request.contextPath}/manager/schedules';
         }
 
         function assignMultipleEmployees() {
@@ -1018,7 +1049,18 @@
             const startTime = document.getElementById('multiStartTime').value;
             const endTime = document.getElementById('multiEndTime').value;
             const selectedDays = Array.from(document.querySelectorAll('input[name="multiWorkDays"]:checked')).map(cb => cb.value);
-            const selectedEmployees = Array.from(document.querySelectorAll('input[name="selectedEmployees"]:checked')).map(cb => cb.value);
+            
+            // Get selected employee names
+            const selectedEmployees = [];
+            document.querySelectorAll('input[name="selectedEmployees"]:checked').forEach(cb => {
+                const checkboxLabel = cb.closest('.employee-checkbox');
+                if (checkboxLabel) {
+                    const span = checkboxLabel.querySelector('span');
+                    if (span) {
+                        selectedEmployees.push(span.textContent.trim());
+                    }
+                }
+            });
             
             const preview = document.getElementById('multiSchedulePreview');
             
@@ -1027,7 +1069,10 @@
                 return;
             }
             
-            let previewHTML = `<div style="font-weight: 600; margin-bottom: 0.5rem;">Lịch làm việc cho ${selectedEmployees.length} nhân viên:</div>`;
+            let previewHTML = `<div style="font-weight: 600; margin-bottom: 1rem; color: #0369a1;">
+                <div style="font-size: 1.1rem;">📅 Lịch làm việc cho ${selectedEmployees.length} nhân viên</div>
+                <div style="font-size: 0.875rem; color: #64748b; margin-top: 0.25rem;">${selectedEmployees.join(', ')}</div>
+            </div>`;
             
             const startDate = new Date(weekStart);
             const dayNames = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
@@ -1041,12 +1086,15 @@
                 if (selectedDays.includes(dayValue)) {
                     const dateStr = currentDate.toLocaleDateString('vi-VN');
                     const dayName = dayNames[currentDate.getDay()];
-                    const timeStr = startTime && endTime ? `${startTime} - ${endTime}` : shift;
+                    const timeStr = startTime && endTime ? `${startTime.substring(0, 5)} - ${endTime.substring(0, 5)}` : shift;
                     
                     previewHTML += `
-                        <div style="display: flex; justify-content: space-between; padding: 0.5rem; background: #e0f2fe; border-radius: 0.25rem; margin-bottom: 0.25rem;">
-                            <span><strong>${dayName}</strong> (${dateStr})</span>
-                            <span style="color: #0369a1;">${timeStr} - ${selectedEmployees.length} nhân viên</span>
+                        <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%); border-left: 4px solid #0369a1; border-radius: 0.375rem; margin-bottom: 0.5rem; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                            <div>
+                                <span style="font-weight: 600; color: #0369a1;">${dayName}</span>
+                                <span style="color: #64748b; font-size: 0.875rem; margin-left: 0.5rem;">${dateStr}</span>
+                            </div>
+                            <span style="background: #0284c7; color: white; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.875rem; font-weight: 600;">${timeStr}</span>
                         </div>
                     `;
                 }

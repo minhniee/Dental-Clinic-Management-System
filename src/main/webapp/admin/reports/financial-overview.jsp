@@ -19,7 +19,7 @@
         
         .page-header {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             margin-bottom: 2rem;
             padding: 1.5rem;
@@ -36,39 +36,6 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .action-buttons {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-        
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 0.75rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.9rem;
-        }
-        
-        .btn-primary {
-            background: rgba(255,255,255,0.2);
-            color: white;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.3);
-        }
-        
-        .btn-primary:hover {
-            background: rgba(255,255,255,0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
         .filter-section {
             background: white;
             padding: 2rem;
@@ -83,9 +50,6 @@
             font-weight: 700;
             color: #2d3748;
             margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
         
         .filter-row {
@@ -157,11 +121,6 @@
             letter-spacing: 0.5px;
         }
         
-        .stat-icon {
-            font-size: 2rem;
-            opacity: 0.7;
-        }
-        
         .stat-value {
             font-size: 2.5rem;
             font-weight: 800;
@@ -199,9 +158,6 @@
             font-weight: 700;
             color: #1f2937;
             margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
         
         .chart-wrapper {
@@ -228,9 +184,6 @@
             font-weight: 700;
             color: #1f2937;
             margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
         }
         
         .table {
@@ -336,6 +289,102 @@
             border-radius: 4px;
             transition: width 0.3s ease;
         }
+        
+        .badge {
+            display: inline-block;
+            padding: 0.4rem 0.8rem;
+            border-radius: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+        
+        .badge-success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            color: #065f46;
+            border: 1px solid #059669;
+        }
+        
+        .badge-danger {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            color: #991b1b;
+            border: 1px solid #dc2626;
+        }
+        
+        .badge-warning {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            color: #92400e;
+            border: 1px solid #f59e0b;
+        }
+        
+        .badge-info {
+            background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+        
+        .stat-card-revenue {
+            border-left: 4px solid #059669;
+            background: linear-gradient(135deg, #ffffff 0%, #f0fdfa 100%);
+        }
+        
+        .stat-card-expense {
+            border-left: 4px solid #dc2626;
+            background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
+        }
+        
+        .stat-card-profit {
+            border-left: 4px solid #667eea;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f3ff 100%);
+        }
+        
+        .stat-card-margin {
+            border-left: 4px solid #f59e0b;
+            background: linear-gradient(135deg, #ffffff 0%, #fffbeb 100%);
+        }
+        
+        .change-arrow {
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            margin-right: 0.5rem;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #6b7280;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #4b5563;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(107, 114, 128, 0.3);
+        }
     </style>
 </head>
 <body>
@@ -349,7 +398,7 @@
     </c:if>
 
     <div class="header">
-        <h1>💰 Báo Cáo Tài Chính Tổng Quan</h1>
+        <h1>Báo Cáo Tài Chính Tổng Quan</h1>
         <div class="user-info">
             <span>Chào mừng, ${sessionScope.user.fullName}</span>
             <a href="${pageContext.request.contextPath}/logout" class="logout-btn">Đăng Xuất</a>
@@ -361,29 +410,18 @@
         <main class="dashboard-content">
             <div class="reports-container">
                 <div class="page-header">
-                    <h2 class="page-title">💰 Báo Cáo Tài Chính Tổng Quan</h2>
-                    <div class="action-buttons">
-                        <a href="${pageContext.request.contextPath}/admin/financial-reports?type=revenue" class="btn btn-primary">
-                            📈 Báo Cáo Doanh Thu
-                        </a>
-                        <a href="${pageContext.request.contextPath}/admin/financial-reports?type=expenses" class="btn btn-primary">
-                            💸 Báo Cáo Chi Phí
-                        </a>
-                        <a href="${pageContext.request.contextPath}/admin/financial-reports?type=profit" class="btn btn-primary">
-                            📊 Báo Cáo Lợi Nhuận
-                        </a>
-                    </div>
+                    <h2 class="page-title">Báo Cáo Tài Chính Tổng Quan</h2>
                 </div>
 
                 <c:if test="${not empty error}">
                     <div class="alert alert-error">
-                        ❌ ${error}
+                        ${error}
                     </div>
                 </c:if>
 
                 <!-- Filter Section -->
                 <div class="filter-section">
-                    <h3 class="filter-title">🔍 Bộ Lọc</h3>
+                    <h3 class="filter-title">Bộ Lọc</h3>
                     <form method="get" action="${pageContext.request.contextPath}/admin/financial-reports">
                         <input type="hidden" name="type" value="overview">
                         <div class="filter-row">
@@ -397,10 +435,10 @@
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary" style="background: #667eea; color: white;">
-                                    🔍 Áp Dụng
+                                    Áp Dụng
                                 </button>
-                                <a href="${pageContext.request.contextPath}/admin/financial-reports?type=overview" class="btn btn-primary" style="background: #6b7280; color: white;">
-                                    🔄 Xóa Lọc
+                                <a href="${pageContext.request.contextPath}/admin/financial-reports?type=overview" class="btn btn-secondary" style="background: #6b7280; color: white;">
+                                    Xóa Lọc
                                 </a>
                             </div>
                         </div>
@@ -410,58 +448,54 @@
                 <c:if test="${not empty financialData}">
                     <!-- Financial Overview Statistics -->
                     <div class="stats-grid">
-                        <div class="stat-card">
+                        <div class="stat-card stat-card-revenue">
                             <div class="stat-header">
                                 <span class="stat-title">Tổng Doanh Thu</span>
-                                <span class="stat-icon">💰</span>
                             </div>
                             <div class="stat-value">
                                 <fmt:formatNumber value="${financialData.totalRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
                             </div>
                             <div class="stat-change positive">
-                                <span>↗️</span>
+                                <span class="change-arrow">↑</span>
                                 <span>Từ hóa đơn và dịch vụ</span>
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card stat-card-expense">
                             <div class="stat-header">
                                 <span class="stat-title">Tổng Chi Phí</span>
-                                <span class="stat-icon">💸</span>
                             </div>
                             <div class="stat-value">
                                 <fmt:formatNumber value="${financialData.totalExpenses}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
                             </div>
                             <div class="stat-change negative">
-                                <span>↘️</span>
+                                <span class="change-arrow">↓</span>
                                 <span>Vật tư và vận hành</span>
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card stat-card-profit">
                             <div class="stat-header">
                                 <span class="stat-title">Lợi Nhuận Ròng</span>
-                                <span class="stat-icon">📊</span>
                             </div>
                             <div class="stat-value">
                                 <fmt:formatNumber value="${financialData.netProfit}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
                             </div>
                             <div class="stat-change ${financialData.netProfit >= 0 ? 'positive' : 'negative'}">
-                                <span>${financialData.netProfit >= 0 ? '↗️' : '↘️'}</span>
+                                <span class="change-arrow">${financialData.netProfit >= 0 ? '↑' : '↓'}</span>
                                 <span>Doanh thu - Chi phí</span>
                             </div>
                         </div>
                         
-                        <div class="stat-card">
+                        <div class="stat-card stat-card-margin">
                             <div class="stat-header">
                                 <span class="stat-title">Tỷ Suất Lợi Nhuận</span>
-                                <span class="stat-icon">📈</span>
                             </div>
                             <div class="stat-value">
                                 <fmt:formatNumber value="${financialData.profitMargin}" maxFractionDigits="1"/>%
                             </div>
                             <div class="stat-change ${financialData.profitMargin >= 0 ? 'positive' : 'negative'}">
-                                <span>${financialData.profitMargin >= 0 ? '↗️' : '↘️'}</span>
+                                <span class="change-arrow">${financialData.profitMargin >= 0 ? '↑' : '↓'}</span>
                                 <span>Hiệu quả kinh doanh</span>
                             </div>
                         </div>
@@ -469,7 +503,7 @@
 
                     <!-- Revenue vs Expenses Chart -->
                     <div class="chart-container">
-                        <h3 class="chart-title">📊 Doanh Thu vs Chi Phí</h3>
+                        <h3 class="chart-title">Doanh Thu vs Chi Phí</h3>
                         <div class="chart-wrapper">
                             <canvas id="revenueExpensesChart"></canvas>
                         </div>
@@ -479,7 +513,7 @@
                     <c:if test="${not empty financialData.revenueBreakdown}">
                         <div class="table-container">
                             <div class="table-header">
-                                <h3 class="table-title">💰 Phân Tích Doanh Thu</h3>
+                                <h3 class="table-title">Phân Tích Doanh Thu</h3>
                             </div>
                             <table class="table">
                                 <thead>
@@ -513,13 +547,13 @@
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${revenue.source == 'Hóa Đơn'}">
-                                                        <span style="color: #059669;">✅ Đã Thanh Toán</span>
+                                                        <span class="badge badge-success">Đã Thanh Toán</span>
                                                     </c:when>
                                                     <c:when test="${revenue.source == 'Dịch Vụ'}">
-                                                        <span style="color: #059669;">✅ Hoàn Thành</span>
+                                                        <span class="badge badge-success">Hoàn Thành</span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span style="color: #6b7280;">📊 Ước Tính</span>
+                                                        <span class="badge badge-info">Ước Tính</span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
@@ -534,7 +568,7 @@
                     <c:if test="${not empty financialData.expenseBreakdown}">
                         <div class="table-container">
                             <div class="table-header">
-                                <h3 class="table-title">💸 Phân Tích Chi Phí</h3>
+                                <h3 class="table-title">Phân Tích Chi Phí</h3>
                             </div>
                             <table class="table">
                                 <thead>
@@ -568,13 +602,13 @@
                                             <td>
                                                 <c:choose>
                                                     <c:when test="${expense.category == 'Vật Tư'}">
-                                                        <span style="color: #dc2626;">📦 Xuất Kho</span>
+                                                        <span class="badge badge-danger">Xuất Kho</span>
                                                     </c:when>
                                                     <c:when test="${expense.category == 'Vận Hành'}">
-                                                        <span style="color: #dc2626;">⚙️ Ước Tính</span>
+                                                        <span class="badge badge-warning">Ước Tính</span>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        <span style="color: #6b7280;">📊 Khác</span>
+                                                        <span class="badge badge-info">Khác</span>
                                                     </c:otherwise>
                                                 </c:choose>
                                             </td>
@@ -587,8 +621,8 @@
 
                     <!-- Monthly Trends Chart -->
                     <c:if test="${not empty financialData.monthlyTrends}">
-                        <div class="chart-container">
-                            <h3 class="chart-title">📈 Xu Hướng Doanh Thu Theo Tháng</h3>
+                    <div class="chart-container">
+                        <h3 class="chart-title">Xu Hướng Doanh Thu Theo Tháng</h3>
                             <div class="chart-wrapper">
                                 <canvas id="monthlyTrendsChart"></canvas>
                             </div>
@@ -599,7 +633,7 @@
                 <c:if test="${empty financialData}">
                     <div class="table-container">
                         <div class="empty-state">
-                            <h3>📊 Không có dữ liệu tài chính</h3>
+                            <h3>Không có dữ liệu tài chính</h3>
                             <p>Không tìm thấy dữ liệu tài chính trong khoảng thời gian đã chọn.</p>
                         </div>
                     </div>

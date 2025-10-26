@@ -10,10 +10,7 @@ import model.User;
 import context.DBContext;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -166,6 +163,16 @@ public class ManagerReportsServlet extends HttpServlet {
         }
     }
 
+    // Helper methods for date range filtering (inclusive of full end day)
+    private Timestamp convertDateFrom(String dateFrom) {
+        return Timestamp.valueOf(LocalDate.parse(dateFrom).atStartOfDay());
+    }
+    
+    private Timestamp convertDateTo(String dateTo) {
+        // Add 1 day to include the entire end day (00:00:00 to 23:59:59)
+        return Timestamp.valueOf(LocalDate.parse(dateTo).plusDays(1).atStartOfDay());
+    }
+
     // Database helper methods
     private List<Map<String, Object>> getAllAppointments(String dateFrom, String dateTo, String doctorName, String status) throws SQLException {
         StringBuilder sql = new StringBuilder();
@@ -176,11 +183,11 @@ public class ManagerReportsServlet extends HttpServlet {
         sql.append("JOIN Patients p ON a.patient_id = p.patient_id ");
         sql.append("JOIN Users u ON a.dentist_id = u.user_id ");
         sql.append("JOIN Services s ON a.service_id = s.service_id ");
-        sql.append("WHERE a.appointment_date BETWEEN ? AND ? ");
+        sql.append("WHERE a.appointment_date >= ? AND a.appointment_date < ? ");
         
         List<Object> parameters = new ArrayList<>();
-        parameters.add(dateFrom);
-        parameters.add(dateTo);
+        parameters.add(convertDateFrom(dateFrom));
+        parameters.add(convertDateTo(dateTo));
         
         if (doctorName != null && !doctorName.trim().isEmpty()) {
             sql.append("AND u.full_name LIKE ? ");
@@ -241,11 +248,11 @@ public class ManagerReportsServlet extends HttpServlet {
         return doctors;
     }
     private int getTotalAppointments(String dateFrom, String dateTo) throws SQLException {
-        String sql = "SELECT COUNT(*) FROM Appointments WHERE appointment_date BETWEEN ? AND ?";
+        String sql = "SELECT COUNT(*) FROM Appointments WHERE appointment_date >= ? AND appointment_date < ?";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getInt(1) : 0;
             }
@@ -253,11 +260,11 @@ public class ManagerReportsServlet extends HttpServlet {
     }
 
     private double getInvoiceRevenue(String dateFrom, String dateTo) throws SQLException {
-        String sql = "SELECT COALESCE(SUM(net_amount), 0) FROM Invoices WHERE created_at BETWEEN ? AND ? AND status = 'PAID'";
+        String sql = "SELECT COALESCE(SUM(net_amount), 0) FROM Invoices WHERE created_at >= ? AND created_at < ? AND status = 'PAID'";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getDouble(1) : 0.0;
             }
@@ -267,11 +274,11 @@ public class ManagerReportsServlet extends HttpServlet {
     private double getAppointmentRevenue(String dateFrom, String dateTo) throws SQLException {
         String sql = "SELECT COALESCE(SUM(s.price), 0) FROM Appointments a " +
                     "JOIN Services s ON a.service_id = s.service_id " +
-                    "WHERE a.appointment_date BETWEEN ? AND ? AND a.status = 'COMPLETED'";
+                    "WHERE a.appointment_date >= ? AND a.appointment_date < ? AND a.status = 'COMPLETED'";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getDouble(1) : 0.0;
             }
@@ -325,11 +332,11 @@ public class ManagerReportsServlet extends HttpServlet {
     }
 
     private int getTotalPatients(String dateFrom, String dateTo) throws SQLException {
-        String sql = "SELECT COUNT(DISTINCT patient_id) FROM Appointments WHERE appointment_date BETWEEN ? AND ?";
+        String sql = "SELECT COUNT(DISTINCT patient_id) FROM Appointments WHERE appointment_date >= ? AND appointment_date < ?";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 return rs.next() ? rs.getInt(1) : 0;
             }
@@ -363,13 +370,13 @@ public class ManagerReportsServlet extends HttpServlet {
 
     private List<Map<String, Object>> getRevenueByDay(String dateFrom, String dateTo) throws SQLException {
         String sql = "SELECT created_at, COALESCE(SUM(net_amount), 0) as daily_revenue " +
-                    "FROM Invoices WHERE created_at BETWEEN ? AND ? AND status = 'PAID' " +
+                    "FROM Invoices WHERE created_at >= ? AND created_at < ? AND status = 'PAID' " +
                     "GROUP BY created_at ORDER BY created_at";
         List<Map<String, Object>> revenueByDay = new ArrayList<>();
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> dayRevenue = new HashMap<>();
@@ -384,12 +391,12 @@ public class ManagerReportsServlet extends HttpServlet {
 
     private List<Map<String, Object>> getAppointmentsByStatus(String dateFrom, String dateTo) throws SQLException {
         String sql = "SELECT status, COUNT(*) as count FROM Appointments " +
-                    "WHERE appointment_date BETWEEN ? AND ? GROUP BY status";
+                    "WHERE appointment_date >= ? AND appointment_date < ? GROUP BY status";
         List<Map<String, Object>> appointmentsByStatus = new ArrayList<>();
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> statusData = new HashMap<>();
@@ -406,13 +413,13 @@ public class ManagerReportsServlet extends HttpServlet {
         String sql = "SELECT u.full_name as doctor_name, COUNT(*) as count " +
                     "FROM Appointments a " +
                     "JOIN Users u ON a.dentist_id = u.user_id " +
-                    "WHERE a.appointment_date BETWEEN ? AND ? " +
+                    "WHERE a.appointment_date >= ? AND a.appointment_date < ? " +
                     "GROUP BY u.full_name ORDER BY count DESC";
         List<Map<String, Object>> appointmentsByDoctor = new ArrayList<>();
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> doctorData = new HashMap<>();
@@ -427,13 +434,13 @@ public class ManagerReportsServlet extends HttpServlet {
 
     private List<Map<String, Object>> getAppointmentsByDay(String dateFrom, String dateTo) throws SQLException {
         String sql = "SELECT appointment_date, COUNT(*) as count FROM Appointments " +
-                    "WHERE appointment_date BETWEEN ? AND ? " +
+                    "WHERE appointment_date >= ? AND appointment_date < ? " +
                     "GROUP BY appointment_date ORDER BY appointment_date";
         List<Map<String, Object>> appointmentsByDay = new ArrayList<>();
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> dayData = new HashMap<>();
@@ -451,13 +458,13 @@ public class ManagerReportsServlet extends HttpServlet {
                     "FROM Invoices i " +
                     "JOIN InvoiceItems ii ON i.invoice_id = ii.invoice_id " +
                     "JOIN Services s ON ii.service_id = s.service_id " +
-                    "WHERE i.created_at BETWEEN ? AND ? AND i.status = 'PAID' " +
+                    "WHERE i.created_at >= ? AND i.created_at < ? AND i.status = 'PAID' " +
                     "GROUP BY s.name ORDER BY revenue DESC";
         List<Map<String, Object>> revenueByService = new ArrayList<>();
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> serviceData = new HashMap<>();
@@ -475,13 +482,13 @@ public class ManagerReportsServlet extends HttpServlet {
                     "FROM Invoices i " +
                     "JOIN Appointments a ON i.appointment_id = a.appointment_id " +
                     "JOIN Users u ON a.dentist_id = u.user_id " +
-                    "WHERE i.created_at BETWEEN ? AND ? AND i.status = 'PAID' " +
+                    "WHERE i.created_at >= ? AND i.created_at < ? AND i.status = 'PAID' " +
                     "GROUP BY u.full_name ORDER BY revenue DESC";
         List<Map<String, Object>> revenueByDoctor = new ArrayList<>();
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Map<String, Object> doctorData = new HashMap<>();
@@ -496,11 +503,11 @@ public class ManagerReportsServlet extends HttpServlet {
 
     private double getAppointmentCompletionRate(String dateFrom, String dateTo) throws SQLException {
         String sql = "SELECT COUNT(*) as total, COUNT(CASE WHEN status = 'COMPLETED' THEN 1 END) as completed " +
-                    "FROM Appointments WHERE appointment_date BETWEEN ? AND ?";
+                    "FROM Appointments WHERE appointment_date >= ? AND appointment_date < ?";
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, dateFrom);
-            ps.setString(2, dateTo);
+            ps.setTimestamp(1, convertDateFrom(dateFrom));
+            ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     int total = rs.getInt("total");
