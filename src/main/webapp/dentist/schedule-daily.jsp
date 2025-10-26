@@ -133,6 +133,11 @@
             color: #dc2626;
         }
 
+        .status-waiting {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
         .btn {
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
@@ -429,6 +434,9 @@
                                                                 </small>
                                                             </c:if>
                                                         </c:when>
+                                                        <c:when test="${appointment.status eq 'WAITING'}">
+                                                            <span class="status-badge status-waiting">Chờ khám</span>
+                                                        </c:when>
                                                         <c:when test="${appointment.status eq 'COMPLETED'}">
                                                             <span class="status-badge status-completed">Hoàn thành</span>
                                                         </c:when>
@@ -461,7 +469,19 @@
                                                             <i class="fas fa-user-md"></i>
                                                             Hồ Sơ
                                                         </a>
-                                                        <c:if test="${appointment.status eq 'CONFIRMED' or appointment.status eq 'SCHEDULED'}">
+                                                        <%-- Nút Chờ khám - hiển thị cho SCHEDULED hoặc CONFIRMED --%>
+                                                        <c:if test="${appointment.status eq 'SCHEDULED' or appointment.status eq 'CONFIRMED'}">
+                                                            <form method="POST" action="${pageContext.request.contextPath}/dentist/schedule" style="display: inline;">
+                                                                <input type="hidden" name="action" value="update_status">
+                                                                <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">
+                                                                <input type="hidden" name="status" value="WAITING">
+                                                                <button type="submit" class="btn btn-primary btn-sm" style="background-color: #d97706; border-color: #d97706;">
+                                                                    <i class="fas fa-hourglass-half"></i> Chờ khám
+                                                                </button>
+                                                            </form>
+                                                        </c:if>
+                                                        <%-- Nút Hoàn thành - chỉ hiển thị cho WAITING --%>
+                                                        <c:if test="${appointment.status eq 'WAITING'}">
                                                             <form method="POST" action="${pageContext.request.contextPath}/dentist/schedule" style="display: inline;">
                                                                 <input type="hidden" name="action" value="update_status">
                                                                 <input type="hidden" name="appointmentId" value="${appointment.appointmentId}">

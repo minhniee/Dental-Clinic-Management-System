@@ -249,7 +249,20 @@
                                             <c:if test="${not empty patient.positionInQueue}">
                                                 <span class="badge bg-primary">Số ${patient.positionInQueue}</span>
                                             </c:if>
-                                            <span class="status-badge status-not-examined">Chưa Khám</span>
+                                            <c:choose>
+                                                <c:when test="${patient.appointmentStatus == 'WAITING'}">
+                                                    <span class="status-badge" style="background-color: #f59e0b; color: white;">Chờ khám</span>
+                                                </c:when>
+                                                <c:when test="${patient.appointmentStatus == 'CONFIRMED'}">
+                                                    <span class="status-badge" style="background-color: #10b981; color: white;">Đã xác nhận</span>
+                                                </c:when>
+                                                <c:when test="${patient.appointmentStatus == 'SCHEDULED'}">
+                                                    <span class="status-badge status-not-examined">Đã lên lịch</span>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <span class="status-badge status-not-examined">Chưa Khám</span>
+                                                </c:otherwise>
+                                            </c:choose>
                                         </div>
                                     </div>
                                     
@@ -332,11 +345,14 @@
                                                 <span class="badge bg-primary">Số ${patient.positionInQueue}</span>
                                             </c:if>
                                             <c:choose>
+                                                <c:when test="${patient.appointmentStatus == 'WAITING'}">
+                                                    <span class="status-badge" style="background-color: #f59e0b; color: white;">Chờ khám</span>
+                                                </c:when>
                                                 <c:when test="${patient.queueStatus == 'COMPLETED'}">
                                                     <span class="status-badge status-examined">Đã Khám</span>
                                                 </c:when>
                                                 <c:when test="${patient.queueStatus == 'IN_TREATMENT'}">
-                                                    <span class="status-badge" style="background-color: #f59e0b; color: white;">Đang Khám</span>
+                                                    <span class="status-badge" style="background-color: #ef4444; color: white;">Đang Khám</span>
                                                 </c:when>
                                                 <c:when test="${patient.queueStatus == 'CALLED'}">
                                                     <span class="status-badge" style="background-color: #3b82f6; color: white;">Đã Gọi</span>

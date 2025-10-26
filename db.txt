@@ -67,7 +67,8 @@ CREATE TABLE Patients (
     gender      CHAR(1) NULL CHECK (gender IN ('M','F','O')),
     phone       VARCHAR(50) NULL,
     email       VARCHAR(150) NULL,
-    address     VARCHAR(300) NULL,
+    address     NVARCHAR(300) NULL,
+    avatar      VARCHAR(500) NULL,
     created_at  DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
 );
 GO
@@ -128,7 +129,7 @@ CREATE TABLE Appointments (
     dentist_id        INT NOT NULL,
     service_id        INT NOT NULL,
     appointment_date  DATETIME2 NOT NULL,
-    status            VARCHAR(50) NOT NULL DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED','CONFIRMED','COMPLETED','CANCELLED')),
+    status            VARCHAR(50) NOT NULL DEFAULT 'SCHEDULED' CHECK (status IN ('SCHEDULED','CONFIRMED','WAITING','COMPLETED','CANCELLED')),
     notes             NVARCHAR(500) NULL,
     created_at        DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     source            VARCHAR(20) NOT NULL DEFAULT 'INTERNAL' CHECK (source IN ('INTERNAL','ONLINE')),
@@ -190,6 +191,7 @@ CREATE TABLE TreatmentPlans (
     plan_id         INT IDENTITY(1,1) PRIMARY KEY,
     record_id       INT NOT NULL,
     plan_summary    NVARCHAR(MAX) NULL,
+    notes           NVARCHAR(500) NULL,
     estimated_cost  DECIMAL(18,2) NULL CHECK (estimated_cost >= 0),
     created_at      DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
     CONSTRAINT FK_TreatmentPlans_Record FOREIGN KEY (record_id) REFERENCES MedicalRecords(record_id)
@@ -381,6 +383,26 @@ VALUES
 ('reception1','recp@clinic.com','1','Reception Staff','0922222222',4);
 GO
 
+INSERT INTO Employees (user_id, position, hire_date)
+VALUES
+(2, 'Senior Dentist', '2024-01-15'),
+(3, 'Receptionist', '2024-02-01');
+GO
+
+-- Thêm thêm employees để có thêm dữ liệu mẫu
+INSERT INTO Users (username, email, password_hash, full_name, phone, role_id)
+VALUES
+('dr.smith','smith@clinic.com','1','Dr. Smith Wilson','0933333333',3),
+('dr.mary','mary@clinic.com','1','Dr. Mary Johnson','0944444444',3),
+('manager1','manager@clinic.com','1','Manager Nguyen Van','0955555555',2);
+GO
+
+INSERT INTO Employees (user_id, position, hire_date)
+VALUES
+(4, 'Dentist', '2024-03-10'),
+(5, 'Junior Dentist', '2024-05-01'),
+(6, 'Clinic Manager', '2023-11-20');
+GO
 
 INSERT INTO InventoryItems(name, unit, quantity, min_stock)
 VALUES
@@ -411,6 +433,195 @@ VALUES
 (N'Nguyễn Văn A', '0901234567', 'nguyenvana@email.com', 1, 2, '2025-10-22', 'Morning', 'Cần khám răng sâu', 'PENDING'),
 (N'Trần Thị B', '0901234568', 'tranthib@email.com', 2, 2, '2025-10-23', 'Afternoon', 'Làm sạch răng', 'PENDING'),
 (N'Lê Văn C', '0901234569', 'levanc@email.com', 3, 2, '2025-10-24', 'Morning', 'Trám răng', 'CONFIRMED');
+GO
+
+-- Sample DoctorSchedules data
+INSERT INTO DoctorSchedules (doctor_id, work_date, shift, start_time, end_time, room_no, status)
+VALUES
+-- Dr. John Doe (doctor_id = 2) - Lịch tuần này
+(2, '2025-10-20', 'Morning', '08:00:00', '12:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-20', 'Afternoon', '13:00:00', '17:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-21', 'Morning', '08:00:00', '12:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-21', 'Afternoon', '13:00:00', '17:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-22', 'Morning', '08:00:00', '12:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-22', 'Afternoon', '13:00:00', '17:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-23', 'Morning', '08:00:00', '12:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-23', 'Afternoon', '13:00:00', '17:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-24', 'Morning', '08:00:00', '12:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-24', 'Afternoon', '13:00:00', '17:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-25', 'Morning', '08:00:00', '12:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-27', 'FullDay', '08:00:00', '17:00:00', 'Room 102', 'ACTIVE'),
+(2, '2025-10-28', 'Morning', '08:00:00', '12:00:00', 'Room 101', 'ACTIVE'),
+(2, '2025-10-28', 'Afternoon', '13:00:00', '17:00:00', 'Room 101', 'ACTIVE');
+GO
+
+-- Sample ScheduleRequests data
+INSERT INTO ScheduleRequests (employee_id, date, shift, reason, status, reviewed_by, reviewed_at)
+VALUES
+-- Employee 1 (Dr. John Doe) - Requests đang chờ xử lý
+(1, '2025-10-26', 'Morning', N'Cần đi khám sức khỏe định kỳ', 'PENDING', NULL, NULL),
+(1, '2025-10-29', 'Afternoon', N'Nghỉ phép để việc gia đình', 'PENDING', NULL, NULL),
+-- Employee 1 - Requests đã được chấp nhận
+(1, '2025-10-30', 'FullDay', N'Nghỉ phép năm', 'APPROVED', 1, '2025-10-19 10:30:00'),
+(1, '2025-10-31', 'Morning', N'Đi học nâng cao chuyên môn', 'APPROVED', 1, '2025-10-18 09:15:00'),
+-- Employee 1 - Requests đã bị từ chối
+(1, '2025-10-21', 'FullDay', N'Nghỉ đột xuất', 'REJECTED', 1, '2025-10-20 14:00:00'),
+-- Employee 2 (Receptionist) - Requests
+(2, '2025-10-22', 'Afternoon', N'Cần nghỉ phép để họp gia đình', 'PENDING', NULL, NULL),
+(2, '2025-10-25', 'Morning', N'Đi khám bệnh', 'PENDING', NULL, NULL),
+(2, '2025-10-27', 'FullDay', N'Nghỉ phép kết hôn', 'APPROVED', 1, '2025-10-15 11:00:00'),
+(2, '2025-10-28', 'Afternoon', N'Lý do cá nhân', 'REJECTED', 1, '2025-10-17 16:20:00');
+GO
+
+-- Sample Patients data
+INSERT INTO Patients (full_name, birth_date, gender, phone, email, address)
+VALUES
+(N'Nguyễn Văn An', '1990-05-15', 'M', '0901111111', 'nguyenvanan@email.com', N'123 Đường ABC, Quận 1, TP.HCM'),
+(N'Trần Thị Bình', '1985-08-22', 'F', '0902222222', 'tranthibinh@email.com', N'456 Đường XYZ, Quận 2, TP.HCM'),
+(N'Lê Văn Cường', '1995-12-10', 'M', '0903333333', 'levancuong@email.com', N'789 Đường DEF, Quận 3, TP.HCM'),
+(N'Phạm Thị Dung', '1988-03-05', 'F', '0904444444', 'phamthidung@email.com', N'101 Đường GHI, Quận 4, TP.HCM'),
+(N'Hoàng Văn Em', '1992-07-18', 'M', '0905555555', 'hoangvanem@email.com', N'202 Đường JKL, Quận 5, TP.HCM');
+GO
+
+-- Sample PatientFiles data
+INSERT INTO PatientFiles (patient_id, content, uploaded_at)
+VALUES
+(1, N'Hồ sơ điều trị răng cửa 2024', '2024-06-15 10:00:00'),
+(1, N'Phim X-quang răng hàm', '2024-07-20 14:30:00'),
+(2, N'Hồ sơ khám định kỳ', '2024-08-10 09:15:00'),
+(3, N'Hồ sơ chữa tủy răng', '2024-09-05 11:45:00');
+GO
+
+-- Sample Appointments data
+INSERT INTO Appointments (patient_id, dentist_id, service_id, appointment_date, status, notes, source, created_by_patient_id, confirmation_code)
+VALUES
+(1, 2, 1, '2025-10-22 09:00:00', 'CONFIRMED', N'Khám răng sâu', 'INTERNAL', NULL, 'CONF001'),
+(2, 2, 2, '2025-10-23 14:00:00', 'SCHEDULED', N'Làm sạch răng', 'INTERNAL', NULL, 'CONF002'),
+(3, 4, 3, '2025-10-24 10:30:00', 'CONFIRMED', N'Trám răng', 'INTERNAL', NULL, 'CONF003'),
+(4, 2, 1, '2025-10-25 08:00:00', 'SCHEDULED', N'Khám tổng quát', 'INTERNAL', NULL, 'CONF004'),
+(5, 2, 4, '2025-10-26 13:00:00', 'SCHEDULED', N'Điều trị tủy răng', 'INTERNAL', NULL, NULL);
+GO
+
+-- Sample WaitingQueue data (chỉ cho các appointments đã confirmed)
+-- Giả sử appointments được insert thành công với IDENTITY bắt đầu từ 1
+INSERT INTO WaitingQueue (appointment_id, position_in_queue, status)
+VALUES
+(1, 1, 'WAITING'),
+(3, 2, 'WAITING');
+GO
+
+-- Sample MedicalRecords data
+INSERT INTO MedicalRecords (patient_id, dentist_id, summary, created_at)
+VALUES
+(1, 2, N'Bệnh nhân có răng sâu ở răng số 16, cần điều trị', '2024-06-15 10:30:00'),
+(2, 2, N'Bệnh nhân cần vệ sinh răng miệng định kỳ', '2024-08-10 09:45:00'),
+(3, 4, N'Bệnh nhân cần trám răng số 35', '2024-09-05 12:00:00'),
+(4, 2, N'Bệnh nhân khám sức khỏe răng miệng tổng quát', '2024-10-01 08:15:00'),
+(5, 2, N'Bệnh nhân có vấn đề về tủy răng số 36', '2024-10-10 13:20:00');
+GO
+
+-- Sample Examinations data
+INSERT INTO Examinations (record_id, findings, diagnosis, created_at)
+VALUES
+(1, N'Phát hiện răng sâu ở răng số 16, có lỗ sâu vừa', N'Sâu răng mức độ 2, cần trám răng', '2024-06-15 10:35:00'),
+(2, N'Răng có nhiều mảng bám, cần vệ sinh sạch sẽ', N'Vệ sinh răng miệng, không phát hiện bất thường', '2024-08-10 09:50:00'),
+(3, N'Răng số 35 có lỗ sâu lớn, cần trám composite', N'Sâu răng mức độ 3, cần trám ngay', '2024-09-05 12:05:00'),
+(4, N'Răng miệng khỏe mạnh, chỉ cần theo dõi', N'Không phát hiện vấn đề', '2024-10-01 08:25:00'),
+(5, N'Tủy răng số 36 bị viêm, cần điều trị nội nha', N'Viêm tủy răng, cần điều trị tủy', '2024-10-10 13:30:00');
+GO
+
+-- Sample TreatmentPlans data
+INSERT INTO TreatmentPlans (record_id, plan_summary, estimated_cost, created_at)
+VALUES
+(1, N'Trám răng composite cho răng số 16', 500000, '2024-06-15 10:40:00'),
+(2, N'Vệ sinh răng miệng hàng năm', 300000, '2024-08-10 09:55:00'),
+(3, N'Trám răng composite cho răng số 35', 500000, '2024-09-05 12:10:00'),
+(4, N'Theo dõi sức khỏe răng miệng', 100000, '2024-10-01 08:30:00'),
+(5, N'Điều trị tủy răng số 36, sau đó trám hoặc bọc', 2000000, '2024-10-10 13:40:00');
+GO
+
+-- Sample TreatmentSessions data
+INSERT INTO TreatmentSessions (plan_id, session_date, procedure_done, session_cost)
+VALUES
+(1, '2024-06-20 10:00:00', N'Đã hoàn thành trám răng số 16', 500000),
+(2, '2024-08-10 10:30:00', N'Đã vệ sinh răng miệng', 300000),
+(3, '2024-09-10 14:00:00', N'Đã hoàn thành trám răng số 35', 500000),
+(4, '2024-10-01 08:30:00', N'Đã khám và theo dõi', 100000);
+GO
+
+-- Sample Prescriptions data
+INSERT INTO Prescriptions (patient_id, dentist_id, notes, created_at)
+VALUES
+(1, 2, N'Uống thuốc giảm đau sau khi trám', '2024-06-20 10:30:00'),
+(3, 4, N'Sử dụng thuốc kháng sinh sau khi trám', '2024-09-10 14:30:00'),
+(5, 2, N'Uống thuốc giảm đau và kháng viêm', '2024-10-10 13:50:00');
+GO
+
+-- Sample PrescriptionItems data
+INSERT INTO PrescriptionItems (prescription_id, medication_name, dosage, duration, instructions)
+VALUES
+(1, N'Paracetamol 500mg', N'2 viên/lần', N'3 ngày', N'Uống sau khi đau'),
+(1, N'Ibuprofen 400mg', N'1 viên/lần', N'3 ngày', N'Uống sau ăn'),
+(2, N'Amoxicillin 500mg', N'1 viên/lần, 3 lần/ngày', N'7 ngày', N'Uống đều đặn sau ăn'),
+(2, N'Metronidazole 250mg', N'1 viên/lần, 2 lần/ngày', N'7 ngày', N'Uống đều đặn'),
+(3, N'Ketoprofen 100mg', N'1 viên/lần', N'5 ngày', N'Uống sau ăn để tránh đau dạ dày'),
+(3, N'Cefuroxime 250mg', N'1 viên/lần, 2 lần/ngày', N'5 ngày', N'Uống đều đặn');
+GO
+
+-- Sample StockTransactions data
+INSERT INTO StockTransactions (item_id, transaction_type, quantity, performed_by, performed_at, notes)
+VALUES
+-- Nhập kho
+(1, 'IN', 20, 1, '2024-10-01 08:00:00', N'Nhập thêm bao tay'),
+(2, 'IN', 15, 3, '2024-10-02 09:00:00', N'Nhập thêm khẩu trang'),
+(3, 'IN', 10, 3, '2024-10-03 10:00:00', N'Nhập thêm nước súc miệng'),
+-- Xuất kho
+(1, 'OUT', 5, 1, '2024-10-05 14:00:00', N'Xuất cho phòng khám'),
+(2, 'OUT', 3, 1, '2024-10-06 15:00:00', N'Xuất cho phòng khám'),
+(1, 'OUT', 2, 1, '2024-10-08 16:00:00', N'Xuất cho phòng khám');
+GO
+
+-- Sample Invoices data
+INSERT INTO Invoices (patient_id, appointment_id, total_amount, discount_amount, status, created_at)
+VALUES
+(1, 1, 500000, 0, 'PAID', '2024-06-20 10:45:00'),
+(2, 2, 300000, 50000, 'UNPAID', '2024-08-10 11:00:00'),
+(3, 3, 500000, 0, 'PAID', '2024-09-10 14:45:00'),
+(4, 4, 100000, 0, 'PARTIAL', '2024-10-01 09:00:00'),
+(5, 5, 2000000, 200000, 'UNPAID', '2024-10-10 14:00:00');
+GO
+
+-- Sample InvoiceItems data
+INSERT INTO InvoiceItems (invoice_id, service_id, quantity, unit_price)
+VALUES
+-- Invoice 1 (Patient 1)
+(1, 3, 1, 500000),
+-- Invoice 2 (Patient 2)
+(2, 2, 1, 300000),
+-- Invoice 3 (Patient 3)
+(3, 3, 1, 500000),
+-- Invoice 4 (Patient 4)
+(4, 1, 1, 100000),
+-- Invoice 5 (Patient 5)
+(5, 4, 1, 2000000);
+GO
+
+-- Sample Payments data
+INSERT INTO Payments (invoice_id, amount, method, paid_at)
+VALUES
+(1, 500000, 'CASH', '2024-06-20 10:50:00'),
+(3, 500000, 'CARD', '2024-09-10 14:50:00'),
+(4, 50000, 'CASH', '2024-10-01 09:15:00');
+GO
+
+-- Sample PatientImages data
+INSERT INTO PatientImages (patient_id, record_id, file_path, image_type, uploaded_at, uploaded_by)
+VALUES
+(1, 1, '/uploads/medical-images/xray-001.png', 'X-RAY', '2024-06-15 10:40:00', 2),
+(2, 2, '/uploads/medical-images/photo-001.png', 'BEFORE', '2024-08-10 09:55:00', 2),
+(3, 3, '/uploads/medical-images/xray-002.png', 'X-RAY', '2024-09-05 12:10:00', 4),
+(3, 3, '/uploads/medical-images/photo-002.png', 'AFTER', '2024-09-10 14:50:00', 4),
+(5, 5, '/uploads/medical-images/xray-003.png', 'X-RAY', '2024-10-10 13:50:00', 2);
 GO
 
 PRINT '✅ DentalClinicDB_MVP full schema (no trigger) created successfully.';

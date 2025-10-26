@@ -60,12 +60,12 @@ public class PatientDAO {
      * Get all patients who have appointments today (both examined and not examined)
      */
     public List<Patient> getAllPatients() {
-        String sql = "SELECT DISTINCT p.*, a.appointment_date, wq.position_in_queue, wq.status as queue_status, " +
+        String sql = "SELECT DISTINCT p.*, a.appointment_date, a.status as appointment_status, wq.position_in_queue, wq.status as queue_status, " +
                     "COALESCE(wq.position_in_queue, 999) as sort_position FROM Patients p " +
                     "INNER JOIN Appointments a ON p.patient_id = a.patient_id " +
                     "LEFT JOIN WaitingQueue wq ON a.appointment_id = wq.appointment_id " +
                     "WHERE CAST(a.appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
-                    "AND a.status IN ('SCHEDULED', 'CONFIRMED', 'COMPLETED') " +
+                    "AND a.status IN ('SCHEDULED', 'CONFIRMED', 'WAITING', 'COMPLETED') " +
                     "ORDER BY sort_position, a.appointment_date ASC, p.full_name";
         
         List<Patient> patients = new ArrayList<>();
@@ -87,12 +87,12 @@ public class PatientDAO {
      * Get patients who have appointments today but haven't been examined yet
      */
     public List<Patient> getPatientsNotExaminedToday() {
-        String sql = "SELECT DISTINCT p.*, a.appointment_date, wq.position_in_queue, wq.status as queue_status, " +
+        String sql = "SELECT DISTINCT p.*, a.appointment_date, a.status as appointment_status, wq.position_in_queue, wq.status as queue_status, " +
                     "COALESCE(wq.position_in_queue, 999) as sort_position FROM Patients p " +
                     "INNER JOIN Appointments a ON p.patient_id = a.patient_id " +
                     "LEFT JOIN WaitingQueue wq ON a.appointment_id = wq.appointment_id " +
                     "WHERE CAST(a.appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
-                    "AND a.status IN ('SCHEDULED', 'CONFIRMED') " +
+                    "AND a.status IN ('SCHEDULED', 'CONFIRMED', 'WAITING') " +
                     "AND (wq.appointment_id IS NULL OR wq.status IN ('WAITING', 'CHECKED_IN', 'CALLED')) " +
                     "ORDER BY sort_position, a.appointment_date ASC, p.full_name";
         
@@ -266,6 +266,13 @@ public class PatientDAO {
             // Column doesn't exist, ignore
         }
         
+        try {
+            String appointmentStatus = rs.getString("appointment_status");
+            patient.setAppointmentStatus(appointmentStatus);
+        } catch (SQLException e) {
+            // Column doesn't exist, ignore
+        }
+        
         return patient;
     }
     
@@ -276,7 +283,7 @@ public class PatientDAO {
         // First, get the appointment_id for today's appointment
         String getAppointmentSql = "SELECT a.appointment_id FROM Appointments a " +
                                  "WHERE a.patient_id = ? AND CAST(a.appointment_date AS DATE) = CAST(GETDATE() AS DATE) " +
-                                 "AND a.status IN ('SCHEDULED', 'CONFIRMED')";
+                                 "AND a.status IN ('SCHEDULED', 'CONFIRMED', 'WAITING')";
         
         try (Connection connection = new DBContext().getConnection()) {
             int appointmentId = -1;

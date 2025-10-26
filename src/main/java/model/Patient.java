@@ -19,6 +19,7 @@ public class Patient {
     // Additional properties for queue management
     private Integer positionInQueue;
     private String queueStatus;
+    private String appointmentStatus;
     
     // Additional properties for medical history
     private Integer medicalRecordCount;
@@ -147,6 +148,14 @@ public class Patient {
 
     public void setQueueStatus(String queueStatus) {
         this.queueStatus = queueStatus;
+    }
+
+    public String getAppointmentStatus() {
+        return appointmentStatus;
+    }
+
+    public void setAppointmentStatus(String appointmentStatus) {
+        this.appointmentStatus = appointmentStatus;
     }
 
     public Integer getMedicalRecordCount() {

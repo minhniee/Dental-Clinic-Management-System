@@ -119,7 +119,7 @@
                             </div>
                         </c:when>
                         <c:otherwise>
-                            <a href="${pageContext.request.contextPath}/login.jsp" class="btn-login">
+                            <a href="${pageContext.request.contextPath}/login" class="btn-login">
                                 Đăng Nhập
                             </a>
                         </c:otherwise>
