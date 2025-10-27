@@ -992,7 +992,20 @@
                                         <div class="image-gallery">
                                             <c:forEach var="image" items="${patientImages}">
                                                 <div class="image-item">
-                                                    <img src="${image.filePath}" alt="Patient Image">
+                                                    <c:choose>
+                                                        <c:when test="${image.filePath.startsWith('http://') or image.filePath.startsWith('https://')}">
+                                                            <img src="${image.filePath}" alt="Patient Image" onerror="this.src='https://via.placeholder.com/200x150/e5e7eb/9ca3af?text=Ảnh+Lỗi'">
+                                                        </c:when>
+                                                        <c:when test="${image.filePath.startsWith('/uploads/') or image.filePath.startsWith('uploads/')}">
+                                                            <img src="${pageContext.request.contextPath}/${image.filePath.replaceFirst('^/+', '')}" alt="Patient Image" onerror="this.src='https://via.placeholder.com/200x150/e5e7eb/9ca3af?text=Ảnh+Lỗi'">
+                                                        </c:when>
+                                                        <c:when test="${image.filePath.startsWith('/')}">
+                                                            <img src="${pageContext.request.contextPath}${image.filePath}" alt="Patient Image" onerror="this.src='https://via.placeholder.com/200x150/e5e7eb/9ca3af?text=Ảnh+Lỗi'">
+                                                        </c:when>
+                                                        <c:otherwise>
+                                                            <img src="${pageContext.request.contextPath}/uploads/${image.filePath}" alt="Patient Image" onerror="this.src='https://via.placeholder.com/200x150/e5e7eb/9ca3af?text=Ảnh+Lỗi'">
+                                                        </c:otherwise>
+                                                    </c:choose>
                                                     <div class="image-overlay">
                                                         <h6 class="mb-1">${image.imageType}</h6>
                                                             <small>${image.uploadedAt}</small>

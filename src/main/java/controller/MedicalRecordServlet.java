@@ -36,6 +36,7 @@ public class MedicalRecordServlet extends HttpServlet {
     private final TreatmentPlanDAO treatmentPlanDAO = new TreatmentPlanDAO();
     private final TreatmentSessionDAO treatmentSessionDAO = new TreatmentSessionDAO();
     private final PrescriptionDAO prescriptionDAO = new PrescriptionDAO();
+    private final PrescriptionItemDAO prescriptionItemDAO = new PrescriptionItemDAO();
     private final PatientImageDAO patientImageDAO = new PatientImageDAO();
 
     @Override
@@ -480,6 +481,12 @@ public class MedicalRecordServlet extends HttpServlet {
             List<TreatmentPlan> treatmentPlans = treatmentPlanDAO.getTreatmentPlansByRecordId(recordId);
             List<TreatmentSession> treatmentSessions = treatmentSessionDAO.getTreatmentSessionsByRecordId(recordId);
             List<Prescription> prescriptions = prescriptionDAO.getPrescriptionsByRecordId(recordId);
+            
+            // Load prescription items for each prescription
+            for (Prescription prescription : prescriptions) {
+                List<PrescriptionItem> items = prescriptionItemDAO.getItemsByPrescriptionId(prescription.getPrescriptionId());
+                prescription.setPrescriptionItems(items);
+            }
             
             record.setExaminations(examinations);
             record.setTreatmentPlans(treatmentPlans);

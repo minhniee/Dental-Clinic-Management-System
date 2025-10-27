@@ -348,23 +348,91 @@
                             <c:choose>
                                 <c:when test="${not empty record.prescriptions}">
                                     <c:forEach var="prescription" items="${record.prescriptions}">
-                                        <div class="treatment-item">
-                                            <h6>Đơn thuốc #${prescription.prescriptionId}</h6>
-                                            <p><strong>Ghi chú:</strong> ${prescription.notes}</p>
-                                            <c:if test="${not empty prescription.dentist}">
-                                                <p><strong>Bác sĩ kê đơn:</strong> ${prescription.dentist.fullName}</p>
-                                            </c:if>
-                                            <small class="text-muted">
-                                                <i class="fas fa-calendar me-1"></i>
+                                        <div class="card mb-3" style="border: 2px solid #06b6d4;">
+                                            <div class="card-header" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); color: white;">
+                                                <div class="d-flex justify-content-between align-items-center">
+                                                    <h6 class="mb-0 text-white">
+                                                        <i class="fas fa-prescription me-2"></i>Đơn Thuốc #${prescription.prescriptionId}
+                                                    </h6>
+                                                    <small class="text-white">
+                                                        <i class="fas fa-calendar me-1"></i>
+                                                        <c:choose>
+                                                            <c:when test="${not empty prescription.createdAt}">
+                                                                ${prescription.createdAt.dayOfMonth}/${prescription.createdAt.monthValue}/${prescription.createdAt.year}
+                                                            </c:when>
+                                                            <c:otherwise>
+                                                                Chưa có ngày
+                                                            </c:otherwise>
+                                                        </c:choose>
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="card-body">
+                                                <c:if test="${not empty prescription.dentist}">
+                                                    <div class="mb-2">
+                                                        <i class="fas fa-user-md me-2 text-primary"></i>
+                                                        <strong>Bác sĩ kê đơn:</strong> 
+                                                        <span class="text-primary">${prescription.dentist.fullName}</span>
+                                                    </div>
+                                                </c:if>
+                                                
+                                                <c:if test="${not empty prescription.notes}">
+                                                    <div class="alert alert-info mb-3">
+                                                        <i class="fas fa-info-circle me-2"></i>
+                                                        <strong>Ghi chú:</strong> ${prescription.notes}
+                                                    </div>
+                                                </c:if>
+                                                
                                                 <c:choose>
-                                                    <c:when test="${not empty prescription.createdAt}">
-                                                        ${prescription.createdAt.dayOfMonth}/${prescription.createdAt.monthValue}/${prescription.createdAt.year}
+                                                    <c:when test="${not empty prescription.prescriptionItems}">
+                                                        <h6 class="text-primary mb-3">
+                                                            <i class="fas fa-pills me-2"></i>Thuốc được kê (${prescription.prescriptionItems.size()})
+                                                        </h6>
+                                                        <div class="table-responsive">
+                                                            <table class="table table-sm table-hover table-bordered">
+                                                                <thead class="table-primary">
+                                                                    <tr>
+                                                                        <th style="width: 35%;">
+                                                                            <i class="fas fa-medkit me-1"></i> Tên Thuốc
+                                                                        </th>
+                                                                        <th style="width: 20%;">
+                                                                            <i class="fas fa-weight me-1"></i> Liều Lượng
+                                                                        </th>
+                                                                        <th style="width: 20%;">
+                                                                            <i class="fas fa-clock me-1"></i> Thời Gian
+                                                                        </th>
+                                                                        <th style="width: 25%;">
+                                                                            <i class="fas fa-info-circle me-1"></i> Hướng Dẫn
+                                                                        </th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    <c:forEach var="item" items="${prescription.prescriptionItems}">
+                                                                        <tr>
+                                                                            <td class="fw-bold text-primary">${item.medicationName}</td>
+                                                                            <td>
+                                                                                <span class="badge bg-success">${item.dosage}</span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <span class="text-muted">${item.duration}</span>
+                                                                            </td>
+                                                                            <td>
+                                                                                <small class="text-muted">${item.instructions}</small>
+                                                                            </td>
+                                                                        </tr>
+                                                                    </c:forEach>
+                                                                </tbody>
+                                                            </table>
+                                                        </div>
                                                     </c:when>
                                                     <c:otherwise>
-                                                        Chưa có ngày kê đơn
+                                                        <div class="alert alert-warning mb-0">
+                                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                                            Đơn thuốc này chưa có thuốc nào
+                                                        </div>
                                                     </c:otherwise>
                                                 </c:choose>
-                                            </small>
+                                            </div>
                                         </div>
                                     </c:forEach>
                                 </c:when>

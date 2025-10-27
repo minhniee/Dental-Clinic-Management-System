@@ -262,29 +262,51 @@
         }
 
         .patient-info-card {
-            background: #f0f9ff;
-            border: 1px solid #bae6fd;
-            border-radius: 0.5rem;
-            padding: 1rem;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #06b6d4;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
             margin-bottom: 1.5rem;
             display: none;
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.15);
         }
 
         .patient-info-card.show {
             display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .patient-info-card h4 {
-            margin: 0 0 0.5rem 0;
+            margin: 0 0 1rem 0;
             color: #0369a1;
-            font-size: 0.875rem;
-            font-weight: 600;
+            font-size: 1rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .patient-info-card p {
             margin: 0;
             color: #0c4a6e;
-            font-size: 0.875rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .patient-info-card i {
+            width: 1.2em;
+            text-align: center;
         }
 
         .empty-state {
@@ -417,6 +439,9 @@
                                                         data-name="${patient.fullName}"
                                                         data-phone="${patient.phone}"
                                                         data-email="${patient.email}"
+                                                        data-birthdate="${patient.birthDate}"
+                                                        data-gender="${patient.gender}"
+                                                        data-address="${patient.address}"
                                                         ${not empty selectedPatient and selectedPatient.patientId eq patient.patientId ? 'selected' : ''}>
                                                     ${patient.fullName} - ${patient.phone}
                                                 </option>
@@ -554,12 +579,28 @@
                 const patientName = selectedOption.getAttribute('data-name');
                 const patientPhone = selectedOption.getAttribute('data-phone');
                 const patientEmail = selectedOption.getAttribute('data-email');
+                const patientBirthDate = selectedOption.getAttribute('data-birthdate');
+                const patientGender = selectedOption.getAttribute('data-gender');
+                const patientAddress = selectedOption.getAttribute('data-address');
                 
-                let infoText = `<strong>${patientName}</strong><br>`;
-                infoText += `📞 ${patientPhone}`;
+                let infoText = '<div style="display: grid; grid-template-columns: auto 1fr; gap: 0.5rem; align-items: start;">';
+                infoText += '<div style="font-weight: 600; color: #0369a1;"><i class="fas fa-user"></i> Tên:</div><div><strong>' + patientName + '</strong></div>';
+                infoText += '<div style="font-weight: 600; color: #0369a1;"><i class="fas fa-phone"></i> SĐT:</div><div>' + patientPhone + '</div>';
                 if (patientEmail) {
-                    infoText += `<br>📧 ${patientEmail}`;
+                    infoText += '<div style="font-weight: 600; color: #0369a1;"><i class="fas fa-envelope"></i> Email:</div><div>' + patientEmail + '</div>';
                 }
+                if (patientBirthDate) {
+                    infoText += '<div style="font-weight: 600; color: #0369a1;"><i class="fas fa-birthday-cake"></i> Ngày sinh:</div><div>' + patientBirthDate + '</div>';
+                }
+                if (patientGender) {
+                    const genderDisplay = patientGender === 'M' ? 'Nam' : patientGender === 'F' ? 'Nữ' : patientGender;
+                    const genderIcon = patientGender === 'M' ? 'mars' : 'venus';
+                    infoText += '<div style="font-weight: 600; color: #0369a1;"><i class="fas fa-' + genderIcon + '"></i> Giới tính:</div><div>' + genderDisplay + '</div>';
+                }
+                if (patientAddress) {
+                    infoText += '<div style="font-weight: 600; color: #0369a1;"><i class="fas fa-map-marker-alt"></i> Địa chỉ:</div><div>' + patientAddress + '</div>';
+                }
+                infoText += '</div>';
                 
                 patientInfoText.innerHTML = infoText;
                 patientInfoCard.classList.add('show');
