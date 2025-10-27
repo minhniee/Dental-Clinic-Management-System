@@ -285,7 +285,7 @@
                                 <div class="detail-item">
                                     <span class="detail-label">Xác nhận lúc:</span>
                                     <span class="detail-value">
-                                        <fmt:formatDate value="${appointment.confirmedAt}" pattern="dd/MM/yyyy HH:mm"/>
+                                        <fmt:formatDate value="${appointment.confirmedAtAsDate}" pattern="dd/MM/yyyy HH:mm"/>
                                     </span>
                                 </div>
                             </c:if>

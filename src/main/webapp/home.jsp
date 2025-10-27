@@ -343,12 +343,12 @@
                                 <div class="row">
                                     <!-- Preferred Doctor -->
                                     <div class="col-md-6 mb-3">
-                                        <label for="preferredDoctorId" class="form-label fw-semibold" style="color: #0f172a;">
+                                        <!-- <label for="preferredDoctorId" class="form-label fw-semibold" style="color: #0f172a;">
                                             Bác Sĩ Ưa Thích (Tùy Chọn)
-                                        </label>
-                                        <select class="form-select" id="preferredDoctorId" name="preferredDoctorId" 
+                                        </label> -->
+                                        <select class="form-select" id="preferredDoctorId" name="preferredDoctorId" required
                                                 style="border-color: #d1d5db; border-radius: 0.5rem;">
-                                            <option value="">Bất kỳ bác sĩ nào có sẵn</option>
+                                            <!-- <option value="">Bất kỳ bác sĩ nào có sẵn</option> -->
                                             <c:forEach var="dentist" items="${dentists}">
                                                 <option value="${dentist.userId}">
                                                     ${dentist.fullName}
@@ -368,7 +368,7 @@
                                         <input type="date" class="form-control" id="preferredDate" name="preferredDate" 
                                                required style="border-color: #d1d5db; border-radius: 0.5rem;">
                                         <div class="invalid-feedback">
-                                            Vui lòng chọn ngày ưa thích.
+                                            Vui lòng chọn ngày trong tương lai.
                                         </div>
                                     </div>
                                 </div>

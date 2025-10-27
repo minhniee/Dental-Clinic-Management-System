@@ -196,7 +196,7 @@ public class AppointmentDAO {
      */
     public boolean updateAppointment(Appointment appointment) {
         String sql = "UPDATE Appointments SET patient_id = ?, dentist_id = ?, service_id = ?, " +
-                     "appointment_date = ?, status = ?, notes = ? WHERE appointment_id = ?";
+                     "appointment_date = ?, status = ?, notes = ?, confirmation_code = ?, confirmed_at = ? WHERE appointment_id = ?";
         
         try (Connection connection = new DBContext().getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -207,7 +207,9 @@ public class AppointmentDAO {
             statement.setTimestamp(4, Timestamp.valueOf(appointment.getAppointmentDate()));
             statement.setString(5, appointment.getStatus());
             statement.setString(6, appointment.getNotes());
-            statement.setInt(7, appointment.getAppointmentId());
+            statement.setString(7, appointment.getConfirmationCode());
+            statement.setObject(8, appointment.getConfirmedAt() != null ? Timestamp.valueOf(appointment.getConfirmedAt()) : null, Types.TIMESTAMP);
+            statement.setInt(9, appointment.getAppointmentId());
             
             int rowsAffected = statement.executeUpdate();
             return rowsAffected > 0;

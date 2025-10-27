@@ -224,6 +224,16 @@ public class Appointment {
     }
 
     /**
+     * Helper method to get confirmedAt as java.util.Date for JSP formatting
+     */
+    public Date getConfirmedAtAsDate() {
+        if (confirmedAt != null) {
+            return Date.from(confirmedAt.atZone(ZoneId.systemDefault()).toInstant());
+        }
+        return null;
+    }
+
+    /**
      * Helper method to format appointmentDate for HTML datetime-local input
      */
     public String getAppointmentDateForInput() {
