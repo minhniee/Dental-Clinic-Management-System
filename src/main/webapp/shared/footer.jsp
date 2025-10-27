@@ -159,5 +159,8 @@
             });
         });
     </script>
+    
+    <!-- Chatbot Component -->
+    <jsp:include page="chatbot.jsp" />
 </body>
 </html>

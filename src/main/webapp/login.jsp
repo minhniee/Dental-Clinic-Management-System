@@ -206,5 +206,8 @@
             <a href="${pageContext.request.contextPath}/forgotPassword">Quên mật khẩu?</a>
         </div>
     </div>
+    
+    <!-- Chatbot Component -->
+    <jsp:include page="shared/chatbot.jsp" />
 </body>
 </html>

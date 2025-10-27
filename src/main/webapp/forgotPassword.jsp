@@ -222,5 +222,8 @@
             <a href="${pageContext.request.contextPath}/login">← Quay Lại Đăng Nhập</a>
         </div>
     </div>
+    
+    <!-- Chatbot Component -->
+    <jsp:include page="shared/chatbot.jsp" />
 </body>
 </html>
