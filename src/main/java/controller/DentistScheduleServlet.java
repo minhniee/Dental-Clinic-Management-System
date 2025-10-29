@@ -17,9 +17,12 @@ import jakarta.servlet.http.HttpSession;
 
 import DAO.AppointmentDAO;
 import DAO.ServiceDAO;
+import DAO.DoctorScheduleDAO;
 import model.Appointment;
 import model.User;
 import model.Service;
+import model.DoctorSchedule;
+import java.time.temporal.WeekFields;
 
 @WebServlet("/dentist/schedule")
 public class DentistScheduleServlet extends HttpServlet {
@@ -28,6 +31,7 @@ public class DentistScheduleServlet extends HttpServlet {
     
     private final AppointmentDAO appointmentDAO = new AppointmentDAO();
     private final ServiceDAO serviceDAO = new ServiceDAO();
+    private final DoctorScheduleDAO doctorScheduleDAO = new DoctorScheduleDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
@@ -45,10 +49,13 @@ public class DentistScheduleServlet extends HttpServlet {
         try {
             String action = request.getParameter("action");
             if (action == null || action.isEmpty()) {
-                action = "daily";
+                action = "view"; // Default to work schedule view
             }
             
             switch (action) {
+                case "view":
+                    handleWorkScheduleView(request, response, currentUser);
+                    break;
                 case "daily":
                     handleDailySchedule(request, response, currentUser);
                     break;
@@ -56,14 +63,64 @@ public class DentistScheduleServlet extends HttpServlet {
                     handleWeeklySchedule(request, response, currentUser);
                     break;
                 default:
-                    handleDailySchedule(request, response, currentUser);
+                    handleWorkScheduleView(request, response, currentUser);
                     break;
             }
             
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error in DentistScheduleServlet", e);
             request.setAttribute("errorMessage", "Có lỗi xảy ra khi tải lịch trình: " + e.getMessage());
-            request.getRequestDispatcher("/dentist/schedule-daily.jsp").forward(request, response);
+            request.getRequestDispatcher("/dentist/schedule.jsp").forward(request, response);
+        }
+    }
+
+    private void handleWorkScheduleView(HttpServletRequest request, HttpServletResponse response, User currentUser)
+            throws ServletException, IOException {
+        
+        try {
+            String weekParam = request.getParameter("week");
+            LocalDate selectedWeek = LocalDate.now();
+            if (weekParam != null && !weekParam.isEmpty()) {
+                try {
+                    selectedWeek = LocalDate.parse(weekParam);
+                } catch (Exception ex) {
+                    selectedWeek = LocalDate.now();
+                }
+            }
+
+            LocalDate weekStart = selectedWeek.with(WeekFields.ISO.dayOfWeek(), 1);
+            LocalDate weekEnd = weekStart.plusDays(6);
+
+            List<DoctorSchedule> allWeekSchedules = doctorScheduleDAO.getSchedulesByDateRange(weekStart, weekEnd);
+
+            List<DoctorSchedule> mySchedules = new ArrayList<>();
+            for (DoctorSchedule schedule : allWeekSchedules) {
+                if (schedule.getDoctorId() == currentUser.getUserId()) {
+                    mySchedules.add(schedule);
+                }
+            }
+
+            LocalDate previousWeek = weekStart.minusWeeks(1);
+            LocalDate nextWeek = weekStart.plusWeeks(1);
+
+            List<LocalDate> weekDays = new ArrayList<>();
+            for (int i = 0; i < 7; i++) {
+                weekDays.add(weekStart.plusDays(i));
+            }
+
+            request.setAttribute("weekStart", weekStart);
+            request.setAttribute("weekEnd", weekEnd);
+            request.setAttribute("previousWeek", previousWeek);
+            request.setAttribute("nextWeek", nextWeek);
+            request.setAttribute("currentWeek", weekStart);
+            request.setAttribute("scheduleList", mySchedules);
+            request.setAttribute("weekDays", weekDays);
+
+            request.getRequestDispatcher("/dentist/schedule.jsp").forward(request, response);
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error loading dentist work schedule", e);
+            request.setAttribute("error", "Không thể tải lịch làm việc: " + e.getMessage());
+            request.getRequestDispatcher("/dentist/schedule.jsp").forward(request, response);
         }
     }
 

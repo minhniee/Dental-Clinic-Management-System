@@ -123,17 +123,6 @@
                     <div class="stat-change positive"><span>↗</span> +8%</div>
                 </div>
 
-                <div class="stat-card requests">
-                    <div class="stat-card-header">
-                        <div>
-                            <div class="stat-label">YÊU CẦU CHỜ DUYỆT</div>
-                            <div class="stat-value">${pendingRequests}</div>
-                        </div>
-                        <div class="stat-icon">📋</div>
-                    </div>
-                    <div class="stat-change neutral"><span>→</span> 0%</div>
-                </div>
-
                 <div class="stat-card inventory">
                     <div class="stat-card-header">
                         <div>

@@ -73,8 +73,11 @@
         <c:if test="${role eq 'dentist'}">
             <ul>
                 <li><a class="${fn:endsWith(currentPath, '/dentist/dashboard.jsp') ? 'active' : ''}" href="${ctx}/dentist/dashboard.jsp">Tổng Quan</a></li>
-                <li><a class="${fn:contains(currentPath, '/dentist/schedule') ? 'active' : ''}" href="${ctx}/dentist/schedule?action=daily">Lịch Trình Hàng Ngày</a></li>
-                <li><a class="${fn:contains(currentPath, '/dentist/schedule') ? 'active' : ''}" href="${ctx}/dentist/schedule?action=weekly">Lịch Trình Hàng Tuần</a></li>
+                <li class="divider"></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/schedule') and (fn:contains(pageContext.request.queryString, 'action=daily') or fn:endsWith(currentPath, '/dentist/schedule-daily.jsp')) ? 'active' : ''}" href="${ctx}/dentist/schedule?action=daily">Lịch Trình Hàng Ngày</a></li>
+                <li><a class="${fn:contains(currentPath, '/dentist/schedule') and (fn:contains(pageContext.request.queryString, 'action=weekly') or fn:endsWith(currentPath, '/dentist/schedule-weekly.jsp')) ? 'active' : ''}" href="${ctx}/dentist/schedule?action=weekly">Lịch Trình Hàng Tuần</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/dentist/schedule.jsp') ? 'active' : ''}" href="${ctx}/dentist/schedule">Lịch làm việc của tôi</a></li>
+                <li class="divider"></li>
                 <li><a class="${fn:contains(currentPath, '/dentist/patients') ? 'active' : ''}" href="${ctx}/dentist/patients">Danh Sách Bệnh Nhân</a></li>
                 <li><a class="${fn:contains(currentPath, '/dentist/medical-history') ? 'active' : ''}" href="${ctx}/dentist/medical-history">Lịch Sử Khám Bệnh</a></li>
             </ul>
