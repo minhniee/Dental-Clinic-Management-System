@@ -329,7 +329,7 @@ CREATE TABLE DoctorSchedules (
     schedule_id INT IDENTITY(1,1) PRIMARY KEY,
     doctor_id   INT NOT NULL,
     work_date   DATE NOT NULL,
-    shift       VARCHAR(50) NOT NULL,
+    shift       NVARCHAR(50) NOT NULL,
     start_time  TIME(7) NULL,
     end_time    TIME(7) NULL,
     room_no     VARCHAR(50) NULL,

@@ -1,7 +1,9 @@
 package controller;
 
 import DAO.AppointmentRequestDAO;
+import DAO.PatientDAO;
 import model.AppointmentRequest;
+import model.Patient;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,11 +19,13 @@ import java.time.format.DateTimeParseException;
 public class AppointmentRequestServlet extends HttpServlet {
 
     private AppointmentRequestDAO appointmentRequestDAO;
+    private PatientDAO patientDAO;
 
     @Override
     public void init() throws ServletException {
         super.init();
         appointmentRequestDAO = new AppointmentRequestDAO();
+        patientDAO = new PatientDAO();
     }
 
     @Override
@@ -87,6 +91,16 @@ public class AppointmentRequestServlet extends HttpServlet {
             appointmentRequest.setPreferredShift(preferredShift);
             appointmentRequest.setNotes(message != null ? message.trim() : null);
             appointmentRequest.setStatus("PENDING");
+
+            // Link to existing patient by phone if available
+            try {
+                Patient existing = patientDAO.getPatientByPhone(phone.trim());
+                if (existing != null) {
+                    appointmentRequest.setPatientId(existing.getPatientId());
+                }
+            } catch (Exception ignore) {
+                // Non-blocking: if lookup fails, continue without patientId
+            }
 
             // Save to database
             boolean success = appointmentRequestDAO.createAppointmentRequest(appointmentRequest);

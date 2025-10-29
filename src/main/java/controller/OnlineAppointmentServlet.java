@@ -253,24 +253,31 @@ public class OnlineAppointmentServlet extends HttpServlet {
             patient = patientDAO.getPatientById(request.getPatientId());
         }
         
-        // If no patient ID or patient not found, create new patient
+        // If no patient ID or patient not found, try to find by phone first; create only if truly new
         if (patient == null) {
-            patient = new Patient();
-            patient.setFullName(request.getFullName());
-            patient.setPhone(request.getPhone());
-            patient.setEmail(request.getEmail());
-            patient.setCreatedAt(java.time.LocalDateTime.now());
-            
-            boolean patientCreated = patientDAO.createPatient(patient);
-            if (!patientCreated) {
-                throw new Exception("Failed to create patient");
+            Patient existingByPhone = null;
+            try {
+                if (request.getPhone() != null) {
+                    existingByPhone = patientDAO.getPatientByPhone(request.getPhone());
+                }
+            } catch (Exception ignore) {
+                // proceed to create if lookup fails
             }
-            // Get the created patient ID - we need to find it by phone/email
-            Patient createdPatient = patientDAO.getPatientByPhone(request.getPhone());
-            if (createdPatient == null) {
-                throw new Exception("Failed to retrieve created patient");
+
+            if (existingByPhone != null) {
+                patient = existingByPhone;
+            } else {
+                patient = new Patient();
+                patient.setFullName(request.getFullName());
+                patient.setPhone(request.getPhone());
+                patient.setEmail(request.getEmail());
+                patient.setCreatedAt(java.time.LocalDateTime.now());
+
+                boolean patientCreated = patientDAO.createPatient(patient);
+                if (!patientCreated) {
+                    throw new Exception("Failed to create patient");
+                }
             }
-            patient.setPatientId(createdPatient.getPatientId());
         }
         
         // Create appointment

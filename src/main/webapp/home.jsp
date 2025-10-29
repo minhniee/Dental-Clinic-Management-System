@@ -318,6 +318,7 @@
                                         <div class="invalid-feedback">
                                             Số điện thoại phải có từ 10 đến 11 chữ số (ví dụ: 0912345678).
                                         </div>
+                                        <small class="text-muted">Nếu bạn đã từng đến khám, vui lòng nhập số đã đăng ký. Hệ thống sẽ tự động liên kết hồ sơ của bạn.</small>
                                     </div>
                                     
                                     <!-- Preferred Service -->

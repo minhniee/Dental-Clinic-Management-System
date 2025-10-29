@@ -58,6 +58,7 @@
                 <li><a class="${fn:contains(currentPath, '/receptionist/appointments') ? 'active' : ''}" href="${ctx}/receptionist/appointments">Quản Lý Lịch Hẹn</a></li>
                 <li><a href="${ctx}/receptionist/appointments?action=new">Đặt Lịch Hẹn Mới</a></li>
                 <li><a href="${ctx}/receptionist/appointment-calendar">Xem Lịch Tuần</a></li>
+                <li><a class="${fn:endsWith(currentPath, '/receptionist/schedule') ? 'active' : ''}" href="${ctx}/receptionist/schedule">Lịch làm việc của tôi</a></li>
                 <li class="divider"></li>
 
                 <li class="divider"></li>

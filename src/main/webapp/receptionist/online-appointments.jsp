@@ -479,6 +479,11 @@
                                                         <span class="request-name">
                                                             <c:out value="${request.fullName}"/>
                                                         </span>
+                                                        <c:if test="${not empty request.patientId}">
+                                                            <span class="status-badge" style="background-color:#e0f2fe;color:#0369a1;">
+                                                                Bệnh nhân hiện có
+                                                            </span>
+                                                        </c:if>
                                                         <span class="request-contact">
                                                             <i class="fas fa-phone"></i> <c:out value="${request.phone}"/>
                                                         </span>
