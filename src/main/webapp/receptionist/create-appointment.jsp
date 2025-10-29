@@ -786,6 +786,12 @@
                 return true;
             }
             
+            // Expose validation functions to global scope for AJAX usage
+            window.validatePatient = validatePatient;
+            window.validateDentist = validateDentist;
+            window.validateService = validateService;
+            window.validateAppointmentDateTime = validateAppointmentDateTime;
+            
             function showError(input, errorDiv, message) {
                 // Add error class to both datetime-input and form-control for compatibility
                 input.classList.add('error');
@@ -1046,9 +1052,10 @@
         document.getElementById('quickSearchBtn').addEventListener('click', function() {
             const phone = document.getElementById('quickSearchPhone').value.trim();
             const resultDiv = document.getElementById('quickSearchResult');
+            const patientSelect = document.getElementById('patientId');
             
             if (!phone) {
-                resultDiv.innerHTML = '<div style="color: #dc2626; font-size: 0.875rem;">Vui lòng nhập số điện thoại</div>';
+                resultDiv.innerHTML = '<div style="color: #dc2626; font-size: 0.875rem;"><i class="fas fa-exclamation-circle"></i> Vui lòng nhập số điện thoại</div>';
                 resultDiv.style.display = 'block';
                 return;
             }
@@ -1059,22 +1066,50 @@
             
             // Make AJAX request to search for patient
             fetch('${pageContext.request.contextPath}/receptionist/patients?action=search&phone=' + encodeURIComponent(phone))
-                .then(response => response.text())
-                .then(html => {
-                    // Parse the response to extract patient data
-                    // This is a simplified approach - in a real app you'd use JSON API
-                    if (html.includes('existingPatient')) {
-                        // Patient found - extract patient info and update dropdown
-                        resultDiv.innerHTML = '<div style="color: #059669; font-size: 0.875rem;"><i class="fas fa-check-circle"></i> Tìm thấy bệnh nhân. Vui lòng chọn từ danh sách bên dưới.</div>';
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Patient found - auto-select in dropdown
+                        let patientFound = false;
+                        for (let i = 0; i < patientSelect.options.length; i++) {
+                            if (patientSelect.options[i].value == data.patientId) {
+                                patientSelect.selectedIndex = i;
+                                patientFound = true;
+                                break;
+                            }
+                        }
                         
-                        // You could also auto-select the patient here
-                        // For now, we'll just show success message
+                        if (patientFound) {
+                            // Show success message with patient info
+                            resultDiv.innerHTML = '<div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 0.5rem; padding: 1rem; color: #16a34a; font-size: 0.875rem;">' +
+                                '<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;"><i class="fas fa-check-circle" style="color: #16a34a;"></i><strong>Tìm thấy bệnh nhân!</strong></div>' +
+                                '<div style="color: #15803d;"><strong>Tên:</strong> ' + data.fullName + '</div>' +
+                                '<div style="color: #15803d;"><strong>SĐT:</strong> ' + data.phone + '</div>' +
+                                (data.email ? '<div style="color: #15803d;"><strong>Email:</strong> ' + data.email + '</div>' : '') +
+                                '</div>';
+                            
+                            // Trigger validation
+                            validatePatient();
+                            
+                            // Scroll to patient select
+                            patientSelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            patientSelect.focus();
+                        } else {
+                            // Patient found in DB but not in dropdown (shouldn't happen)
+                            resultDiv.innerHTML = '<div style="color: #d97706; font-size: 0.875rem;"><i class="fas fa-exclamation-triangle"></i> Bệnh nhân được tìm thấy nhưng không có trong danh sách. Vui lòng tải lại trang.</div>';
+                        }
                     } else {
-                        resultDiv.innerHTML = '<div style="color: #d97706; font-size: 0.875rem;"><i class="fas fa-exclamation-triangle"></i> Không tìm thấy bệnh nhân với số điện thoại này. Vui lòng đăng ký bệnh nhân mới.</div>';
+                        // Patient not found
+                        resultDiv.innerHTML = '<div style="background: #fffbeb; border: 1px solid #fcd34d; border-radius: 0.5rem; padding: 1rem; color: #92400e; font-size: 0.875rem;">' +
+                            '<div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.5rem;"><i class="fas fa-exclamation-triangle" style="color: #d97706;"></i><strong>Không tìm thấy bệnh nhân</strong></div>' +
+                            '<div>Số điện thoại <strong>' + phone + '</strong> chưa được đăng ký.</div>' +
+                            '<div style="margin-top: 0.5rem;">Vui lòng <a href="${pageContext.request.contextPath}/receptionist/patients?action=new" style="color: #0891b2; font-weight: 600; text-decoration: underline;">đăng ký bệnh nhân mới</a>.</div>' +
+                            '</div>';
                     }
                 })
                 .catch(error => {
-                    resultDiv.innerHTML = '<div style="color: #dc2626; font-size: 0.875rem;"><i class="fas fa-exclamation-circle"></i> Lỗi khi tìm kiếm. Vui lòng thử lại.</div>';
+                    console.error('Search error:', error);
+                    resultDiv.innerHTML = '<div style="color: #dc2626; font-size: 0.875rem;"><i class="fas fa-exclamation-circle"></i> Lỗi khi tìm kiếm: ' + error.message + '. Vui lòng thử lại.</div>';
                 });
         });
 

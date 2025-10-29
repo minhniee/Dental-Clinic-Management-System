@@ -255,6 +255,53 @@ public class PatientServlet extends HttpServlet {
     private void handleSearchPatients(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
+        String phone = request.getParameter("phone");
+        
+        // If phone is provided, search for patient and return JSON for AJAX
+        if (phone != null && !phone.trim().isEmpty()) {
+            phone = phone.trim();
+            
+            try {
+                // Search for patient by phone
+                List<Patient> allPatients = PatientMDAO.getAllPatients(0, 10000);
+                Patient foundPatient = null;
+                
+                for (Patient p : allPatients) {
+                    if (p.getPhone() != null && p.getPhone().equals(phone)) {
+                        foundPatient = p;
+                        break;
+                    }
+                }
+                
+                // Return JSON response
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                
+                if (foundPatient != null) {
+                    // Patient found - return patient data as JSON
+                    String json = String.format(
+                        "{\"success\": true, \"patientId\": %d, \"fullName\": \"%s\", \"phone\": \"%s\", \"email\": \"%s\"}",
+                        foundPatient.getPatientId(),
+                        foundPatient.getFullName().replace("\"", "\\\""),
+                        foundPatient.getPhone(),
+                        foundPatient.getEmail() != null ? foundPatient.getEmail().replace("\"", "\\\"") : ""
+                    );
+                    response.getWriter().write(json);
+                } else {
+                    // Patient not found
+                    response.getWriter().write("{\"success\": false, \"message\": \"Không tìm thấy bệnh nhân\"}");
+                }
+                return;
+                
+            } catch (Exception e) {
+                response.setContentType("application/json");
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write("{\"success\": false, \"message\": \"Lỗi khi tìm kiếm\"}");
+                return;
+            }
+        }
+        
+        // Otherwise, show list page
         handleListPatients(request, response);
     }
 
