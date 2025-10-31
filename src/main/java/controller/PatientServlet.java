@@ -347,13 +347,37 @@ public class PatientServlet extends HttpServlet {
         
         // Validate required fields
         if (fullName == null || fullName.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Full name is required");
+            request.setAttribute("errorMessage", "Vui lòng nhập họ và tên");
+            handleNewPatient(request, response);
+            return;
+        }
+        
+        if (birthDateStr == null || birthDateStr.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Vui lòng nhập ngày sinh");
+            handleNewPatient(request, response);
+            return;
+        }
+        
+        if (gender == null || gender.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Vui lòng chọn giới tính");
             handleNewPatient(request, response);
             return;
         }
         
         if (phone == null || phone.trim().isEmpty()) {
-            request.setAttribute("errorMessage", "Phone number is required");
+            request.setAttribute("errorMessage", "Vui lòng nhập số điện thoại");
+            handleNewPatient(request, response);
+            return;
+        }
+        
+        if (email == null || email.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Vui lòng nhập email");
+            handleNewPatient(request, response);
+            return;
+        }
+        
+        if (address == null || address.trim().isEmpty()) {
+            request.setAttribute("errorMessage", "Vui lòng nhập địa chỉ");
             handleNewPatient(request, response);
             return;
         }
@@ -361,31 +385,29 @@ public class PatientServlet extends HttpServlet {
         // Check if phone already exists
         Patient existingPatient = PatientMDAO.getPatientByPhone(phone.trim());
         if (existingPatient != null) {
-            request.setAttribute("errorMessage", "A patient with this phone number already exists");
+            request.setAttribute("errorMessage", "Số điện thoại này đã được sử dụng bởi bệnh nhân khác");
             handleNewPatient(request, response);
             return;
         }
         
         // Parse birth date
         LocalDate birthDate = null;
-        if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
-            try {
-                birthDate = LocalDate.parse(birthDateStr);
-            } catch (DateTimeParseException e) {
-                request.setAttribute("errorMessage", "Invalid birth date format");
-                handleNewPatient(request, response);
-                return;
-            }
+        try {
+            birthDate = LocalDate.parse(birthDateStr);
+        } catch (DateTimeParseException e) {
+            request.setAttribute("errorMessage", "Định dạng ngày sinh không hợp lệ");
+            handleNewPatient(request, response);
+            return;
         }
         
         // Create patient object
         Patient patient = new Patient();
         patient.setFullName(fullName.trim());
         patient.setBirthDate(birthDate);
-        patient.setGender(gender != null && !gender.isEmpty() ? gender : null);
+        patient.setGender(gender.trim());
         patient.setPhone(phone.trim());
-        patient.setEmail(email != null && !email.trim().isEmpty() ? email.trim() : null);
-        patient.setAddress(address != null && !address.trim().isEmpty() ? address.trim() : null);
+        patient.setEmail(email.trim());
+        patient.setAddress(address.trim());
         
         // Create patient in database
         int patientId = PatientMDAO.createPatient(patient);
@@ -450,7 +472,23 @@ public class PatientServlet extends HttpServlet {
             
             // Validate required fields
             if (fullName == null || fullName.trim().isEmpty()) {
-                request.setAttribute("errorMessage", "Full name is required");
+                request.setAttribute("errorMessage", "Vui lòng nhập họ và tên");
+                request.setAttribute("patient", existingPatient);
+                request.setAttribute("action", "update");
+                request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
+                return;
+            }
+            
+            if (birthDateStr == null || birthDateStr.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "Vui lòng nhập ngày sinh");
+                request.setAttribute("patient", existingPatient);
+                request.setAttribute("action", "update");
+                request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
+                return;
+            }
+            
+            if (gender == null || gender.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "Vui lòng chọn giới tính");
                 request.setAttribute("patient", existingPatient);
                 request.setAttribute("action", "update");
                 request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
@@ -458,7 +496,23 @@ public class PatientServlet extends HttpServlet {
             }
             
             if (phone == null || phone.trim().isEmpty()) {
-                request.setAttribute("errorMessage", "Phone number is required");
+                request.setAttribute("errorMessage", "Vui lòng nhập số điện thoại");
+                request.setAttribute("patient", existingPatient);
+                request.setAttribute("action", "update");
+                request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
+                return;
+            }
+            
+            if (email == null || email.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "Vui lòng nhập email");
+                request.setAttribute("patient", existingPatient);
+                request.setAttribute("action", "update");
+                request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
+                return;
+            }
+            
+            if (address == null || address.trim().isEmpty()) {
+                request.setAttribute("errorMessage", "Vui lòng nhập địa chỉ");
                 request.setAttribute("patient", existingPatient);
                 request.setAttribute("action", "update");
                 request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
@@ -468,7 +522,7 @@ public class PatientServlet extends HttpServlet {
             // Check if phone already exists for another patient
             Patient patientWithSamePhone = PatientMDAO.getPatientByPhone(phone.trim());
             if (patientWithSamePhone != null && patientWithSamePhone.getPatientId() != patientId) {
-                request.setAttribute("errorMessage", "Another patient with this phone number already exists");
+                request.setAttribute("errorMessage", "Số điện thoại này đã được sử dụng bởi bệnh nhân khác");
                 request.setAttribute("patient", existingPatient);
                 request.setAttribute("action", "update");
                 request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
@@ -477,25 +531,23 @@ public class PatientServlet extends HttpServlet {
             
             // Parse birth date
             LocalDate birthDate = null;
-            if (birthDateStr != null && !birthDateStr.trim().isEmpty()) {
-                try {
-                    birthDate = LocalDate.parse(birthDateStr);
-                } catch (DateTimeParseException e) {
-                    request.setAttribute("errorMessage", "Invalid birth date format");
-                    request.setAttribute("patient", existingPatient);
-                    request.setAttribute("action", "update");
-                    request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
-                    return;
-                }
+            try {
+                birthDate = LocalDate.parse(birthDateStr);
+            } catch (DateTimeParseException e) {
+                request.setAttribute("errorMessage", "Định dạng ngày sinh không hợp lệ");
+                request.setAttribute("patient", existingPatient);
+                request.setAttribute("action", "update");
+                request.getRequestDispatcher("/receptionist/register-patient.jsp").forward(request, response);
+                return;
             }
             
             // Update patient object
             existingPatient.setFullName(fullName.trim());
             existingPatient.setBirthDate(birthDate);
-            existingPatient.setGender(gender != null && !gender.isEmpty() ? gender : null);
+            existingPatient.setGender(gender.trim());
             existingPatient.setPhone(phone.trim());
-            existingPatient.setEmail(email != null && !email.trim().isEmpty() ? email.trim() : null);
-            existingPatient.setAddress(address != null && !address.trim().isEmpty() ? address.trim() : null);
+            existingPatient.setEmail(email.trim());
+            existingPatient.setAddress(address.trim());
             
             // Update patient in database
             boolean success = PatientMDAO.updatePatient(existingPatient);

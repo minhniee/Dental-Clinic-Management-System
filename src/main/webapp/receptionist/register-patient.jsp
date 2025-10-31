@@ -85,14 +85,30 @@
             box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.1);
         }
 
-        .form-control.error {
+        .form-control.error,
+        .form-control:invalid:not(:placeholder-shown):not(:focus) {
             border-color: #dc2626;
+            background-color: #fef2f2;
         }
 
         .error-message {
             color: #dc2626;
-            font-size: 0.75rem;
-            margin-top: 0.25rem;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+            padding: 0.5rem;
+            background-color: #fef2f2;
+            border-left: 3px solid #dc2626;
+            border-radius: 0.25rem;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .form-control:invalid:not(:placeholder-shown):not(:focus) + .help-text + .error-message,
+        .form-control:invalid:not(:placeholder-shown):not(:focus) ~ .error-message {
+            display: block;
         }
 
         .help-text {
@@ -330,29 +346,44 @@
                                    value="${patient.fullName}"
                                    placeholder="Nhập họ và tên đầy đủ">
                             <div class="help-text">Vui lòng nhập họ và tên đầy đủ của bệnh nhân</div>
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i> Họ và tên không được để trống
+                            </div>
                         </div>
 
                         <div class="form-row">
                             <!-- Birth Date -->
                             <div class="form-group">
-                                <label for="birthDate">Ngày Sinh</label>
+                                <label for="birthDate">
+                                    Ngày Sinh <span class="required">*</span>
+                                </label>
                                 <input type="date" 
                                        id="birthDate" 
                                        name="birthDate" 
                                        class="form-control"
+                                       required
                                        value="<c:if test='${not empty patient.birthDate}'><fmt:formatDate value='${patient.birthDateAsDate}' pattern='yyyy-MM-dd'/></c:if>">
-                                <div class="help-text">Nhập ngày sinh (tùy chọn)</div>
+                                <div class="help-text">Nhập ngày sinh của bệnh nhân</div>
+                                <div class="error-message">
+                                    <i class="fas fa-exclamation-circle"></i> Ngày sinh không được để trống
+                                </div>
                             </div>
 
                             <!-- Gender -->
                             <div class="form-group">
-                                <label for="gender">Giới Tính</label>
-                                <select id="gender" name="gender" class="form-control">
+                                <label for="gender">
+                                    Giới Tính <span class="required">*</span>
+                                </label>
+                                <select id="gender" name="gender" class="form-control" required>
                                     <option value="">Chọn giới tính</option>
                                     <option value="M" ${patient.gender eq 'M' ? 'selected' : ''}>Nam</option>
                                     <option value="F" ${patient.gender eq 'F' ? 'selected' : ''}>Nữ</option>
                                     <option value="O" ${patient.gender eq 'O' ? 'selected' : ''}>Khác</option>
                                 </select>
+                                <div class="help-text">Chọn giới tính của bệnh nhân</div>
+                                <div class="error-message">
+                                    <i class="fas fa-exclamation-circle"></i> Vui lòng chọn giới tính
+                                </div>
                             </div>
                         </div>
 
@@ -367,33 +398,49 @@
                                        name="phone" 
                                        class="form-control" 
                                        required 
+                                       pattern="[0-9]{10,11}"
                                        value="${not empty patient.phone ? patient.phone : searchPhone}"
                                        placeholder="0123456789">
                                 <div class="help-text">Số điện thoại là bắt buộc để liên lạc</div>
+                                <div class="error-message">
+                                    <i class="fas fa-exclamation-circle"></i> Số điện thoại không được để trống và phải có 10-11 số
+                                </div>
                             </div>
 
                             <!-- Email -->
                             <div class="form-group">
-                                <label for="email">Email</label>
+                                <label for="email">
+                                    Email <span class="required">*</span>
+                                </label>
                                 <input type="email" 
                                        id="email" 
                                        name="email" 
                                        class="form-control"
+                                       required
                                        value="${patient.email}"
                                        placeholder="email@example.com">
                                 <div class="help-text">Email để gửi nhắc nhở lịch hẹn</div>
+                                <div class="error-message">
+                                    <i class="fas fa-exclamation-circle"></i> Email không được để trống và phải đúng định dạng
+                                </div>
                             </div>
                         </div>
 
                         <!-- Address -->
                         <div class="form-group full-width">
-                            <label for="address">Địa Chỉ</label>
+                            <label for="address">
+                                Địa Chỉ <span class="required">*</span>
+                            </label>
                             <textarea id="address" 
                                       name="address" 
                                       class="form-control" 
                                       rows="3"
+                                      required
                                       placeholder="Nhập địa chỉ đầy đủ của bệnh nhân">${patient.address}</textarea>
-                            <div class="help-text">Địa chỉ nhà hoặc nơi ở hiện tại</div>
+                            <div class="help-text">Địa chỉ nhà hoặc nơi ở hiện tại của bệnh nhân</div>
+                            <div class="error-message">
+                                <i class="fas fa-exclamation-circle"></i> Địa chỉ không được để trống
+                            </div>
                         </div>
 
                         <!-- Form Actions -->
@@ -418,17 +465,89 @@
     </div>
 
     <script>
-        // Form validation
+        // Form validation with custom error messages
         (function() {
             'use strict';
+            
+            function showError(input) {
+                const formGroup = input.closest('.form-group');
+                const errorMessage = formGroup.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.classList.add('show');
+                }
+                input.classList.add('error');
+            }
+            
+            function hideError(input) {
+                const formGroup = input.closest('.form-group');
+                const errorMessage = formGroup.querySelector('.error-message');
+                if (errorMessage) {
+                    errorMessage.classList.remove('show');
+                }
+                input.classList.remove('error');
+            }
+            
+            function validateField(input) {
+                if (!input.checkValidity()) {
+                    showError(input);
+                    return false;
+                } else {
+                    hideError(input);
+                    return true;
+                }
+            }
+            
             window.addEventListener('load', function() {
                 var forms = document.getElementsByClassName('needs-validation');
-                var validation = Array.prototype.filter.call(forms, function(form) {
+                
+                Array.prototype.forEach.call(forms, function(form) {
+                    // Get all required inputs
+                    const requiredInputs = form.querySelectorAll('[required]');
+                    
+                    // Add blur event listener to each required field
+                    requiredInputs.forEach(function(input) {
+                        input.addEventListener('blur', function() {
+                            validateField(input);
+                        });
+                        
+                        input.addEventListener('input', function() {
+                            if (input.classList.contains('error')) {
+                                validateField(input);
+                            }
+                        });
+                        
+                        input.addEventListener('change', function() {
+                            if (input.classList.contains('error')) {
+                                validateField(input);
+                            }
+                        });
+                    });
+                    
+                    // Form submit validation
                     form.addEventListener('submit', function(event) {
-                        if (form.checkValidity() === false) {
+                        let isValid = true;
+                        
+                        // Validate all required fields
+                        requiredInputs.forEach(function(input) {
+                            if (!validateField(input)) {
+                                isValid = false;
+                            }
+                        });
+                        
+                        if (!isValid) {
                             event.preventDefault();
                             event.stopPropagation();
+                            
+                            // Scroll to first error
+                            const firstError = form.querySelector('.error-message.show');
+                            if (firstError) {
+                                firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            }
+                            
+                            // Show alert
+                            alert('Vui lòng điền đầy đủ tất cả các trường bắt buộc!');
                         }
+                        
                         form.classList.add('was-validated');
                     }, false);
                 });

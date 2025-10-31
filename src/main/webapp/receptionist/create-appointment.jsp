@@ -612,7 +612,7 @@
                                 </label>
                                 <div class="datetime-container">
                                     <div class="datetime-input-wrapper">
-                                        <input type="datetime-local" 
+                                        <input type="datetime-local" readonly
                                                id="appointmentDateTime" 
                                                name="appointmentDateTime" 
                                                class="datetime-input" 
@@ -620,12 +620,12 @@
                                                required 
                                                value="${not empty appointment ? appointment.appointmentDateForInput : ''}">
                                     </div>
-                                    <button type="button" 
+                                    <!-- <button type="button" 
                                             id="setCurrentTimeBtn" 
                                             class="current-time-btn">
-                                        <i class="fas fa-clock"></i>
-                                        <span>Hiện tại</span>
-                                    </button>
+                                        <i class="fas fa-calendar-day"></i>
+                                        <span>Hôm nay</span>
+                                    </button> -->
                                 </div>
                                 <div id="appointmentDateTime-error" class="error-message" style="display: none;">
                                     <i class="fas fa-exclamation-circle"></i>
@@ -639,9 +639,9 @@
                                     <h5><i class="fas fa-info-circle"></i> Hướng dẫn đặt lịch</h5>
                                     <ul>
                                         <li>Giờ làm việc: 8:00 - 18:00 (thứ 2 - thứ 6)</li>
-                                        <li><strong>Phút chỉ có thể là 00 hoặc 30</strong> (8:00, 8:30, 9:00, 9:30...)</li>
+                                        <!-- <li><strong>Phút chỉ có thể là 00 hoặc 30</strong> (8:00, 8:30, 9:00, 9:30...)</li>
                                         <li>Có thể đặt lịch trong ngày hiện tại</li>
-                                        <li>Không thể đặt lịch trước 30 phút từ hiện tại</li>
+                                        <li>Không thể đặt lịch trước 30 phút từ hiện tại</li> -->
                                     </ul>
                                 </div>
                             </div>
@@ -870,83 +870,51 @@
             });
         })();
 
-        // Auto-set current date/time if creating new appointment with business hours
+        // Helper function to get current datetime in Asia/Bangkok timezone
+        function getCurrentDateTimeBangkok() {
+            // Get current time in Asia/Bangkok timezone (GMT+7)
+            const now = new Date();
+            const bangkokTime = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Bangkok' }));
+            
+            // Format to YYYY-MM-DDTHH:MM for datetime-local input
+            const year = bangkokTime.getFullYear();
+            const month = String(bangkokTime.getMonth() + 1).padStart(2, '0');
+            const day = String(bangkokTime.getDate()).padStart(2, '0');
+            const hours = String(bangkokTime.getHours()).padStart(2, '0');
+            const minutes = String(bangkokTime.getMinutes()).padStart(2, '0');
+            
+            return year + '-' + month + '-' + day + 'T' + hours + ':' + minutes;
+        }
+        
+        // Auto-set current date/time if creating new appointment
         document.addEventListener('DOMContentLoaded', function() {
             const dateTimeInput = document.getElementById('appointmentDateTime');
-            
-            // Set minimum date/time to 30 minutes ago (allow same-day appointments)
-            const now = new Date();
-            const thirtyMinutesAgo = new Date(now.getTime() - (30 * 60 * 1000));
-            const minDateTime = thirtyMinutesAgo.toISOString().slice(0, 16);
-            dateTimeInput.min = minDateTime;
             
             // Only set default if this is a new appointment and no value is set
             var isUpdate = '${action}' === 'update';
             if (!isUpdate && !dateTimeInput.value) {
-                // Round to next 30 minutes and ensure it's within business hours
-                let rounded = new Date(Math.ceil(now.getTime() / (30 * 60 * 1000)) * (30 * 60 * 1000));
-                
-                // If it's weekend, set to next Monday at 8:00 AM
-                if (rounded.getDay() === 0) { // Sunday
-                    rounded = new Date(rounded);
-                    rounded.setDate(rounded.getDate() + 1);
-                    rounded.setHours(8, 0, 0, 0);
-                } else if (rounded.getDay() === 6) { // Saturday
-                    rounded = new Date(rounded);
-                    rounded.setDate(rounded.getDate() + 2);
-                    rounded.setHours(8, 0, 0, 0);
-                } else if (rounded.getHours() < 8) {
-                    // If before 8 AM, set to 8:00 AM
-                    rounded.setHours(8, 0, 0, 0);
-                } else if (rounded.getHours() >= 18) {
-                    // If after 6 PM, set to next day at 8:00 AM
-                    rounded.setDate(rounded.getDate() + 1);
-                    rounded.setHours(8, 0, 0, 0);
-                }
-                
-                dateTimeInput.value = rounded.toISOString().slice(0, 16);
+                // Set current datetime in Bangkok timezone
+                dateTimeInput.value = getCurrentDateTimeBangkok();
             }
         });
 
-        // Current time button functionality
+        // Current time button functionality - Get current datetime in Bangkok timezone
         document.getElementById('setCurrentTimeBtn').addEventListener('click', function() {
             const dateTimeInput = document.getElementById('appointmentDateTime');
-            const now = new Date();
             
-            // Round to next 30 minutes and ensure it's within business hours
-            let rounded = new Date(Math.ceil(now.getTime() / (30 * 60 * 1000)) * (30 * 60 * 1000));
+            // Set the exact current datetime in Bangkok timezone
+            dateTimeInput.value = getCurrentDateTimeBangkok();
             
-            // If it's weekend, set to next Monday at 8:00 AM
-            if (rounded.getDay() === 0) { // Sunday
-                rounded = new Date(rounded);
-                rounded.setDate(rounded.getDate() + 1);
-                rounded.setHours(8, 0, 0, 0);
-            } else if (rounded.getDay() === 6) { // Saturday
-                rounded = new Date(rounded);
-                rounded.setDate(rounded.getDate() + 2);
-                rounded.setHours(8, 0, 0, 0);
-            } else if (rounded.getHours() < 8) {
-                // If before 8 AM, set to 8:00 AM
-                rounded.setHours(8, 0, 0, 0);
-            } else if (rounded.getHours() >= 18) {
-                // If after 6 PM, set to next day at 8:00 AM
-                rounded.setDate(rounded.getDate() + 1);
-                rounded.setHours(8, 0, 0, 0);
-            }
-            
-            dateTimeInput.value = rounded.toISOString().slice(0, 16);
-            
-            // Trigger validation to clear any previous errors
-            validateAppointmentDateTime();
+            // Trigger change event to run validation and auto-adjustment
+            dateTimeInput.dispatchEvent(new Event('change'));
             
             // Show success message briefly
             const btn = this;
             const originalText = btn.innerHTML;
-            const isSameDay = rounded.toDateString() === now.toDateString();
-            btn.innerHTML = `<i class="fas fa-check"></i> <span>${isSameDay ? 'Hôm nay' : 'Đã đặt'}</span>`;
+            btn.innerHTML = '<i class="fas fa-check"></i> <span>Đã đặt</span>';
             btn.classList.add('success');
             
-            setTimeout(() => {
+            setTimeout(function() {
                 btn.innerHTML = originalText;
                 btn.classList.remove('success');
             }, 1500);

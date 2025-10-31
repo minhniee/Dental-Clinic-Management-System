@@ -152,7 +152,7 @@ public class InvoiceDAO {
      * Get invoices by patient ID
      */
     public List<Invoice> getInvoicesByPatient(int patientId) {
-        String sql = "SELECT i.*, p.full_name as patient_name, p.phone as patient_phone " +
+        String sql = "SELECT i.*, p.full_name as patient_name, p.phone as patient_phone, p.email as patient_email " +
                      "FROM Invoices i " +
                      "LEFT JOIN Patients p ON i.patient_id = p.patient_id " +
                      "WHERE i.patient_id = ? ORDER BY i.created_at DESC";
@@ -167,6 +167,17 @@ public class InvoiceDAO {
             
             while (rs.next()) {
                 Invoice invoice = mapResultSetToInvoice(rs);
+                
+                // Set patient object
+                if (rs.getString("patient_name") != null) {
+                    Patient patient = new Patient();
+                    patient.setPatientId(rs.getInt("patient_id"));
+                    patient.setFullName(rs.getString("patient_name"));
+                    patient.setPhone(rs.getString("patient_phone"));
+                    patient.setEmail(rs.getString("patient_email"));
+                    invoice.setPatient(patient);
+                }
+                
                 invoices.add(invoice);
             }
             
@@ -181,7 +192,7 @@ public class InvoiceDAO {
      * Get all recent invoices
      */
     public List<Invoice> getRecentInvoices(int limit) {
-        String sql = "SELECT TOP (?) i.*, p.full_name as patient_name, p.phone as patient_phone " +
+        String sql = "SELECT TOP (?) i.*, p.full_name as patient_name, p.phone as patient_phone, p.email as patient_email " +
                      "FROM Invoices i " +
                      "LEFT JOIN Patients p ON i.patient_id = p.patient_id " +
                      "ORDER BY i.created_at DESC";
@@ -196,6 +207,17 @@ public class InvoiceDAO {
             
             while (rs.next()) {
                 Invoice invoice = mapResultSetToInvoice(rs);
+                
+                // Set patient object
+                if (rs.getString("patient_name") != null) {
+                    Patient patient = new Patient();
+                    patient.setPatientId(rs.getInt("patient_id"));
+                    patient.setFullName(rs.getString("patient_name"));
+                    patient.setPhone(rs.getString("patient_phone"));
+                    patient.setEmail(rs.getString("patient_email"));
+                    invoice.setPatient(patient);
+                }
+                
                 invoices.add(invoice);
             }
             

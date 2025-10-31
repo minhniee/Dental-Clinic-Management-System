@@ -401,108 +401,61 @@
                                 <fmt:formatNumber value="${revenueData.totalRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
                             </div>
                             <div class="stat-change positive">
-                                <span>↗️</span>
-                                <span>Tổng hợp từ tất cả nguồn</span>
+                                <span>✅</span>
+                                <span>Từ Hóa Đơn Đã Thanh Toán</span>
                             </div>
                         </div>
                         
                         <div class="stat-card">
                             <div class="stat-header">
-                                <span class="stat-title">Doanh Thu Hóa Đơn</span>
+                                <span class="stat-title">Số Hóa Đơn</span>
                                 <span class="stat-icon">🧾</span>
                             </div>
                             <div class="stat-value">
-                                <fmt:formatNumber value="${revenueData.invoiceRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                ${not empty revenueData.invoiceList ? revenueData.invoiceList.size() : 0}
                             </div>
                             <div class="stat-change positive">
-                                <span>↗️</span>
-                                <span>Từ bảng Invoices</span>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <span class="stat-title">Doanh Thu Dịch Vụ</span>
-                                <span class="stat-icon">🦷</span>
-                            </div>
-                            <div class="stat-value">
-                                <fmt:formatNumber value="${revenueData.appointmentRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
-                            </div>
-                            <div class="stat-change positive">
-                                <span>↗️</span>
-                                <span>Từ Appointments + Services</span>
-                            </div>
-                        </div>
-                        
-                        <div class="stat-card">
-                            <div class="stat-header">
-                                <span class="stat-title">Doanh Thu Vật Tư</span>
-                                <span class="stat-icon">📦</span>
-                            </div>
-                            <div class="stat-value">
-                                <fmt:formatNumber value="${revenueData.inventoryRevenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
-                            </div>
-                            <div class="stat-change">
                                 <span>📊</span>
-                                <span>Từ InventoryItems</span>
+                                <span>Hóa Đơn Đã Thanh Toán</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Revenue by Source Chart -->
-                    <div class="chart-container">
-                        <h3 class="chart-title">📊 Phân Bố Doanh Thu Theo Nguồn</h3>
-                        <div class="chart-wrapper">
-                            <canvas id="revenueBySourceChart"></canvas>
-                        </div>
-                    </div>
-
-                    <!-- Revenue by Source Table -->
-                    <c:if test="${not empty revenueData.revenueBySource}">
-                        <div class="table-container">
+                    <!-- Invoice List Table -->
+                    <c:if test="${not empty revenueData.invoiceList}">
+                        <div class="table-container" style="margin-bottom: 2rem;">
                             <div class="table-header">
-                                <h3 class="table-title">📋 Chi Tiết Doanh Thu Theo Nguồn</h3>
+                                <h3 class="table-title">🧾 Danh Sách Hóa Đơn Đã Thanh Toán</h3>
                             </div>
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Nguồn Doanh Thu</th>
+                                        <th>Mã HĐ</th>
+                                        <th>Ngày Tạo</th>
+                                        <th>Bệnh Nhân</th>
+                                        <th>Bác Sĩ</th>
                                         <th>Số Tiền</th>
-                                        <th>Tỷ Lệ</th>
-                                        <th>Thanh Toán</th>
+                                        <th>Trạng Thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <c:forEach var="source" items="${revenueData.revenueBySource}">
+                                    <c:forEach var="invoice" items="${revenueData.invoiceList}">
                                         <tr>
                                             <td>
-                                                <div class="revenue-source">${source.source}</div>
+                                                <div class="revenue-source">#${invoice.invoiceId}</div>
                                             </td>
+                                            <td>
+                                                <fmt:formatDate value="${invoice.createdAt}" pattern="dd/MM/yyyy HH:mm"/>
+                                            </td>
+                                            <td>${invoice.patientName}</td>
+                                            <td>${invoice.doctorName}</td>
                                             <td>
                                                 <div class="revenue-amount">
-                                                    <fmt:formatNumber value="${source.revenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                    <fmt:formatNumber value="${invoice.netAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
                                                 </div>
                                             </td>
                                             <td>
-                                                <div class="revenue-percentage">
-                                                    <fmt:formatNumber value="${source.percentage}" maxFractionDigits="1"/>%
-                                                </div>
-                                                <div class="progress-bar">
-                                                    <div class="progress-fill" style="width: ${source.percentage}%"></div>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <c:choose>
-                                                    <c:when test="${source.source == 'Hóa Đơn'}">
-                                                        <span style="color: #059669;">✅ Đã Thanh Toán</span>
-                                                    </c:when>
-                                                    <c:when test="${source.source == 'Dịch Vụ'}">
-                                                        <span style="color: #059669;">✅ Hoàn Thành</span>
-                                                    </c:when>
-                                                    <c:otherwise>
-                                                        <span style="color: #6b7280;">📊 Nội Bộ</span>
-                                                    </c:otherwise>
-                                                </c:choose>
+                                                <span style="color: #059669; font-weight: 600;">✅ ${invoice.status}</span>
                                             </td>
                                         </tr>
                                     </c:forEach>
@@ -523,27 +476,29 @@
 
                     <!-- Revenue by Service Table -->
                     <c:if test="${not empty revenueData.revenueByService}">
-                        <div class="table-container">
+                        <div class="table-container" style="margin-bottom: 2rem;">
                             <div class="table-header">
-                                <h3 class="table-title">🦷 Doanh Thu Theo Dịch Vụ</h3>
+                                <h3 class="table-title">🦷 Doanh Thu Theo Dịch Vụ (Từ Hóa Đơn)</h3>
                             </div>
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th>Dịch Vụ</th>
-                                        <th>Số Lượng</th>
+                                        <th>Tên Dịch Vụ</th>
                                         <th>Doanh Thu</th>
-                                        <th>Tỷ Lệ</th>
+                                        <th>Biểu Đồ</th>
                                     </tr>
                                 </thead>
                                 <tbody>
+                                    <c:set var="totalServiceRevenue" value="0"/>
                                     <c:forEach var="service" items="${revenueData.revenueByService}">
+                                        <c:set var="totalServiceRevenue" value="${totalServiceRevenue + service.revenue}"/>
+                                    </c:forEach>
+                                    
+                                    <c:forEach var="service" items="${revenueData.revenueByService}">
+                                        <c:set var="percentage" value="${totalServiceRevenue > 0 ? (service.revenue / totalServiceRevenue * 100) : 0}"/>
                                         <tr>
                                             <td>
                                                 <div class="revenue-source">${service.serviceName}</div>
-                                            </td>
-                                            <td>
-                                                <div class="revenue-amount">${service.count}</div>
                                             </td>
                                             <td>
                                                 <div class="revenue-amount">
@@ -552,7 +507,56 @@
                                             </td>
                                             <td>
                                                 <div class="revenue-percentage">
-                                                    <fmt:formatNumber value="${service.percentage}" maxFractionDigits="1"/>%
+                                                    <fmt:formatNumber value="${percentage}" maxFractionDigits="1"/>%
+                                                </div>
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" style="width: ${percentage}%"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                    </c:if>
+
+                    <!-- Revenue by Doctor Table -->
+                    <c:if test="${not empty revenueData.revenueByDoctor}">
+                        <div class="table-container">
+                            <div class="table-header">
+                                <h3 class="table-title">👨‍⚕️ Doanh Thu Theo Bác Sĩ (Từ Hóa Đơn)</h3>
+                            </div>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Tên Bác Sĩ</th>
+                                        <th>Doanh Thu</th>
+                                        <th>Biểu Đồ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:set var="totalDoctorRevenue" value="0"/>
+                                    <c:forEach var="doctor" items="${revenueData.revenueByDoctor}">
+                                        <c:set var="totalDoctorRevenue" value="${totalDoctorRevenue + doctor.revenue}"/>
+                                    </c:forEach>
+                                    
+                                    <c:forEach var="doctor" items="${revenueData.revenueByDoctor}">
+                                        <c:set var="percentage" value="${totalDoctorRevenue > 0 ? (doctor.revenue / totalDoctorRevenue * 100) : 0}"/>
+                                        <tr>
+                                            <td>
+                                                <div class="revenue-source">${doctor.doctorName}</div>
+                                            </td>
+                                            <td>
+                                                <div class="revenue-amount">
+                                                    <fmt:formatNumber value="${doctor.revenue}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="revenue-percentage">
+                                                    <fmt:formatNumber value="${percentage}" maxFractionDigits="1"/>%
+                                                </div>
+                                                <div class="progress-bar">
+                                                    <div class="progress-fill" style="width: ${percentage}%"></div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -576,58 +580,6 @@
     </div>
 
     <script>
-        // Revenue by Source Chart
-        <c:if test="${not empty revenueData.revenueBySource}">
-        const revenueBySourceCtx = document.getElementById('revenueBySourceChart').getContext('2d');
-        new Chart(revenueBySourceCtx, {
-            type: 'doughnut',
-            data: {
-                labels: [
-                    <c:forEach var="source" items="${revenueData.revenueBySource}" varStatus="status">
-                    '${source.source}'<c:if test="${!status.last}">,</c:if>
-                    </c:forEach>
-                ],
-                datasets: [{
-                    data: [
-                        <c:forEach var="source" items="${revenueData.revenueBySource}" varStatus="status">
-                        ${source.revenue}<c:if test="${!status.last}">,</c:if>
-                        </c:forEach>
-                    ],
-                    backgroundColor: [
-                        '#667eea',
-                        '#764ba2',
-                        '#f093fb'
-                    ],
-                    borderWidth: 2,
-                    borderColor: '#fff'
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            padding: 20,
-                            usePointStyle: true
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                const value = context.parsed;
-                                const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                                const percentage = ((value / total) * 100).toFixed(1);
-                                return context.label + ': ₫' + value.toLocaleString() + ' (' + percentage + '%)';
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        </c:if>
-
         // Revenue by Day Chart
         <c:if test="${not empty revenueData.revenueByDay}">
         const revenueByDayCtx = document.getElementById('revenueByDayChart').getContext('2d');

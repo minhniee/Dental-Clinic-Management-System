@@ -119,37 +119,25 @@ public class ManagerReportsServlet extends HttpServlet {
                 dateTo = LocalDate.now().toString();
             }
             
-            // Revenue from Invoices
-            double invoiceRevenue = getInvoiceRevenue(dateFrom, dateTo);
-            revenueData.put("invoiceRevenue", invoiceRevenue);
-            
-            // Revenue from Appointments (Services)
-            double appointmentRevenue = getAppointmentRevenue(dateFrom, dateTo);
-            revenueData.put("appointmentRevenue", appointmentRevenue);
-            
-            // Revenue from Inventory Items (if any sales)
-            double inventoryRevenue = getInventoryRevenue(dateFrom, dateTo);
-            revenueData.put("inventoryRevenue", inventoryRevenue);
-            
-            // Total combined revenue
-            double totalRevenue = invoiceRevenue + appointmentRevenue + inventoryRevenue;
+            // Revenue from Invoices only (PAID invoices)
+            double totalRevenue = getInvoiceRevenue(dateFrom, dateTo);
             revenueData.put("totalRevenue", totalRevenue);
             
-            // Revenue breakdown by source
-            List<Map<String, Object>> revenueBySource = getRevenueBySource(dateFrom, dateTo);
-            revenueData.put("revenueBySource", revenueBySource);
-            
-            // Revenue by day
+            // Revenue by day (from invoices)
             List<Map<String, Object>> revenueByDay = getRevenueByDay(dateFrom, dateTo);
             revenueData.put("revenueByDay", revenueByDay);
             
-            // Revenue by service
+            // Revenue by service (from invoice items)
             List<Map<String, Object>> revenueByService = getRevenueByService(dateFrom, dateTo);
             revenueData.put("revenueByService", revenueByService);
             
-            // Revenue by doctor
+            // Revenue by doctor (from invoices)
             List<Map<String, Object>> revenueByDoctor = getRevenueByDoctor(dateFrom, dateTo);
             revenueData.put("revenueByDoctor", revenueByDoctor);
+            
+            // Invoice details
+            List<Map<String, Object>> invoiceList = getInvoiceList(dateFrom, dateTo);
+            revenueData.put("invoiceList", invoiceList);
             
             request.setAttribute("revenueData", revenueData);
             request.setAttribute("dateFrom", dateFrom);
@@ -271,64 +259,35 @@ public class ManagerReportsServlet extends HttpServlet {
         }
     }
     
-    private double getAppointmentRevenue(String dateFrom, String dateTo) throws SQLException {
-        String sql = "SELECT COALESCE(SUM(s.price), 0) FROM Appointments a " +
-                    "JOIN Services s ON a.service_id = s.service_id " +
-                    "WHERE a.appointment_date >= ? AND a.appointment_date < ? AND a.status = 'COMPLETED'";
+    private List<Map<String, Object>> getInvoiceList(String dateFrom, String dateTo) throws SQLException {
+        String sql = "SELECT i.invoice_id, i.created_at, i.net_amount, i.status, " +
+                    "p.full_name as patient_name, u.full_name as doctor_name " +
+                    "FROM Invoices i " +
+                    "JOIN Appointments a ON i.appointment_id = a.appointment_id " +
+                    "JOIN Patients p ON a.patient_id = p.patient_id " +
+                    "JOIN Users u ON a.dentist_id = u.user_id " +
+                    "WHERE i.created_at >= ? AND i.created_at < ? AND i.status = 'PAID' " +
+                    "ORDER BY i.created_at DESC";
+        
+        List<Map<String, Object>> invoiceList = new ArrayList<>();
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, convertDateFrom(dateFrom));
             ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
-                return rs.next() ? rs.getDouble(1) : 0.0;
+                while (rs.next()) {
+                    Map<String, Object> invoice = new HashMap<>();
+                    invoice.put("invoiceId", rs.getInt("invoice_id"));
+                    invoice.put("createdAt", rs.getTimestamp("created_at"));
+                    invoice.put("netAmount", rs.getDouble("net_amount"));
+                    invoice.put("status", rs.getString("status"));
+                    invoice.put("patientName", rs.getString("patient_name"));
+                    invoice.put("doctorName", rs.getString("doctor_name"));
+                    invoiceList.add(invoice);
+                }
             }
         }
-    }
-    
-    private double getInventoryRevenue(String dateFrom, String dateTo) throws SQLException {
-        // Note: This assumes inventory items can be sold. If not, return 0
-        // For now, we'll return 0 as inventory items are typically for internal use
-        return 0.0;
-    }
-    
-    private List<Map<String, Object>> getRevenueBySource(String dateFrom, String dateTo) throws SQLException {
-        List<Map<String, Object>> revenueBySource = new ArrayList<>();
-        
-        // Invoice Revenue
-        Map<String, Object> invoiceData = new HashMap<>();
-        invoiceData.put("source", "Hóa Đơn");
-        invoiceData.put("revenue", getInvoiceRevenue(dateFrom, dateTo));
-        invoiceData.put("percentage", 0.0); // Will be calculated later
-        revenueBySource.add(invoiceData);
-        
-        // Appointment Revenue
-        Map<String, Object> appointmentData = new HashMap<>();
-        appointmentData.put("source", "Dịch Vụ");
-        appointmentData.put("revenue", getAppointmentRevenue(dateFrom, dateTo));
-        appointmentData.put("percentage", 0.0); // Will be calculated later
-        revenueBySource.add(appointmentData);
-        
-        // Inventory Revenue
-        Map<String, Object> inventoryData = new HashMap<>();
-        inventoryData.put("source", "Vật Tư");
-        inventoryData.put("revenue", getInventoryRevenue(dateFrom, dateTo));
-        inventoryData.put("percentage", 0.0); // Will be calculated later
-        revenueBySource.add(inventoryData);
-        
-        // Calculate percentages
-        double totalRevenue = getInvoiceRevenue(dateFrom, dateTo) + 
-                            getAppointmentRevenue(dateFrom, dateTo) + 
-                            getInventoryRevenue(dateFrom, dateTo);
-        
-        if (totalRevenue > 0) {
-            for (Map<String, Object> data : revenueBySource) {
-                double revenue = (Double) data.get("revenue");
-                double percentage = (revenue / totalRevenue) * 100;
-                data.put("percentage", percentage);
-            }
-        }
-        
-        return revenueBySource;
+        return invoiceList;
     }
 
     private int getTotalPatients(String dateFrom, String dateTo) throws SQLException {
@@ -369,18 +328,26 @@ public class ManagerReportsServlet extends HttpServlet {
     }
 
     private List<Map<String, Object>> getRevenueByDay(String dateFrom, String dateTo) throws SQLException {
-        String sql = "SELECT created_at, COALESCE(SUM(net_amount), 0) as daily_revenue " +
+        String sql = "SELECT CAST(created_at AS DATE) as date, COALESCE(SUM(net_amount), 0) as daily_revenue " +
                     "FROM Invoices WHERE created_at >= ? AND created_at < ? AND status = 'PAID' " +
-                    "GROUP BY created_at ORDER BY created_at";
+                    "GROUP BY CAST(created_at AS DATE) ORDER BY CAST(created_at AS DATE)";
         List<Map<String, Object>> revenueByDay = new ArrayList<>();
         try (Connection conn = dbContext.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setTimestamp(1, convertDateFrom(dateFrom));
             ps.setTimestamp(2, convertDateTo(dateTo));
             try (ResultSet rs = ps.executeQuery()) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
                 while (rs.next()) {
                     Map<String, Object> dayRevenue = new HashMap<>();
-                    dayRevenue.put("date", rs.getString("created_at"));
+                    // Get date and format it properly
+                    Date sqlDate = rs.getDate("date");
+                    if (sqlDate != null) {
+                        LocalDate localDate = sqlDate.toLocalDate();
+                        dayRevenue.put("date", localDate.format(formatter));
+                    } else {
+                        dayRevenue.put("date", "");
+                    }
                     dayRevenue.put("revenue", rs.getDouble("daily_revenue"));
                     revenueByDay.add(dayRevenue);
                 }

@@ -340,14 +340,14 @@
                                                     </c:if>
                                                 </td>
                                                 <td>
-                                                    <fmt:formatNumber value="${invoice.totalAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                    <fmt:formatNumber value="${invoice.totalAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫
                                                 </td>
                                                 <td>
-                                                    <fmt:formatNumber value="${invoice.discountAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                    <fmt:formatNumber value="${invoice.discountAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫
                                                 </td>
                                                 <td>
                                                     <strong>
-                                                        <fmt:formatNumber value="${invoice.netAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                        <fmt:formatNumber value="${invoice.netAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫
                                                     </strong>
                                                 </td>
                                                 <td>

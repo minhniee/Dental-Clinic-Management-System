@@ -136,7 +136,7 @@
             </div>
 
             <!-- Quick Actions -->
-            <div class="quick-actions">
+            <!-- <div class="quick-actions">
                 <h3>⚡ Thao Tác Nhanh</h3>
                 <div class="action-buttons">
                     <a href="${pageContext.request.contextPath}/manager/schedule-requests?action=pending" 
@@ -147,10 +147,10 @@
                     <a href="${pageContext.request.contextPath}/manager/employees" 
                        class="btn-quick btn-success">👥 Nhân Viên</a>
                 </div>
-            </div>
+            </div> -->
 
             <!-- Recent Schedule Requests -->
-            <c:if test="${not empty recentScheduleRequestsList}">
+            <!-- <c:if test="${not empty recentScheduleRequestsList}">
                 <div class="recent-section">
                     <h3>📋 Yêu Cầu Nghỉ Gần Đây</h3>
                     <div class="requests-list">
@@ -181,7 +181,7 @@
                         </c:forEach>
                     </div>
                 </div>
-            </c:if>
+            </c:if> -->
         </div>
     </main>
 </div>

@@ -321,6 +321,41 @@ public class AppointmentDAO {
     }
 
     /**
+     * Get appointments by date range and dentist
+     */
+    public List<Appointment> getAppointmentsByDateRangeAndDentist(java.sql.Date startDate, java.sql.Date endDate, int dentistId) {
+        String sql = "SELECT a.*, p.full_name as patient_name, p.phone as patient_phone, " +
+                     "u.full_name as dentist_name, s.name as service_name, s.price as service_price, " +
+                     "s.duration_minutes as service_duration " +
+                     "FROM Appointments a " +
+                     "LEFT JOIN Patients p ON a.patient_id = p.patient_id " +
+                     "LEFT JOIN Users u ON a.dentist_id = u.user_id " +
+                     "LEFT JOIN Services s ON a.service_id = s.service_id " +
+                     "WHERE CAST(a.appointment_date AS DATE) BETWEEN ? AND ? AND a.dentist_id = ? " +
+                     "ORDER BY a.appointment_date ASC";
+        
+        List<Appointment> appointments = new ArrayList<>();
+        
+        try (Connection connection = new DBContext().getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
+            
+            statement.setDate(1, startDate);
+            statement.setDate(2, endDate);
+            statement.setInt(3, dentistId);
+            ResultSet rs = statement.executeQuery();
+            
+            while (rs.next()) {
+                Appointment appointment = mapResultSetToAppointment(rs);
+                appointments.add(appointment);
+            }
+        } catch (SQLException e) {
+            logger.log(Level.SEVERE, "Error getting appointments by date range and dentist", e);
+        }
+        
+        return appointments;
+    }
+
+    /**
      * Get appointments for a specific patient
      */
     public List<Appointment> getAppointmentsByPatient(int patientId) {

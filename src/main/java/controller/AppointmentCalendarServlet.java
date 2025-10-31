@@ -80,6 +80,7 @@ public class AppointmentCalendarServlet extends HttpServlet {
             // Get week parameter or default to current week
             String weekParam = request.getParameter("week");
             String yearParam = request.getParameter("year");
+            String dentistIdParam = request.getParameter("dentistId");
             
             LocalDate targetDate;
             if (weekParam != null && !weekParam.isEmpty()) {
@@ -106,9 +107,23 @@ public class AppointmentCalendarServlet extends HttpServlet {
             
             System.out.println("Week Start: " + weekStart + " (" + weekStartSql + ")");
             System.out.println("Week End: " + weekEnd + " (" + weekEndSql + ")");
+            System.out.println("Dentist ID Filter: " + dentistIdParam);
             
-            List<Appointment> weekAppointments = appointmentDAO.getAppointmentsByDateRange(weekStartSql, weekEndSql);
-            System.out.println("Found " + weekAppointments.size() + " appointments for this week");
+            // Get appointments, filtered by dentist if specified
+            List<Appointment> weekAppointments;
+            if (dentistIdParam != null && !dentistIdParam.trim().isEmpty()) {
+                try {
+                    int dentistId = Integer.parseInt(dentistIdParam);
+                    weekAppointments = appointmentDAO.getAppointmentsByDateRangeAndDentist(weekStartSql, weekEndSql, dentistId);
+                    System.out.println("Found " + weekAppointments.size() + " appointments for dentist ID: " + dentistId);
+                } catch (NumberFormatException e) {
+                    weekAppointments = appointmentDAO.getAppointmentsByDateRange(weekStartSql, weekEndSql);
+                    System.out.println("Found " + weekAppointments.size() + " appointments for this week (all dentists)");
+                }
+            } else {
+                weekAppointments = appointmentDAO.getAppointmentsByDateRange(weekStartSql, weekEndSql);
+                System.out.println("Found " + weekAppointments.size() + " appointments for this week (all dentists)");
+            }
             
             // Organize appointments by day of week
             Map<Integer, List<Appointment>> appointmentsByDay = new HashMap<>();
@@ -152,6 +167,7 @@ public class AppointmentCalendarServlet extends HttpServlet {
             request.setAttribute("currentWeek", getWeekNumber(targetDate));
             request.setAttribute("currentYear", targetDate.getYear());
             request.setAttribute("selectedWeek", weekParam != null ? weekParam : getWeekString(LocalDate.now()));
+            request.setAttribute("selectedDentistId", dentistIdParam);
             
             // Add test data if no appointments found
             if (weekAppointments.isEmpty()) {

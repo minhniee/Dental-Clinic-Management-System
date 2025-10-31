@@ -404,8 +404,8 @@
                                                     </c:choose>
                                                 </td>
                                                 <td>${item.quantity}</td>
-                                                <td><fmt:formatNumber value="${item.unitPrice}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></td>
-                                                <td><strong><fmt:formatNumber value="${item.totalPrice}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></strong></td>
+                                                <td><fmt:formatNumber value="${item.unitPrice}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫</td>
+                                                <td><strong><fmt:formatNumber value="${item.totalPrice}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫</strong></td>
                                             </tr>
                                         </c:forEach>
                                     </tbody>
@@ -423,15 +423,15 @@
                         <div class="totals-section">
                             <div class="total-row">
                                 <span>Tổng Tiền:</span>
-                                <span><fmt:formatNumber value="${invoice.totalAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></span>
+                                <span><fmt:formatNumber value="${invoice.totalAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫</span>
                             </div>
                             <div class="total-row">
                                 <span>Giảm Giá:</span>
-                                <span><fmt:formatNumber value="${invoice.discountAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></span>
+                                <span><fmt:formatNumber value="${invoice.discountAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫</span>
                             </div>
                             <div class="total-row final">
                                 <span>Thành Tiền:</span>
-                                <span><fmt:formatNumber value="${invoice.netAmount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></span>
+                                <span><fmt:formatNumber value="${invoice.netAmount}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫</span>
                             </div>
                         </div>
                     </div>
@@ -449,7 +449,7 @@
                                                 <strong>Mã Thanh Toán:</strong> #${payment.paymentId}
                                             </div>
                                             <div>
-                                                <fmt:formatNumber value="${payment.amount}" type="currency" currencySymbol="₫" maxFractionDigits="0"/>
+                                                <fmt:formatNumber value="${payment.amount}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫
                                             </div>
                                             <div>
                                                 <c:choose>
@@ -468,12 +468,12 @@
                                 
                                 <div class="total-row" style="border-top: 1px solid #e2e8f0; padding-top: 1rem;">
                                     <strong>Đã Thanh Toán:</strong>
-                                    <strong><fmt:formatNumber value="${totalPaid}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></strong>
+                                    <strong><fmt:formatNumber value="${totalPaid}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫</strong>
                                 </div>
                                 
                                 <div class="total-row final">
                                     <span>Còn Lại:</span>
-                                    <span><fmt:formatNumber value="${invoice.netAmount.subtract(totalPaid)}" type="currency" currencySymbol="₫" maxFractionDigits="0"/></span>
+                                    <span><fmt:formatNumber value="${invoice.netAmount.subtract(totalPaid)}" type="number" groupingUsed="true" maxFractionDigits="0"/> ₫</span>
                                 </div>
                             </c:when>
                             <c:otherwise>
@@ -496,13 +496,20 @@
                                                    id="amount" 
                                                    name="amount" 
                                                    class="form-control" 
-                                                   step="0.01" 
-                                                   min="0.01"
+                                                   step="1" 
+                                                   min="1"
+                                                   title="Vui lòng nhập số tiền thanh toán"
+                                                   oninvalid="this.setCustomValidity('Vui lòng nhập số tiền thanh toán')"
+                                                   oninput="this.setCustomValidity('')"
                                                    required>
                                         </div>
                                         <div class="form-group">
                                             <label for="method">Phương Thức <span style="color: #dc2626;">*</span></label>
-                                            <select id="method" name="method" class="form-control" required>
+                                            <select id="method" name="method" class="form-control" 
+                                                    title="Vui lòng chọn phương thức thanh toán"
+                                                    oninvalid="this.setCustomValidity('Vui lòng chọn phương thức thanh toán')"
+                                                    oninput="this.setCustomValidity('')"
+                                                    required>
                                                 <option value="">Chọn phương thức</option>
                                                 <option value="CASH">Tiền mặt</option>
                                                 <option value="CARD">Thẻ</option>
