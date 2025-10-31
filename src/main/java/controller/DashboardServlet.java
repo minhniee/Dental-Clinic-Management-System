@@ -54,21 +54,6 @@ public class DashboardServlet extends HttpServlet {
                     // Use default period
                 }
             }
-
-            // Test DB connection
-            try (Connection testConn = new DBContext().getConnection()) {
-                System.out.println("Database connection successful!");
-                try (PreparedStatement ps = testConn.prepareStatement("SELECT COUNT(*) FROM Users");
-                     ResultSet rs = ps.executeQuery()) {
-                    if (rs.next()) {
-                        System.out.println("Test query result: " + rs.getInt(1));
-                    }
-                }
-            } catch (Exception e) {
-                System.out.println("Database connection failed: " + e.getMessage());
-                e.printStackTrace();
-            }
-
             Map<String, Object> dashboardData = new HashMap<>();
 
             // Tổng quan

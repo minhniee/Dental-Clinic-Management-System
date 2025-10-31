@@ -24,7 +24,6 @@
                 <li><a href="${ctx}/admin/users">Quản Lý Người Dùng</a></li>
                 <li><a href="${ctx}/admin/roles">Vai Trò & Quyền Hạn</a></li>
                 <li class="divider"></li>
-                <li><a href="${ctx}/admin/financial-reports?type=overview">Báo Cáo Tài Chính Tổng Quan</a></li>
             </ul>
         </c:if>
 
